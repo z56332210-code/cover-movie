@@ -606,7 +606,7 @@ const sceneAt = (t) => SCENES2.find((s) => t >= s.t0 && t < s.t1) || SCENES2[SCE
 let CV2, CX2, PX2 = 1, GRAIN = 0.07, FLICKER = 0.05;
 function post(ctx, t) {
   // film grain: ~2 px clumps, new random offset every frame (part of the look in preview and final)
-  const fr = Math.floor(t * 30), tile = A2.grain[fr % A2.grain.length];
+  const fr = Math.floor(t * 30), tile = A2.grain[((fr % A2.grain.length) + A2.grain.length) % A2.grain.length];
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = GRAIN;
   ctx.translate(-hash(fr) * 256, -hash(fr + 9) * 256);
   ctx.fillStyle = ctx.createPattern(tile, "repeat"); ctx.fillRect(0, 0, W, H); ctx.restore();
