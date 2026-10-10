@@ -46,6 +46,8 @@ async function loadAssets2() {
   const dot = (rgba) => { const c = cnv(64, 64), g = c.getContext("2d"), q = g.createRadialGradient(32, 32, 0, 32, 32, 32);
     q.addColorStop(0, rgba(1)); q.addColorStop(0.4, rgba(0.5)); q.addColorStop(1, rgba(0)); g.fillStyle = q; g.fillRect(0, 0, 64, 64); return c; };
   A2.dot = dot((a) => `rgba(235,235,232,${a})`);
+  A2.dotDark = dot((a) => `rgba(28,28,30,${a})`);
+  A2.dotMid = dot((a) => `rgba(172,172,169,${a})`);   // foreground dust: a little brighter than the backlit figure
   A2.small = cnv(240, 135);
   // blinds shadow: soft dark slats, baked once (drawn rotated and sliding as an overlay)
   const bl = cnv(1400, 1400), bx = bl.getContext("2d"); bx.filter = "blur(18px)"; bx.fillStyle = "rgba(0,0,0,1)";

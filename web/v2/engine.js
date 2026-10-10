@@ -25,6 +25,7 @@ function drawShot(ctx, shot, t, vp = FULL) {
   if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
   ctx.save(); roll(ctx, cr);
   if (MASK) { ctx.fillStyle = "#000"; ctx.fillRect(-200, -200, W + 400, H + 400); }
+  else if (shot.dustBack) { drawDustBack(ctx, t, vp); drawKeyLight(ctx, vp, 0.5); }
   else { drawWall(ctx, shot, cr); if (shot.keyLight) drawKeyLight(ctx, vp); else drawLight(ctx, t, shot); }
   drawLayers(ctx, shot, cr, t);
   if (shot.thread) drawThread2(ctx, shot, cr, t);
@@ -105,9 +106,30 @@ function drawWall(ctx, shot, cr) {
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
 }
-function drawKeyLight(ctx, vp) { // soft light from the upper left, opposite side and bottom fall off
+function drawDustBack(ctx, t, vp) {
+  // soft grey air (same tone range as the old wall), slightly uneven so it reads as space, not a flat card
+  ctx.fillStyle = "#f5f5f3"; ctx.fillRect(vp.x - 200, vp.y - 200, vp.w + 400, vp.h + 400);   // bright air for contrast with the figure
+  const g = ctx.createRadialGradient(vp.x + vp.w * 0.28, vp.y + vp.h * 0.15, 40, vp.x + vp.w * 0.28, vp.y + vp.h * 0.15, vp.w * 0.9);
+  g.addColorStop(0, "rgba(255,255,250,0.22)"); g.addColorStop(1, "rgba(255,255,250,0)");
+  ctx.fillStyle = g; ctx.fillRect(vp.x - 200, vp.y - 200, vp.w + 400, vp.h + 400);
+  // three depths of dust: far = many/tiny/slow, mid, near = few/large/soft
+  const layers = [[170, 1.4, 2.8, 5, 0.6], [80, 3.0, 5.5, 11, 0.5], [18, 10, 24, 22, 0.2]];   // dark dust on the bright air
+  ctx.save(); ctx.globalCompositeOperation = "source-over";
+  layers.forEach(([n, r0, r1, speed, a0], li) => {
+    for (let i = 0; i < n; i++) {
+      const k = i * 13 + li * 1000;
+      const x = vp.x + (((hash(k + 1) * vp.w + t * speed * (hash(k + 2) - 0.3)) % vp.w) + vp.w) % vp.w;
+      const y = vp.y - 40 + (((hash(k + 3) * (vp.h + 80) - t * speed * (0.4 + hash(k + 4))) % (vp.h + 80)) + vp.h + 80) % (vp.h + 80);
+      const r = r0 + hash(k + 5) * (r1 - r0);
+      ctx.globalAlpha = a0 * (0.55 + 0.45 * Math.sin(t * (0.6 + hash(k + 6)) + k));
+      ctx.drawImage(A2.dotDark, x - r, y - r, r * 2, r * 2);
+    }
+  });
+  ctx.restore();
+}
+function drawKeyLight(ctx, vp, soft = 1) { // soft light from the upper left, opposite side and bottom fall off
   const g = ctx.createLinearGradient(vp.x, vp.y, vp.x + vp.w * 0.9, vp.y + vp.h * 1.4);
-  g.addColorStop(0, "rgba(255,255,250,0.30)"); g.addColorStop(0.45, "rgba(255,255,250,0)"); g.addColorStop(0.46, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.38)");
+  g.addColorStop(0, "rgba(255,255,250,0.30)"); g.addColorStop(0.45, "rgba(255,255,250,0)"); g.addColorStop(0.46, "rgba(0,0,0,0)"); g.addColorStop(1, `rgba(0,0,0,${0.38 * soft})`);
   ctx.save(); ctx.globalCompositeOperation = "soft-light"; ctx.fillStyle = g; ctx.fillRect(vp.x - 200, vp.y - 200, vp.w + 400, vp.h + 400); ctx.restore();
 }
 function drawLight(ctx, t, shot) { // diagonal light sliding across the wall
@@ -202,27 +224,27 @@ function buildScenes() {
   const s = (i) => L2(i).start, e = (i) => L2(i).end;
   const P = (o = {}) => ({ n: "patient", ...o }), N = (o = {}) => ({ n: "nurse", ...o });
   SCENES2 = [
-    { type: "letterbox_closeup", t0: 0, t1: 20.0, hud: false, bars: 264, vignette: 0.55, lightOverlay: true,
+    { type: "letterbox_closeup", t0: 0, t1: 20.0, hud: false, bars: 264, vignette: 0.38, lightOverlay: true,
       shots: [
         { t0: 0, t1: 2.4, black: true, layers: [], c0: [0, 0, 1], c1: [0, 0, 1] },
         // upper body centre (garment + crossed arms), wall on both sides
-        { t0: 2.4, t1: 7.3, tin: "bleed", layers: [P()], c0: [1150, 1480, 2560], c1: [1000, 1400, 2260], keyLight: true, longShadow: true, r0: -0.8, r1: 0.6, focus: "pull", rack: 0.15 },
+        { t0: 2.4, t1: 7.3, tin: "bleed", layers: [P()], c0: [1150, 1480, 2560], c1: [1000, 1400, 2260], keyLight: true, dustBack: true, longShadow: true, r0: -0.8, r1: 0.6, focus: "pull", rack: 0.15 },
         // face, eyes visible
-        { t0: 7.3, t1: 12.3, tin: "bleed", layers: [P()], c0: [990, 900, 1640], c1: [880, 860, 1400], keyLight: true, longShadow: true, r0: 0.7, r1: -0.7, focus: "pull", rack: 0.15 },
+        { t0: 7.3, t1: 12.3, tin: "bleed", layers: [P()], c0: [990, 900, 1640], c1: [880, 860, 1400], keyLight: true, dustBack: true, longShadow: true, r0: 0.7, r1: -0.7, focus: "pull", rack: 0.15 },
         // second figure: chest and the clipboard held in both hands
-        { t0: 12.3, t1: 17.0, tin: "bleed", layers: [N()], c0: [1160, 1600, 2120], c1: [1300, 1520, 1840], keyLight: true, longShadow: true, r0: -0.7, r1: 0.7, focus: "pull", rack: 0.15 },
+        { t0: 12.3, t1: 17.0, tin: "bleed", layers: [N()], c0: [1160, 1600, 2120], c1: [1300, 1520, 1840], keyLight: true, dustBack: true, longShadow: true, r0: -0.7, r1: 0.7, focus: "pull", rack: 0.15 },
         // second figure: face (whip pan in)
-        { t0: 17.0, t1: 20.0, tin: "whip", layers: [N()], c0: [1110, 890, 1600], c1: [1010, 860, 1420], keyLight: true, longShadow: true, r0: 0.7, r1: -0.5, focus: "pull", rack: 0.15 },
+        { t0: 17.0, t1: 20.0, tin: "whip", layers: [N()], c0: [1110, 890, 1600], c1: [1010, 860, 1420], keyLight: true, dustBack: true, longShadow: true, r0: 0.7, r1: -0.5, focus: "pull", rack: 0.15 },
       ],
       text: {
         1: { lvl: "A", layout: "vert", x: 1010, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
         2: { lvl: "A", layout: "vert", x: 1010 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
         3: { lvl: "A", layout: "vert", x: 1010, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
-        4: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
-        5: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
+        4: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
+        5: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
         6: { lvl: "A", layout: "vert", x: 860, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
         7: { lvl: "A", layout: "vert", x: 860 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
-        8: { lvl: "A", layout: "vert", x: 1590, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
+        8: { lvl: "A", layout: "vert", x: 1290, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
@@ -340,12 +362,14 @@ function drawLightOverlay(ctx, t) {
   const flow = (t * 60) % 1500, breathe = 1 + 0.2 * Math.sin(2 * Math.PI * t / 4.5);
   ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.2 * breathe;
   ctx.translate(W / 2, H / 2); ctx.rotate(STRIPE_ANG); ctx.translate(-1500 + flow - 1500, -1500); ctx.drawImage(A2.stripeTex, 0, 0); ctx.restore();
-  ctx.save(); ctx.globalCompositeOperation = "screen";
-  for (let i = 0; i < 32; i++) {
-    const x = ((hash(i * 3 + 1) * W + t * (hash(i) - 0.5) * 18) % W + W) % W, y = ((hash(i * 5 + 2) * H - t * (4 + hash(i * 7) * 9)) % H + H) % H;
-    const lit = stripeIntensity(x, y, flow); if (lit < 0.05) continue;
-    const r = 1.5 + hash(i * 11) * (i < 6 ? 14 : 3.5);
-    ctx.globalAlpha = lit * (i < 6 ? 0.18 : 0.75); ctx.drawImage(A2.dot, x - r, y - r, r * 2, r * 2);
+  ctx.save(); ctx.globalCompositeOperation = "source-over";
+  for (let i = 0; i < 24; i++) {                                             // fewer than the backdrop dust
+    const big = i < 5;
+    const x = ((hash(i * 3 + 1) * W + t * (hash(i) - 0.5) * (big ? 30 : 18)) % W + W) % W, y = ((hash(i * 5 + 2) * H - t * (big ? 10 : 4 + hash(i * 7) * 9)) % H + H) % H;
+    const lit = stripeIntensity(x, y, flow);
+    const r = big ? 26 + hash(i * 11) * 40 : 1.8 + hash(i * 11) * 3.6;
+    ctx.globalAlpha = big ? 0.18 + 0.1 * lit : 0.55 + 0.25 * lit;
+    ctx.drawImage(A2.dotMid, x - r, y - r, r * 2, r * 2);
   }
   ctx.restore();
 }

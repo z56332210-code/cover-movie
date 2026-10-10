@@ -25,7 +25,8 @@ function drawGlyph(ctx, ch, x, y, size, weight, color, a, blur, rot = 0, shade =
   ctx.fillStyle = color.replace("A", a.toFixed(3)); ctx.fillText(ch, 0, 0);
   ctx.restore();
 }
-const colorOf = (spec, ch, idx) => (spec.red && (spec.red === ch || spec.red === idx) ? RED : INK_W);
+const INK_D = "rgba(34,34,36,A)";   // dark ink for lyrics placed on the bright backdrop
+const colorOf = (spec, ch, idx) => (spec.red && (spec.red === ch || spec.red === idx) ? RED : spec.ink === "dark" ? INK_D : INK_W);
 
 // Level A: small lyric; vertical columns or a single horizontal line. Optional mirrored copy (reference).
 function drawA(ctx, spec, line, t) {
@@ -41,7 +42,7 @@ function drawA(ctx, spec, line, t) {
         [...col].forEach((ch, k) => {
           const g = glyphAlpha(line, i, t, 0.4, spec); let dx = 0, dy = 0;
           if (SMALL_K.has(ch)) { dx = size * 0.1; dy = -size * 0.1; }
-          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0, 0.7);
+          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0, spec.ink === "dark" ? 0 : 0.7);
           i++;
         });
       });
