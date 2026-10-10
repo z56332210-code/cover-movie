@@ -173,7 +173,8 @@ function drawLayers(ctx, shot, cr, t) {
         ctx.restore(); }
     }
     if (L.color) { ctx.globalAlpha = (L.alpha ?? 1) * L.color(t); ctx.drawImage(C.color, 0, 0); }    // colour returns (final merge)
-    if (shot.keyLight) { ctx.globalAlpha = 0.5 * (L.alpha ?? 1); ctx.drawImage(C.rim, 0, 0); }       // rim light from behind, upper left
+    if (shot.keyLight) { ctx.globalAlpha = 0.95 * (L.alpha ?? 1); ctx.drawImage(C.rim, 0, 0);       // rim light from behind, upper left
+      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.45 * (L.alpha ?? 1); ctx.drawImage(C.rim, -3, -3); ctx.globalCompositeOperation = "source-over"; }
     if (MASK) {                                                                                      // measurement pass
       ctx.globalAlpha = 1; ctx.fillStyle = "#000"; ctx.drawImage(C.sil, 0, 0);
       if (MASK === 2) { const b = KP[L.n].eyeBox; ctx.fillStyle = "#f00"; ctx.fillRect(b[0] - 30, b[1] - 60, b[2] - b[0] + 60, b[3] - b[1] + 260); }
@@ -215,17 +216,21 @@ function stepKeys(keys, t) {
 }
 R.hud_two_shot = (ctx, sc, t) => {
   if (!sc.split) { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; }
-  const g = stepKeys(sc.split, t), half = (W - g) / 2, k = clamp((t - sc.t0) / (sc.t1 - sc.t0));
-  const scale = 0.62 + 0.06 * k;                       // slow push-in
-  const panel = (n, cx, vp, dir) => drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n }], c0: [cx, 1250, vp.w / scale], c1: [cx, 1250, vp.w / scale], r0: 0.3 * dir, r1: -0.3 * dir, keyLight: true, longShadow: true }, t, vp);
-  // the figures lean toward the band: crop centre a little toward the outer side of each panel
-  panel("patient", 1000 - 120 * (g / 260), { x: 0, y: 0, w: half, h: H }, 1);
-  panel("nurse", 1120 + 120 * (g / 260), { x: half + g, y: 0, w: half, h: H }, -1);
+  const g = stepKeys(sc.split, t), half = (W - g) / 2, c = clamp(1 - g / sc.split[0][1]);
+  const scale = lerp(0.62, 1.12, Math.pow(c, 1.6));              // closer as the band narrows
+  const fy = lerp(330, 470, c);                                  // face height on screen
+  const panel = (n, vp, faceTargetX, dir) => {
+    const F = KP[n].face, cx = F[0] - (faceTargetX - (vp.x + vp.w / 2)) / scale, cy = F[1] - (fy - H / 2) / scale;
+    drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n }], c0: [cx, cy, vp.w / scale], c1: [cx, cy, vp.w / scale], r0: 0, r1: 0, keyLight: true, longShadow: true }, t, vp);
+  };
+  // each face travels toward the seam; at c = 1 both face centres sit exactly on it (one face, two halves)
+  panel("patient", { x: 0, y: 0, w: half, h: H }, lerp(half * 0.5, half, c), 1);
+  panel("nurse", { x: half + g, y: 0, w: half, h: H }, lerp(half + g + half * 0.5, half + g, c), -1);
   if (g > 0.5) {
     ctx.fillStyle = "#0b0c0f"; ctx.fillRect(half, 0, g, H);
     ctx.fillStyle = "rgba(179,18,43,0.85)"; ctx.fillRect(W / 2 - 1, 0, 2, H);
-  }
-  return { drift: k * 30 };
+  } else { ctx.fillStyle = "rgba(236,236,232,0.5)"; ctx.fillRect(W / 2 - 0.5, 0, 1, H); }   // the seam
+  return { drift: c * 30 };
 };
 R.letterbox_closeup = (ctx, sc, t) => {
   const sh = shotAt(sc, t);
@@ -254,10 +259,17 @@ R.red_burst = (ctx, sc, t) => {
     ctx.drawImage(A2.dot, x - r, y - r, r * 2, r * 2);
   }
   ctx.globalAlpha = 1;
-  // crimson smears spreading from the frame edges
-  const grow = 0.85 + 0.3 * sease(k);
-  [[1620, 330, 1250, 0, 1], [1800, 880, 900, 1, 0.95], [150, 170, 700, 2, 0.6]].forEach(([x, y, s, i, a]) => {
-    const z = s * grow; ctx.globalAlpha = a; ctx.drawImage(A2.smear[i], x - z / 2, y - z / 2, z, z);
+  // crimson smears at the frame edges, boiling like paper (12 fps strip jitter), no zoom
+  const fr = Math.floor(t * 12);
+  [[1620, 330, 1150, 0, 1], [1800, 880, 860, 1, 0.95], [150, 170, 660, 2, 0.6]].forEach(([x, y, z, i, a], si) => {
+    ctx.save(); ctx.globalAlpha = a;
+    ctx.translate(x + (hash2(fr, si) - 0.5) * 6, y + (hash2(si, fr) - 0.5) * 6); ctx.rotate((hash2(fr + 3, si) - 0.5) * 0.012);
+    const src = A2.smear[i], n = 10, sh = src.height / n;
+    for (let k2 = 0; k2 < n; k2++) {
+      const off = (hash2(fr * 7 + k2, si) - 0.5) * 9;
+      ctx.drawImage(src, 0, k2 * sh, src.width, sh + 1, -z / 2 + off, -z / 2 + k2 * z / n, z, z / n + 1);
+    }
+    ctx.restore();
   });
   ctx.globalAlpha = 1;
   ctx.save(); roll(ctx, cr); ctx.globalAlpha = 0.9; drawLayers(ctx, shot, cr, t); ctx.restore();
@@ -283,12 +295,20 @@ function lightBand(ctx, t, x0, a = 0.5) {               // broad diagonal window
 R.title_card_shadow = (ctx, sc, t) => {
   const u = t - sc.t0, k = 1 - Math.pow(1 - clamp(u / (sc.t1 - sc.t0)), 2.2);
   wallBase(ctx, t, k);
-  const merge = sc.merge ? sease(clamp(u / 2.2)) : 0;
+  const merge = sc.merge ? sease(clamp(u / 1.1)) : 0, gl0 = 1.45, gone = sc.merge && u > gl0 + 0.2;
   ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate((0.6 - 1.0 * k) * Math.PI / 180); ctx.scale(1 + 0.05 * k, 1 + 0.05 * k); ctx.translate(-W / 2, -H / 2);
-  [["patient", 120 + 260 * merge, -0.4], ["nurse", 900 - 520 * merge, 0.4]].forEach(([n, x, sk]) => {
-    ctx.save(); ctx.globalAlpha = 0.5 - (n === "nurse" ? 0.25 * merge : 0); ctx.translate(x + 18 * k, 130 - 10 * k); ctx.transform(1, 0, sk * 0.15, 1, 0, 0);
-    ctx.drawImage(A2.ch[n].shadowSharp, -540, -260, 1080 * 1.55, 1920 * 1.55); ctx.restore();
+  const SX = SHL.getContext("2d"); SX.setTransform(1, 0, 0, 1, 0, 0); SX.clearRect(0, 0, SHL.width, SHL.height); SX.setTransform(PX2, 0, 0, PX2, 0, 0);
+  if (!gone) [["patient", 120 + 390 * merge, -0.4], ["nurse", 900 - 390 * merge, 0.4]].forEach(([n, x, sk]) => {
+    SX.save(); SX.globalAlpha = n === "nurse" ? 1 - 0.5 * merge : 1; SX.translate(x + 18 * k, 130 - 10 * k); SX.transform(1, 0, sk * 0.15 * (1 - merge), 1, 0, 0);
+    SX.drawImage(A2.ch[n].shadowSharp, -540, -260, 1080 * 1.55, 1920 * 1.55); SX.restore();
   });
+  ctx.restore(); ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 0.5;
+  if (sc.merge && u >= gl0 && u < gl0 + 0.2) {                  // glitch the shadows only
+    const fr = Math.floor(t * 30);
+    for (let i = 0; i < 14; i++) { const y = hash2(fr, i) * SHL.height, h = (8 + hash2(i, fr) * 50) * PX2, off = (hash2(fr + 5, i) - 0.5) * 220 * PX2;
+      ctx.drawImage(SHL, 0, y, SHL.width, h, off, y, SHL.width, h); }
+  } else ctx.drawImage(SHL, 0, 0);
   ctx.restore();
   lightBand(ctx, u, -700 + 300 * k, 0.45);
   const ta = sc.titleAt !== undefined ? clamp((t - sc.titleAt) / 0.08) : 0;
@@ -376,7 +396,7 @@ R.kinetic_cluster = (ctx, sc, t) => {
   }
   ctx.strokeStyle = "rgba(10,10,10,1)"; ctx.lineWidth = 6;
   for (let i = 1; i < 3; i++) { ctx.beginPath(); ctx.moveTo(i * 640, 0); ctx.lineTo(i * 640, H); ctx.moveTo(0, i * 360); ctx.lineTo(W, i * 360); ctx.stroke(); }
-  return { glitchAt: sc.t0 + sc.strip, drift: 0 };
+  return { drift: 0 };
 };
 // full body, then the exposure climbs to white
 R.full_body_whiteout = (ctx, sc, t) => {
@@ -546,17 +566,16 @@ function buildScenes() {
     { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
       text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
     { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
-      split: [[s(38), 260], [s(38) + 1.4, 190], [s(39), 120], [s(39) + 1.6, 50], [s(40) - 0.12, 0]],
+      split: [[s(38), 260], [s(38) + 1.4, 190], [s(39), 120], [s(39) + 1.6, 50], [s(40) - 0.75, 0]],
       text: {
         38: { lvl: "A", layout: "vert", x: 170, y: 230, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
         39: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
       } },
     // ---- one: the nurse dissolves into the patient, colour returns
     { type: "giant_type", t0: s(40), t1: e(40), tin: "flash",
-      pulse: s(40) + 0.95,
+      pulse: s(40) + 0.05,
       shots: [{ t0: s(40), t1: e(40), layers: [
-        N({ ox: 666, ox1: 0, alpha: (t) => 1 - 0.45 * sease((t - s(40)) / 0.9) - 0.55 * sease((t - s(40) - 0.9) / 0.8), echo: (t) => clamp((t - s(40) - 0.7) / 1.4), dissolve: (t) => clamp((t - s(40) - 0.6) / 2.0) }),
-        P({ ox: -626, ox1: 0, color: (t) => 0.55 * sease((t - s(40) - 1.1) / 1.6) })], ease: "inout", c0: [1080, 1250, 2820], c1: [1000, 1150, 2350] }],
+        P({ color: (t) => 0.55 * sease((t - s(40) - 0.3) / 1.6) })], c0: [1000, 1150, 2350], c1: [960, 1100, 2150] }],
       text: { 40: { lvl: "B", x: 10, y: 640, rot: -5, size: 0.3 * H, weight: 300, rows: [{ t: "今この世界と", y: 300 }, { t: "一つになった。", x: 700, y: 560 }] } } },
     { type: "title_card_shadow", t0: e(40), t1: 142.3, geo: true, tin: "blur", merge: true, titleAt: e(40) + 0.4, credits: true, lightOverlay: true },
     { type: "fade_out", t0: 142.3, t1: 143.4, tin: "black", hud: false },
@@ -648,7 +667,7 @@ function drawLightOverlay(ctx, t) {
   ctx.restore();
 }
 
-let IMG, IX, MASK = 0, NOTEXT = false;
+let IMG, IX, MASK = 0, NOTEXT = false, SHL;
 function renderImage(t) { // the picture (wall, figure, light) without text/HUD
   const ctx = IX; ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
   ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
@@ -751,7 +770,7 @@ async function init2(width = 960, opts = {}) {
   PX2 = width / W; POST = !!opts.post;
   CV2 = document.getElementById("c"); CV2.width = width; CV2.height = Math.round(H * PX2); CX2 = CV2.getContext("2d");
   await loadAssets2(); buildScenes();
-  IMG = cnv(CV2.width, CV2.height); IX = IMG.getContext("2d"); ACC = cnv(CV2.width, CV2.height);
+  IMG = cnv(CV2.width, CV2.height); IX = IMG.getContext("2d"); ACC = cnv(CV2.width, CV2.height); SHL = cnv(CV2.width, CV2.height);
   SUBS = opts.post ? 3 : 1;
   CUTS = [];
   for (const sc of SCENES2) {

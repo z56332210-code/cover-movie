@@ -56,9 +56,9 @@ def backlight(alpha, bbox):
     u = (xx - x0) / (x1 - x0); v = (yy - y0) / (y1 - y0)
     d = np.clip((u * 0.55 + v * 0.85) / 1.25, 0, 1); d = d * d * (3 - 2 * d)
     G = 0.33 - 0.19 * d
-    A = alpha / 255.0; k = 4
+    A = alpha / 255.0; k = 8                                   # thicker rim (~4-5 px at 1920 after crop scaling)
     sh = np.zeros_like(A); sh[k:, k:] = A[:-k, :-k]
-    rim = np.clip(A - sh, 0, 1) * (1 - 0.75 * d) ** 1.5      # fades out smoothly toward the dark side
+    rim = np.clip(A - sh, 0, 1) * (1 - 0.6 * d) ** 1.2       # fades out toward the dark side, but stays visible
     return G.astype(np.float32), rim.astype(np.float32), d
 
 for name in ("patient", "nurse"):
