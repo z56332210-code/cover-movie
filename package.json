@@ -1,0 +1,14 @@
+{
+  "name": "slowdowner-lyric-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "node tools/render.mjs --preview",
+    "stills": "node tools/render.mjs --preview --stills",
+    "bench": "node tools/render.mjs --bench chorus2",
+    "render": "node tools/render.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}

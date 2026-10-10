@@ -77,6 +77,26 @@ for k, o in enumerate(out):
         if sec["start"] - 1.0 <= o["start"] < sec["end"]: o["section"] = sec["name"]
     o["start"], o["end"] = round(o["start"], 2), round(o["end"], 2)
 
+# per-character sung time (matched chars from Whisper, the rest interpolated) for karaoke-synced reveals
+ctime = {}
+for k in range(len(rows)):
+    for idx, (s0, _) in hits[k]: ctime[idx] = s0
+pos = 0
+for k, (r, o) in enumerate(zip(rows, out)):
+    ts = []
+    for c in r[1]:
+        if keep(c):
+            ts.append(ctime.get(pos)); pos += 1
+        else:
+            ts.append(None)
+    known = [(i, x) for i, x in enumerate(ts) if x is not None and o["start"] - 0.3 <= x <= o["end"]]
+    if len(known) < 2:
+        known = [(0, o["start"]), (len(ts) - 1, max(o["start"], o["end"] - 0.4))]
+    xi = np.array([i for i, _ in known], float); xt = np.array([x for _, x in known])
+    full = np.interp(np.arange(len(ts)), xi, xt)
+    full = np.maximum.accumulate(np.clip(full, o["start"], max(o["start"], o["end"] - 0.25)))
+    o["chars"] = [round(float(x), 3) for x in full]
+
 json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o.get("section","?"):8s} {o["start"]:7.2f}-{o["end"]:7.2f} cov {o["cover"]:.2f} {o.get("flag","")} {o["ja"]}')
