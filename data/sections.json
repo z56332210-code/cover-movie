@@ -1,0 +1,13 @@
+[
+ {"name": "A1",      "start": 0.55,   "end": 20.99,  "lines": [1, 8]},
+ {"name": "inter1",  "start": 20.99,  "end": 30.42},
+ {"name": "A2",      "start": 30.42,  "end": 54.86,  "lines": [9, 16]},
+ {"name": "pre",     "start": 54.86,  "end": 62.11,  "lines": [17, 19]},
+ {"name": "chorus1", "start": 62.11,  "end": 82.54,  "lines": [20, 25]},
+ {"name": "inter2",  "start": 82.54,  "end": 84.39},
+ {"name": "C",       "start": 84.39,  "end": 101.09, "lines": [26, 29]},
+ {"name": "chorus2", "start": 101.09, "end": 123.36, "lines": [30, 36]},
+ {"name": "inter3",  "start": 123.36, "end": 128.93},
+ {"name": "outro",   "start": 128.93, "end": 139.4,  "lines": [37, 40]},
+ {"name": "end",     "start": 139.4,  "end": 143.33}
+]
