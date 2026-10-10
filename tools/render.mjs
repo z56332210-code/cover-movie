@@ -28,7 +28,7 @@ const DURATION = 143.333875;
 const argv = process.argv.slice(2);
 const flag = (n) => argv.includes("--" + n);
 const opt = (n, d) => { const i = argv.indexOf("--" + n); return i >= 0 ? argv[i + 1] : d; };
-const preview = flag("preview");
+const preview = !flag("final");            // preview is the default; --final = 1920x1080 30fps, all post effects
 const width = +opt("w", preview ? 960 : 1920);
 const fps = +opt("fps", preview ? 15 : 30);
 const outDir = path.resolve(ROOT, opt("out", preview ? "out/preview" : "out/final"));
@@ -61,7 +61,7 @@ async function openPage(browser, port) {
   page.on("console", (m) => { if (m.type() === "warning" || m.type() === "error") log("page:", m.text()); });
   page.on("pageerror", (e) => log("pageerror:", e.message));
   await page.goto(`http://127.0.0.1:${port}/index.html`);
-  const info = await page.evaluate((w) => window.init(w), width);
+  const info = await page.evaluate(([w, post]) => window.init(w, { post }), [width, !preview]);
   if (info.fallbacks.length) throw new Error("font fallback for: " + info.fallbacks.join(" "));
   return page;
 }
