@@ -206,7 +206,27 @@ R.giant_type = (ctx, sc, t) => {
   return { drift: cr.k * 40 };
 };
 R.blur_focus_pull = R.hud_portrait;
-R.hud_two_shot = R.hud_portrait;
+// Two-shot. With sc.split: each figure in its own panel, a dark band with a red thread between them that narrows
+// in steps on the lyric hits (each step snaps fast, then settles), until it closes.
+function stepKeys(keys, t) {
+  let v = keys[0][1];
+  for (let i = 1; i < keys.length; i++) { const [kt, kv] = keys[i]; if (t < kt) break; const u = clamp((t - kt) / 0.55); v = lerp(v, kv, 1 - Math.pow(1 - u, 3)); }
+  return v;
+}
+R.hud_two_shot = (ctx, sc, t) => {
+  if (!sc.split) { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; }
+  const g = stepKeys(sc.split, t), half = (W - g) / 2, k = clamp((t - sc.t0) / (sc.t1 - sc.t0));
+  const scale = 0.62 + 0.06 * k;                       // slow push-in
+  const panel = (n, cx, vp, dir) => drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n }], c0: [cx, 1250, vp.w / scale], c1: [cx, 1250, vp.w / scale], r0: 0.3 * dir, r1: -0.3 * dir, keyLight: true, longShadow: true }, t, vp);
+  // the figures lean toward the band: crop centre a little toward the outer side of each panel
+  panel("patient", 1000 - 120 * (g / 260), { x: 0, y: 0, w: half, h: H }, 1);
+  panel("nurse", 1120 + 120 * (g / 260), { x: half + g, y: 0, w: half, h: H }, -1);
+  if (g > 0.5) {
+    ctx.fillStyle = "#0b0c0f"; ctx.fillRect(half, 0, g, H);
+    ctx.fillStyle = "rgba(179,18,43,0.85)"; ctx.fillRect(W / 2 - 1, 0, 2, H);
+  }
+  return { drift: k * 30 };
+};
 R.letterbox_closeup = (ctx, sc, t) => {
   const sh = shotAt(sc, t);
   if (sh.black) { ctx.fillStyle = "#000"; ctx.fillRect(-100, -100, W + 200, H + 200); return { bars: sc.bars ?? 78, black: true }; }
@@ -489,10 +509,14 @@ function buildScenes() {
     { type: "mirror_flip", t0: s(29), t1: s(30), tin: "flash", lightOverlay: false,
       text: { 29: { lvl: "A", layout: "vert", x: 975, y: 230, size: 34, gap: 1.35, ink: "dark", cols: ["たどり着いたんだ", "正体と擬態したアイを"] } } },
     // ---- kinetic cluster: one line on a dark strip, then a grid + giant keyword
-    { type: "kinetic_cluster", t0: s(30), t1: s(31), tin: "cut", strip: 0.9, lightOverlay: false, hud: false,
+    { type: "kinetic_cluster", t0: s(30), t1: 101.95, tin: "cut", strip: 0.32, lightOverlay: false, hud: false,
       crops: [["patient", 1050, 1500, 1500], ["nurse", 1400, 1600, 1500], ["patient", 1600, 760, 1300], ["nurse", 1150, 1450, 1500], ["patient", 700, 1700, 1300], ["nurse", 1450, 2000, 1500]],
-      text: { 30: (t) => (t - s(30) < 0.9 ? { lvl: "A", layout: "line", x: 960, y: 540, size: 28 }
+      text: { 30: (t) => (t - s(30) < 0.32 ? { lvl: "A", layout: "line", x: 960, y: 540, size: 28, instant: true }
         : { lvl: "C", text: "嗚呼", x: 960, y: 560, size: 0.5 * H * (1 + 0.06 * (Math.floor((t - s(30)) / 0.23) % 3)), weight: 200 }) } },
+    { type: "giant_type", t0: 101.95, t1: s(31), tin: "flash",
+      shots: [{ t0: 101.95, t1: s(31), layers: [P()], c0: [1080, 1420, 2300], c1: [1010, 1360, 2050] }],
+      text: { 30: { lvl: "B", x: 10, y: 470, rot: -5, size: 0.3 * H, weight: 300, red: "ア",
+        rows: [{ t: "嗚呼", y: 300, scale: 0.5 }, { t: "人類最後に", x: 300, y: 300 }, { t: "アイを持ったって", x: 760, y: 520 }] } } },
     // ---- two-shot: both on the wall, vertical lyrics in the gap
     { type: "hud_two_shot", t0: s(31), t1: s(33), tin: "bleed",
       shots: [
@@ -522,20 +546,17 @@ function buildScenes() {
     { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
       text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
     { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
-      shots: [
-        { t0: s(38), t1: s(39), layers: [P({ ox: -560 }), N({ ox: 640 })], c0: [1080, 1250, 3400], c1: [1080, 1200, 3100] },
-        { t0: s(39), t1: s(40), tin: "cut", ease: "inout", layers: [P({ ox: -520, ox1: 0 }), N({ ox: 600, ox1: 0, alpha: (t) => 1 - 0.35 * sease((t - s(39)) / (s(40) - s(39))) })], c0: [1080, 1150, 3000], c1: [1000, 1120, 2500] },
-      ],
+      split: [[s(38), 260], [s(38) + 1.4, 190], [s(39), 120], [s(39) + 1.6, 50], [s(40) - 0.12, 0]],
       text: {
-        38: { lvl: "A", layout: "vert", x: 1000, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
-        39: { lvl: "A", layout: "vert", x: 1700, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
+        38: { lvl: "A", layout: "vert", x: 170, y: 230, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
+        39: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
       } },
     // ---- one: the nurse dissolves into the patient, colour returns
     { type: "giant_type", t0: s(40), t1: e(40), tin: "flash",
-      pulse: s(40) + 0.15,
+      pulse: s(40) + 0.95,
       shots: [{ t0: s(40), t1: e(40), layers: [
-        N({ alpha: (t) => 0.65 * (1 - sease((t - s(40)) / 0.9)), echo: (t) => clamp((t - s(40)) / 1.4), dissolve: (t) => clamp((t - s(40)) / 2.0) }),
-        P({ color: (t) => 0.55 * sease((t - s(40) - 0.5) / 1.8) })], c0: [1000, 1120, 2500], c1: [940, 1080, 2200] }],
+        N({ ox: 666, ox1: 0, alpha: (t) => 1 - 0.45 * sease((t - s(40)) / 0.9) - 0.55 * sease((t - s(40) - 0.9) / 0.8), echo: (t) => clamp((t - s(40) - 0.7) / 1.4), dissolve: (t) => clamp((t - s(40) - 0.6) / 2.0) }),
+        P({ ox: -626, ox1: 0, color: (t) => 0.55 * sease((t - s(40) - 1.1) / 1.6) })], ease: "inout", c0: [1080, 1250, 2820], c1: [1000, 1150, 2350] }],
       text: { 40: { lvl: "B", x: 10, y: 640, rot: -5, size: 0.3 * H, weight: 300, rows: [{ t: "今この世界と", y: 300 }, { t: "一つになった。", x: 700, y: 560 }] } } },
     { type: "title_card_shadow", t0: e(40), t1: 142.3, geo: true, tin: "blur", merge: true, titleAt: e(40) + 0.4, credits: true, lightOverlay: true },
     { type: "fade_out", t0: 142.3, t1: 143.4, tin: "black", hud: false },

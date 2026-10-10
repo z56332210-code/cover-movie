@@ -97,6 +97,9 @@ for k, (r, o) in enumerate(zip(rows, out)):
     full = np.maximum.accumulate(np.clip(full, o["start"], max(o["start"], o["end"] - 0.25)))
     o["chars"] = [round(float(x), 3) for x in full]
 
+# MANUAL: Whisper merged 嗚呼人 of line 30 into one timestamp; spread them across the sung span
+for o in out:
+    if o["id"] == 30: o["chars"][0:3] = [101.18, 101.5, 101.95]
 json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o.get("section","?"):8s} {o["start"]:7.2f}-{o["end"]:7.2f} cov {o["cover"]:.2f} {o.get("flag","")} {o["ja"]}')

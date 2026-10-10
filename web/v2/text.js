@@ -10,39 +10,44 @@ const VROT = new Set(["ー", "〜", "…"]);
 let POST = true;
 
 // Entrance / exit styles (no bounce). Each lyric line picks one; neighbours never share a style.
-const ENTER = ["fade", "rise", "drop", "zoom", "spread", "flicker", "slide"];
-const EXIT = ["blur", "up", "spread", "flick"];
 function animState(spec, g, i, n, size, t) {
-  const en = spec.anim || ENTER[(spec._id * 3) % ENTER.length], ex = spec.exitAnim || EXIT[(spec._id * 5 + 1) % EXIT.length];
-  const p = g.a > 0 && g.x < 1 ? clamp(g.p) : clamp(g.p), e = 1 - Math.pow(1 - p, 3), x = g.x, mid = i - (n - 1) / 2;
-  const st = { a: p, blur: 0, dx: 0, dy: 0, sc: 1, along: 0 };
-  switch (en) {
-    case "fade": st.blur = (1 - e) * 12; break;
-    case "rise": st.dy = (1 - e) * size * 0.7; st.blur = (1 - e) * 5; break;
-    case "drop": st.dy = -(1 - e) * size * 0.9; st.blur = (1 - e) * 9; break;
-    case "zoom": st.sc = 1 + 0.45 * (1 - e); st.blur = (1 - e) * 14; break;
-    case "spread": st.along = mid * size * 0.55 * (1 - e); st.blur = (1 - e) * 6; break;
-    case "flicker": st.a = p >= 1 ? 1 : (hash2(Math.floor(t * 30), i * 7 + spec._id) > 0.45 ? p : p * 0.15); break;
-    case "slide": st.dx = -(1 - e) * size * 1.1; st.blur = (1 - e) * 8; break;
-  }
-  if (x > 0) switch (ex) {
-    case "blur": st.a *= 1 - x; st.blur += x * 10; break;
-    case "up": st.a *= 1 - x; st.dy -= x * size * 0.6; st.blur += x * 4; break;
-    case "spread": st.a *= 1 - x; st.along += mid * size * 0.5 * x; break;
-    case "flick": st.a *= hash2(i * 13 + spec._id, Math.floor(t * 30)) > x ? 1 - x * 0.3 : 0; break;
+  // entrance = fragment build (handled in drawGlyph via st.build); exit = staggered dim + slight blur
+  const id = spec._id || 0, st = { a: 1, blur: 0, dx: 0, dy: 0, sc: 1, along: 0, build: clamp(g.p), seed: id * 131 + i * 17 };
+  if (g.p <= 0) st.a = 0;
+  if (g.x > 0) { const q = clamp((g.x - hash(st.seed) * 0.35) / 0.65); st.a *= 1 - q; st.blur = q * 6; st.dy = -q * size * 0.06; }
+  if (spec.lvl === "B" || spec.lvl === "C") {            // irregular baseline, size and tilt per character
+    st.dy += (hash(st.seed + 3) - 0.5) * size * 0.16; st.rot = (hash(st.seed + 5) - 0.5) * 0.07; st.sc = 0.92 + hash(st.seed + 7) * 0.16;
   }
   return st;
 }
 function glyphAlpha(line, i, t, enterDur = 0.28, spec) {
   // A level: quick sequential fade from the line start (reference); B/C: on the sung time of each character
-  const tc = spec && spec.lvl === "A" ? line.start - 0.08 + i * 0.045 : line.chars[Math.min(i, line.chars.length - 1)] - 0.05;
+  const tc = spec && spec.instant ? line.start - 0.05 : line.chars[Math.min(i, line.chars.length - 1)] - 0.05;
   const end = spec && spec.holdUntil ? L2(spec.holdUntil).end : line.end;
   const a = clamp((t - tc) / enterDur), x = clamp((t - (end - 0.35)) / 0.35);
   return { a: a * (1 - x), blur: (1 - easeOut(a)) * 12 + x * 10, p: a, x };
 }
-function drawGlyph(ctx, ch, x, y, size, weight, color, a, blur, rot = 0, shade = 0, sc = 1) {
+// Fragment build (reference): while build < 1 the glyph shows as scattered pieces of itself that drift into place,
+// with a few specks around it; at build = 1 it is whole.
+function drawGlyph(ctx, ch, x, y, size, weight, color, a, blur, rot = 0, shade = 0, sc = 1, build = 1, seed = 0) {
   if (a <= 0.003) return;
   ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot); if (sc !== 1) ctx.scale(sc, sc);
+  if (build < 1) {
+    const N = 5, cell = size / N, e = 1 - Math.pow(1 - build, 2);
+    ctx.font = `${weight} ${size}px LyricMincho`; ctx.fillStyle = color.replace("A", a.toFixed(3));
+    for (let k = 0; k < 4; k++) {                                          // specks
+      if (hash(seed + 40 + k) > 1 - build * 1.6) continue;
+      const sx = (hash(seed + 50 + k) - 0.5) * size * 1.1, sy = (hash(seed + 60 + k) - 0.5) * size * 1.1, r = size * 0.03;
+      ctx.fillRect(sx - r, sy - r, r * 2, r * 2);
+    }
+    for (let gy = 0; gy < N; gy++) for (let gx = 0; gx < N; gx++) {      // pieces
+      const h = hash(seed * 7 + gy * N + gx); if (h > e * 1.25) continue;
+      const off = (1 - e) * size * 0.35, ox = (hash(seed + gy * 11 + gx * 3) - 0.5) * off, oy = (hash(seed + gx * 13 + gy * 5) - 0.6) * off;
+      ctx.save(); ctx.beginPath(); ctx.rect(-size / 2 + gx * cell, -size / 2 + gy * cell, cell + 0.5, cell + 0.5); ctx.clip();
+      ctx.fillText(ch, ox, oy); ctx.restore();
+    }
+    ctx.restore(); return;
+  }
   if (shade) { ctx.shadowColor = `rgba(0,0,0,${(shade * a).toFixed(3)})`; ctx.shadowBlur = Math.max(6, size * 0.06); }
   ctx.font = `${weight} ${size}px LyricMincho`;
   if (POST && blur > 0.4) ctx.filter = `blur(${(blur * size / 120).toFixed(1)}px)`;
@@ -65,9 +70,9 @@ function drawA(ctx, spec, line, t) {
       cols.forEach((col, ci) => {
         const cc = [...col];
         cc.forEach((ch, k) => {
-          const g = glyphAlpha(line, i, t, 0.4, spec), st = animState(spec, g, k, cc.length, size, t); let dx = 0, dy = 0;
+          const g = glyphAlpha(line, i, t, 0.2, spec), st = animState(spec, g, k, cc.length, size, t); let dx = 0, dy = 0;
           if (SMALL_K.has(ch)) { dx = size * 0.1; dy = -size * 0.1; }
-          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx + st.dx, k * size * 1.12 + dy + st.dy + st.along, size, w, colorOf(spec, ch, i), st.a * amul, st.blur, VROT.has(ch) ? Math.PI / 2 : 0, spec.ink === "dark" ? 0 : 0.95, st.sc);
+          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx + st.dx, k * size * 1.12 + dy + st.dy + st.along, size, w, colorOf(spec, ch, i), st.a * amul, st.blur, VROT.has(ch) ? Math.PI / 2 : 0, spec.ink === "dark" ? 0 : 0.95, st.sc, st.build, st.seed);
           i++;
         });
       });
@@ -75,8 +80,8 @@ function drawA(ctx, spec, line, t) {
       ctx.font = `${w} ${size}px LyricMincho`; const track = size * 0.08;
       const widths = chars.map((c) => ctx.measureText(c).width + track), total = widths.reduce((s, v) => s + v, 0);
       let x = spec.align === "left" ? 0 : spec.align === "right" ? -total : -total / 2;
-      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t, 0.4, spec), st = animState(spec, g, i, chars.length, size, t);
-        drawGlyph(ctx, ch, x + widths[i] / 2 + st.dx + st.along, st.dy, size, w, colorOf(spec, ch, i), st.a * amul, st.blur, 0, spec.ink === "dark" ? 0 : 0.95, st.sc); x += widths[i]; });
+      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t, 0.2, spec), st = animState(spec, g, i, chars.length, size, t);
+        drawGlyph(ctx, ch, x + widths[i] / 2 + st.dx + st.along, st.dy, size, w, colorOf(spec, ch, i), st.a * amul, st.blur, 0, spec.ink === "dark" ? 0 : 0.95, st.sc, st.build, st.seed); x += widths[i]; });
     }
     ctx.restore();
   };
@@ -89,7 +94,7 @@ function drawA(ctx, spec, line, t) {
 function drawB(ctx, spec, line, t) {
   const S = spec.size || 0.4 * H, w = spec.weight || 200, rot = (spec.rot ?? -6) * Math.PI / 180;
   ctx.save(); ctx.translate(spec.x, spec.y); ctx.rotate(rot);
-  ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
   let i = 0;
   spec.rows.forEach((row) => {
     const cs = [...row.t], sizes = cs.map((ch) => S * (row.scale || 1) * (isKana(ch) ? (SMALL_K.has(ch) ? 0.5 : 0.62) : 1));
@@ -101,8 +106,8 @@ function drawB(ctx, spec, line, t) {
     if (ex > W - 70) { fit = Math.max(0.72, room / (width * Math.cos(rot))); if (spec.x + (x0 + width * fit) * Math.cos(rot) > W - 70) x0 -= spec.x + (x0 + width * fit) * Math.cos(rot) - (W - 70); }
     let x = x0;
     cs.forEach((ch, k) => {
-      const g = glyphAlpha(line, i, t, 0.35), st = animState(spec, g, k, cs.length, sizes[k] * fit, t);
-      drawGlyph(ctx, ch, x + st.dx + st.along, row.y + st.dy, sizes[k] * fit, w, colorOf(spec, ch, i), st.a, st.blur * 1.4, 0, 0.85, st.sc);
+      const g = glyphAlpha(line, i, t, 0.22), st = animState(spec, g, k, cs.length, sizes[k] * fit, t);
+      drawGlyph(ctx, ch, x + st.dx + st.along + sizes[k] * fit * 0.5, row.y + st.dy - sizes[k] * fit * 0.36, sizes[k] * fit, w, colorOf(spec, ch, i), st.a, st.blur * 1.4, st.rot || 0, 0.85, st.sc, st.build, st.seed);
       x += advs[k] * fit; i++;
     });
   });
@@ -118,8 +123,8 @@ function drawC(ctx, spec, line, t) {
   ctx.font = `${spec.weight || 200} ${S}px LyricMincho`;
   const chars = [...k], ws = chars.map((c) => ctx.measureText(c).width), tot = ws.reduce((a, b) => a + b, 0);
   let x = -tot / 2;
-  chars.forEach((ch, j) => { const g = glyphAlpha(line, base + j, t, 0.3), st = animState(spec, g, j, chars.length, S, t);
-    drawGlyph(ctx, ch, x + ws[j] / 2 + st.dx + st.along, st.dy, S, spec.weight || 200, colorOf(spec, ch, base + j), st.a, st.blur * 1.6, 0, 0, st.sc); x += ws[j]; });
+  chars.forEach((ch, j) => { const g = glyphAlpha(line, base + j, t, 0.22), st = animState(spec, g, j, chars.length, S, t);
+    drawGlyph(ctx, ch, x + ws[j] / 2 + st.dx + st.along, st.dy, S, spec.weight || 200, colorOf(spec, ch, base + j), st.a, st.blur * 1.6, st.rot || 0, 0, st.sc, st.build, st.seed); x += ws[j]; });
   ctx.restore();
 }
 
