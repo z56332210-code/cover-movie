@@ -45,4 +45,8 @@ async function loadAssets2() {
     q.addColorStop(0, rgba(1)); q.addColorStop(0.4, rgba(0.5)); q.addColorStop(1, rgba(0)); g.fillStyle = q; g.fillRect(0, 0, 64, 64); return c; };
   A2.dot = dot((a) => `rgba(235,235,232,${a})`);
   A2.small = cnv(240, 135);
+  // blinds shadow: soft dark slats, baked once (drawn rotated and sliding as an overlay)
+  const bl = cnv(1400, 1400), bx = bl.getContext("2d"); bx.filter = "blur(18px)"; bx.fillStyle = "rgba(0,0,0,1)";
+  for (let y = 40; y < 1400; y += 150) bx.fillRect(-50, y, 1500, 62);
+  A2.blinds = bl;
 }

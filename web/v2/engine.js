@@ -23,12 +23,65 @@ function drawShot(ctx, shot, t, vp = FULL) {
   const cr = cropAt(shot, t, vp);
   ctx.save();
   if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
-  roll(ctx, cr);
+  ctx.save(); roll(ctx, cr);
   drawWall(ctx, shot, cr); drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
   if (shot.thread) drawThread2(ctx, shot, cr, t);
   ctx.restore();
+  for (const f of shot.fx || []) FX[f](ctx, t - shot.t0, vp, shot);   // decoration above the character
+  ctx.restore();
   return cr;
 }
+
+// ---------------------------------------------------------------- overlays above the character (neutral light only, no saturated colour)
+const FX = {
+  // warm-white light leak drifting in from an edge
+  leak(ctx, u, vp, sh) {
+    const side = sh.leakSide ?? 1, x = vp.x + (side > 0 ? vp.w * 0.92 : vp.w * 0.08) - side * 60 * Math.sin(u * 0.6), y = vp.y + vp.h * 0.25 + 40 * Math.sin(u * 0.4);
+    const r = vp.w * 0.55, g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, "rgba(252,250,244,0.55)"); g.addColorStop(0.4, "rgba(250,247,240,0.18)"); g.addColorStop(1, "rgba(250,247,240,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = g; ctx.fillRect(vp.x, vp.y, vp.w, vp.h); ctx.restore();
+  },
+  // diagonal light beam crossing the figure
+  beam(ctx, u, vp) {
+    const p = vp.x - 500 + ((u * 160) % (vp.w + 1000)), w = 260;
+    const g = ctx.createLinearGradient(p, 0, p + w, 0);
+    g.addColorStop(0, "rgba(255,255,250,0)"); g.addColorStop(0.5, "rgba(255,255,250,0.22)"); g.addColorStop(1, "rgba(255,255,250,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(p + 300, vp.y); ctx.lineTo(p + 300 + w, vp.y); ctx.lineTo(p + w - 200, vp.y + vp.h); ctx.lineTo(p - 200, vp.y + vp.h); ctx.fill(); ctx.restore();
+  },
+  // window-blind shadows sliding across
+  blinds(ctx, u, vp) {
+    ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.globalAlpha = 0.24;
+    ctx.translate(vp.x + vp.w / 2, vp.y + vp.h / 2); ctx.rotate(-0.38); ctx.translate(-700, -700 + (u * 26) % 150);
+    ctx.drawImage(A2.blinds, 0, 0); ctx.restore();
+  },
+  // floating dust + out-of-focus foreground specks
+  dust(ctx, u, vp, sh) {
+    const seed = Math.round(sh.t0 * 10);
+    ctx.save(); ctx.globalCompositeOperation = "screen";
+    for (let i = 0; i < 46; i++) {
+      const big = i < 6, x = vp.x + ((hash(seed + i * 7) * vp.w + u * (hash(i * 3 + seed) - 0.5) * 40) % vp.w + vp.w) % vp.w;
+      const y = vp.y + ((hash(seed + i * 13) * vp.h - u * (8 + hash(i) * 18)) % vp.h + vp.h) % vp.h;
+      const r = big ? 26 + hash(i * 5 + seed) * 40 : 1.2 + hash(i * 11) * 2.6;
+      ctx.globalAlpha = big ? 0.08 + hash(i * 17) * 0.08 : 0.35 + 0.35 * Math.sin(u * 2 + i);
+      ctx.drawImage(A2.dot, x - r, y - r, r * 2, r * 2);
+    }
+    ctx.restore();
+  },
+  // haze rising from the bottom
+  haze(ctx, u, vp) {
+    const g = ctx.createLinearGradient(0, vp.y + vp.h, 0, vp.y + vp.h * 0.45);
+    g.addColorStop(0, `rgba(245,245,240,${0.28 + 0.05 * Math.sin(u)})`); g.addColorStop(1, "rgba(245,245,240,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = g; ctx.fillRect(vp.x, vp.y, vp.w, vp.h); ctx.restore();
+  },
+  // thin flickering film scratches
+  scratch(ctx, u, vp, sh) {
+    const fr = Math.floor((sh.t0 + u) * 15);
+    ctx.save(); ctx.fillStyle = "rgba(240,240,236,0.22)";
+    for (let i = 0; i < 3; i++) if (hash2(fr, i) > 0.45) ctx.fillRect(vp.x + hash2(i, fr) * vp.w, vp.y, 1.2, vp.h);
+    ctx.restore();
+  },
+};
 // thin red thread (kept from the demo): drawn progressively along the IV line on 赤い糸
 function drawThread2(ctx, shot, cr, t) {
   const th = shot.thread, k = clamp((t - th.t0) / (th.t1 - th.t0));
@@ -131,11 +184,19 @@ function buildScenes() {
   SCENES2 = [
     { type: "letterbox_closeup", t0: 0, t1: s(8), hud: false,
       shots: [
-        { t0: 0, t1: s(3), layers: [P()], c0: [900, 1490, 1450], c1: [905, 1445, 1300], lightX: -200 },
-        { t0: s(3), t1: s(5), layers: [P()], c0: [870, 1105, 780], c1: [935, 1092, 700], focus: "pull", dof: true },
-        { t0: s(5), t1: s(7), layers: [P()], c0: [1700, 760, 980], c1: [1640, 790, 880], lightX: 500,
+        { t0: 0, t1: s(2), layers: [P()], c0: [900, 1500, 1450], c1: [905, 1460, 1320], lightX: -200, fx: ["leak", "dust"] },
+        { t0: s(2), t1: 3.4, layers: [P()], c0: [880, 540, 1050], c1: [900, 520, 960], fx: ["blinds", "dust"] },
+        { t0: 3.4, t1: s(3), layers: [P()], c0: [620, 1730, 1050], c1: [580, 1710, 960], fx: ["beam", "dust"] },
+        { t0: s(3), t1: s(4), layers: [P()], c0: [870, 1105, 780], c1: [925, 1095, 720], focus: "pull", dof: true, fx: ["leak", "scratch"], leakSide: -1 },
+        { t0: s(4), t1: 8.3, layers: [P()], c0: [905, 1240, 860], c1: [930, 1215, 780], fx: ["blinds"] },
+        { t0: 8.3, t1: s(5), layers: [P()], c0: [1490, 1380, 900], c1: [1500, 1330, 820], fx: ["haze", "dust"] },
+        { t0: s(5), t1: s(6), layers: [P()], c0: [1700, 760, 980], c1: [1640, 790, 880], lightX: 500, fx: ["beam", "dust"],
           thread: { t0: s(5), t1: e(5), p: [[1478, 805], [1640, 690], [1820, 1000], [2200, 760]] } },
-        { t0: s(7), t1: s(8), layers: [P()], c0: [895, 845, 720], c1: [900, 835, 620], focus: "pull", dof: true },
+        { t0: s(6), t1: 13.5, layers: [P()], c0: [1640, 980, 900], c1: [1700, 960, 820], fx: ["leak", "scratch"],
+          thread: { t0: s(5) - 9, t1: s(5) - 8, p: [[1478, 805], [1640, 690], [1820, 1000], [2200, 760]] } },
+        { t0: 13.5, t1: s(7), layers: [P()], c0: [1150, 1520, 1100], c1: [1110, 1490, 1000], fx: ["blinds", "haze"] },
+        { t0: s(7), t1: 15.9, layers: [P()], c0: [895, 845, 720], c1: [905, 835, 650], focus: "pull", dof: true, fx: ["leak", "dust"] },
+        { t0: 15.9, t1: s(8), layers: [P()], c0: [1230, 900, 820], c1: [1190, 880, 740], dof: true, fx: ["beam", "scratch"] },
       ],
       text: {
         1: { lvl: "A", layout: "vert", x: 1640, y: 230, size: 40, cols: ["僕は", "最上最愛の"] },
@@ -143,19 +204,19 @@ function buildScenes() {
         3: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
         4: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
         5: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 40, cols: ["赤い糸を", "放ったスパイダー"], red: "糸" },
-        6: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 40, cols: ["予想通り", "絡まるハンター"] },
+        6: { lvl: "A", layout: "vert", x: 330, y: 230, size: 40, cols: ["予想通り", "絡まるハンター"] },
         7: { lvl: "A", layout: "vert", x: 1760, y: 250, size: 38, cols: ["どうか", "一生淡々と"] },
       } },
     { type: "split_slide", t0: s(8), t1: 20.0, hud: false, slideAt: snapOnset(charT2(8, 13), 0.2),
       shots: [
-        { t0: s(7), t1: 20.0, layers: [P()], c0: [895, 845, 720], c1: [905, 830, 650], dof: true, r0: -0.6, r1: 0.6 },
-        { t0: s(8), t1: 20.0, layers: [N()], c0: [1042, 840, 600], c1: [1042, 835, 540], dof: true, r0: 0.8, r1: -0.4 },
+        { t0: s(8), t1: 20.0, layers: [P()], c0: [880, 930, 980], c1: [900, 900, 860], dof: true, r0: -0.6, r1: 0.6, fx: ["leak", "dust"] },
+        { t0: s(8), t1: 20.0, layers: [N()], c0: [1042, 840, 600], c1: [1042, 835, 540], dof: true, r0: 0.8, r1: -0.4, fx: ["beam", "haze"], leakSide: -1 },
       ],
       text: { 8: { lvl: "A", layout: "vert", x: 170, y: 150, size: 34, cols: ["生きるだけの", "理由をください", "ドクター"] } } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
       shots: [
-        { t0: 34.14, t1: s(11), layers: [P()], c0: [1000, 1260, 2300], c1: [990, 1230, 2120], lightX: 200 },
+        { t0: 34.14, t1: s(11), layers: [P()], c0: [1000, 1260, 2300], c1: [990, 1230, 2120], lightX: 200, fx: ["leak", "dust"] },
         { t0: s(11), t1: s(12), layers: [P()], c0: [905, 930, 1000], c1: [925, 920, 900], dof: true, dark: false },
         { t0: s(12), t1: s(13), layers: [P()], c0: [700, 1640, 1200], c1: [760, 1620, 1100], pan: -1 },
       ],
@@ -170,7 +231,7 @@ function buildScenes() {
     { type: "flash_cut_cluster", t0: 61.3, t1: 62.11 },
     { type: "giant_type", t0: 62.11, t1: s(22),
       shots: [
-        { t0: 62.11, t1: s(21), layers: [P()], c0: [960, 1250, 1900], c1: [950, 1215, 1760], lightX: 600 },
+        { t0: 62.11, t1: s(21), layers: [P()], c0: [960, 1250, 1900], c1: [950, 1215, 1760], lightX: 600, fx: ["beam", "dust", "scratch"] },
         { t0: s(21), t1: s(22), layers: [P()], c0: [820, 1520, 1300], c1: [780, 1490, 1180], lightX: 900 },
       ],
       text: {
