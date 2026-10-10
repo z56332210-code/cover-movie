@@ -29,7 +29,10 @@ async function loadAssets2() {
     const [mono, blur, shadow, color, rim] = await Promise.all(["mono", "blur", "shadow", "color", "rim"].map((k) => img(`img/v2/${n}_${k}.png`)));
     // white silhouette, used only by the measurement pass
     const sil = cnv(2160, 3840), sg = sil.getContext("2d"); sg.drawImage(mono, 0, 0); sg.globalCompositeOperation = "source-in"; sg.fillStyle = "#fff"; sg.fillRect(0, 0, 2160, 3840);
-    A2.ch[n] = { mono, blur, shadow, color, rim, sil, w: 2160, h: 3840 };
+    // crisper cast shadow for the title card (silhouette, small blur), half resolution, baked once
+    const ss = cnv(1080, 1920), sx2 = ss.getContext("2d"); sx2.filter = "blur(5px)"; sx2.drawImage(sil, 0, 0, 1080, 1920);
+    sx2.filter = "none"; sx2.globalCompositeOperation = "source-in"; sx2.fillStyle = "#0a0a0c"; sx2.fillRect(0, 0, 1080, 1920);
+    A2.ch[n] = { mono, blur, shadow, color, rim, sil, shadowSharp: ss, w: 2160, h: 3840 };
   }
   A2.wall = await img("img/v2/concrete.png");
   A2.wallBlur = await img("img/v2/concrete_blur.png");

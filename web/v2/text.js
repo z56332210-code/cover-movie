@@ -42,7 +42,7 @@ function drawA(ctx, spec, line, t) {
         [...col].forEach((ch, k) => {
           const g = glyphAlpha(line, i, t, 0.4, spec); let dx = 0, dy = 0;
           if (SMALL_K.has(ch)) { dx = size * 0.1; dy = -size * 0.1; }
-          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0, spec.ink === "dark" ? 0 : 0.7);
+          drawGlyph(ctx, ch, -ci * size * (spec.gap || 1.5) + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0, spec.ink === "dark" ? 0 : 0.95);
           i++;
         });
       });
@@ -50,7 +50,7 @@ function drawA(ctx, spec, line, t) {
       ctx.font = `${w} ${size}px LyricMincho`; const track = size * 0.08;
       const widths = chars.map((c) => ctx.measureText(c).width + track), total = widths.reduce((s, v) => s + v, 0);
       let x = spec.align === "left" ? 0 : spec.align === "right" ? -total : -total / 2;
-      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t, 0.4, spec); drawGlyph(ctx, ch, x + widths[i] / 2, 0, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, 0, 0.7); x += widths[i]; });
+      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t, 0.4, spec); drawGlyph(ctx, ch, x + widths[i] / 2, 0, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, 0, spec.ink === "dark" ? 0 : 0.95); x += widths[i]; });
     }
     ctx.restore();
   };
@@ -71,7 +71,7 @@ function drawB(ctx, spec, line, t) {
       const s = S * (row.scale || 1) * (isKana(ch) ? (SMALL_K.has(ch) ? 0.5 : 0.62) : 1);
       ctx.font = `${w} ${s}px LyricMincho`; const adv = ctx.measureText(ch).width;
       const g = glyphAlpha(line, i, t, 0.35);
-      drawGlyph(ctx, ch, x, row.y, s, w, colorOf(spec, ch, i), g.a, g.blur * 1.4, 0, 0.45);
+      drawGlyph(ctx, ch, x, row.y, s, w, colorOf(spec, ch, i), g.a, g.blur * 1.4, 0, 0.85);
       x += adv * (row.track || 0.96); i++;
     }
   });

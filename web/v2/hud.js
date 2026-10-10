@@ -16,10 +16,11 @@ function sparkle(ctx, x, y, r) { // thin 4-point star
   ctx.quadraticCurveTo(x, y, x - r, y); ctx.quadraticCurveTo(x, y, x, y - r); ctx.fill();
 }
 
-function drawHUD2(ctx, t, a, drift) {
+function drawHUD2(ctx, t, a, drift, dark) {
   if (a <= 0) return;
+  const C = dark ? "40,40,42" : "236,236,232";
   ctx.save();
-  ctx.strokeStyle = `rgba(236,236,232,${0.75 * a})`; ctx.fillStyle = `rgba(236,236,232,${0.8 * a})`; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = `rgba(${C},${0.75 * a})`; ctx.fillStyle = `rgba(${C},${0.8 * a})`; ctx.lineWidth = 1.5;
   const { x0, y0, x1, y1 } = FR;
   // frame: top line broken by the ruler, sides, bottom centre line
   ctx.beginPath();
@@ -40,13 +41,13 @@ function drawHUD2(ctx, t, a, drift) {
   ctx.lineWidth = 1.2;
   [[1570, 900], [1620, 922], [1500, 944], [1470, 966]].forEach(([xs, y]) => { ctx.beginPath(); ctx.moveTo(xs, y); ctx.lineTo(x1 - 30, y); ctx.stroke(); });
   // bottom-left title + unreadable dummy block
-  ctx.font = "300 46px UI"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = `rgba(236,236,232,${0.78 * a})`;
+  ctx.font = "300 46px UI"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = `rgba(${C},${0.78 * a})`;
   ctx.letterSpacing = "3px"; ctx.fillText("SLOWDOWNER", x0 + 26, 892); ctx.letterSpacing = "0px";
-  ctx.font = "300 11px UI"; ctx.fillStyle = `rgba(236,236,232,${0.45 * a})`;
+  ctx.font = "300 11px UI"; ctx.fillStyle = `rgba(${C},${0.45 * a})`;
   DUMMY.forEach((s, i) => ctx.fillText(s, x0 + 28, 918 + i * 17));
   ctx.restore();
   // thin crossing lines / arcs over the picture (slow drift with the camera)
-  ctx.save(); ctx.strokeStyle = `rgba(240,240,236,${0.5 * a})`; ctx.lineWidth = 1.4;
+  ctx.save(); ctx.strokeStyle = `rgba(${C},${0.5 * a})`; ctx.lineWidth = 1.4;
   const d = drift || 0;
   ctx.beginPath(); ctx.moveTo(-40, 300 + d * 0.6); ctx.bezierCurveTo(500, 160 + d, 1100, 80 + d, 1960, -40 + d * 0.4); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(-40, 1000 - d * 0.3); ctx.bezierCurveTo(700, 820, 1400, 760 - d, 1960, 640 - d * 0.5); ctx.stroke();

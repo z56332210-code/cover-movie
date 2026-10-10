@@ -222,7 +222,23 @@ async function camspeed() {
   }
 }
 
+async function textcheck() {
+  const L = JSON.parse(fs.readFileSync(path.join(ROOT, "data/lyrics_timed.json"), "utf8"));
+  const srv = await serve(); const browser = await chromium.launch({ args: ["--disable-gpu"] });
+  const page = await openPage(browser, srv.address().port);
+  const bad = [];
+  for (const l of L) for (const f of [0.35, 0.7, 0.95]) {
+    const t = l.start + (l.end - l.start) * f;
+    const r = await page.evaluate((t) => window.textCheck(t), t);
+    const lowContrast = r.textPx > 50 && Math.abs(r.ink - r.picUnderText) < 60;
+    if (r.onFace > 0 || lowContrast) bad.push({ id: l.id, ...r });
+  }
+  await browser.close(); srv.close();
+  log(bad.length ? "TEXT CHECK " + bad.length + " issues:\n" + bad.map((b) => JSON.stringify(b)).join("\n") : "TEXT CHECK OK: no glyph on eyes/face, contrast >= 60 everywhere");
+}
+
 const run = async () => {
+  if (flag("textcheck")) return textcheck();
   if (flag("camspeed")) return camspeed();
   if (opt("luma")) return luma(opt("luma").split(",").map(Number));
   if (flag("check")) return check();

@@ -25,6 +25,7 @@ function drawShot(ctx, shot, t, vp = FULL) {
   if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
   ctx.save(); roll(ctx, cr);
   if (MASK) { ctx.fillStyle = "#000"; ctx.fillRect(-200, -200, W + 400, H + 400); }
+  else if (shot.plain) { /* background drawn by the scene */ }
   else if (shot.dustBack) { drawDustBack(ctx, t, vp); drawKeyLight(ctx, vp, 0.5); }
   else { drawWall(ctx, shot, cr); if (shot.keyLight) drawKeyLight(ctx, vp); else drawLight(ctx, t, shot); }
   drawLayers(ctx, shot, cr, t);
@@ -102,7 +103,7 @@ function drawThread2(ctx, shot, cr, t) {
 function drawWall(ctx, shot, cr) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
-  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#b4b6b8" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
+  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#9c9ea0" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
 }
@@ -140,8 +141,9 @@ function drawLight(ctx, t, shot) { // diagonal light sliding across the wall
 }
 function drawLayers(ctx, shot, cr, t) {
   ctx.save(); ctx.scale(cr.s, cr.s); ctx.translate(-cr.x0, -cr.y0);
-  for (const L of shot.layers) {
-    const C = A2.ch[L.n], ox = L.ox || 0, oy = L.oy || 0;
+  for (const L0 of shot.layers) {
+    const L = typeof L0.alpha === "function" ? { ...L0, alpha: L0.alpha(t) } : L0;
+    const C = A2.ch[L.n], ox = L.ox1 !== undefined ? lerp(L.ox || 0, L.ox1, cr.k) : (L.ox || 0), oy = L.oy || 0;
     ctx.save(); ctx.translate(ox, oy);
     if (L.mirror) { ctx.translate(C.w, 0); ctx.scale(-1, 1); }
     if (L.flipV) { ctx.translate(0, C.h); ctx.scale(1, -1); }
@@ -154,6 +156,7 @@ function drawLayers(ctx, shot, cr, t) {
     if (shot.rack) sharp *= 1 - shot.rack * (0.5 + 0.5 * Math.sin(2 * Math.PI * (t - shot.t0) / 3.7 - Math.PI / 2));   // slow focus breathing
     if (sharp < 1) { ctx.globalAlpha = (L.alpha ?? 1) * (1 - sharp * 0.999); ctx.drawImage(C.blur, 0, 0, C.w, C.h); }
     if (sharp > 0) { ctx.globalAlpha = (L.alpha ?? 1) * sharp; ctx.drawImage(C.mono, 0, 0); }
+    if (L.color) { ctx.globalAlpha = (L.alpha ?? 1) * L.color(t); ctx.drawImage(C.color, 0, 0); }    // colour returns (final merge)
     if (shot.keyLight) { ctx.globalAlpha = 0.5 * (L.alpha ?? 1); ctx.drawImage(C.rim, 0, 0); }       // rim light from behind, upper left
     if (MASK) {                                                                                      // measurement pass
       ctx.globalAlpha = 1; ctx.fillStyle = "#000"; ctx.drawImage(C.sil, 0, 0);
@@ -179,6 +182,8 @@ const R = {};
 const shotAt = (sc, t) => sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
 R.hud_portrait = (ctx, sc, t) => { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; };
 R.giant_type = R.hud_portrait;
+R.blur_focus_pull = R.hud_portrait;
+R.hud_two_shot = R.hud_portrait;
 R.letterbox_closeup = (ctx, sc, t) => {
   const sh = shotAt(sc, t);
   if (sh.black) { ctx.fillStyle = "#000"; ctx.fillRect(-100, -100, W + 200, H + 200); return { bars: sc.bars ?? 78, black: true }; }
@@ -218,6 +223,132 @@ R.red_burst = (ctx, sc, t) => {
 };
 R.placeholder = (ctx, sc, t) => { ctx.fillStyle = "#3a3b3c"; ctx.fillRect(0, 0, W, H); return {}; };
 
+// ---- reference-specific backgrounds
+function wallBase(ctx, t, k = 0, bright = "#a6a8aa") {   // concrete wall (title/credits/HUD scenes)
+  ctx.fillStyle = bright; ctx.fillRect(-100, -100, W + 200, H + 200);
+  ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
+  ctx.drawImage(A2.wall, -180 - 90 * k, -120, 2400 * (1 + 0.04 * k), 1350 * (1 + 0.04 * k)); ctx.restore();
+}
+function lightBand(ctx, t, x0, a = 0.5) {               // broad diagonal window light across the wall
+  const p = x0 + t * 14;
+  ctx.save(); ctx.globalCompositeOperation = "soft-light";
+  const g = ctx.createLinearGradient(p, 0, p + 900, -520);
+  g.addColorStop(0, "rgba(0,0,0,0.55)"); g.addColorStop(0.3, `rgba(255,255,250,${a})`); g.addColorStop(0.62, `rgba(255,255,250,${a})`); g.addColorStop(1, "rgba(0,0,0,0.55)");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
+}
+// title card: two shadow silhouettes on the concrete, light sliding over; title box; optional credits / merging shadows
+R.title_card_shadow = (ctx, sc, t) => {
+  const u = t - sc.t0, k = 1 - Math.pow(1 - clamp(u / (sc.t1 - sc.t0)), 2.2);
+  wallBase(ctx, t, k);
+  const merge = sc.merge ? sease(clamp(u / 2.2)) : 0;
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate((0.6 - 1.0 * k) * Math.PI / 180); ctx.scale(1 + 0.05 * k, 1 + 0.05 * k); ctx.translate(-W / 2, -H / 2);
+  [["patient", 120 + 260 * merge, -0.4], ["nurse", 900 - 520 * merge, 0.4]].forEach(([n, x, sk]) => {
+    ctx.save(); ctx.globalAlpha = 0.5 - (n === "nurse" ? 0.25 * merge : 0); ctx.translate(x + 18 * k, 130 - 10 * k); ctx.transform(1, 0, sk * 0.15, 1, 0, 0);
+    ctx.drawImage(A2.ch[n].shadowSharp, -540, -260, 1080 * 1.55, 1920 * 1.55); ctx.restore();
+  });
+  ctx.restore();
+  lightBand(ctx, u, -700 + 300 * k, 0.45);
+  const ta = sc.titleAt !== undefined ? clamp((t - sc.titleAt) / 0.08) : 0;
+  return { drift: k * 40, title: ta, credits: sc.credits ? clamp((t - sc.t0 - 0.6) / 0.6) : 0, creditPos: [1240, 640] };
+};
+// credits page then white over-exposure with a short pixel glitch (one of the 3-4 glitch uses)
+R.white_flash_glitch = (ctx, sc, t) => {
+  const u = t - sc.t0; wallBase(ctx, t, u / 3, "#9c9ea0"); lightBand(ctx, u, -400, 0.55);
+  return { credits: 1, white: clamp((u - (sc.t1 - sc.t0) + 0.9) / 0.6) * 0.92, glitchAt: sc.t0 + 0.05 };
+};
+// film strip: dark checker, thin circles, framed panels sliding (two speeds)
+R.filmstrip = (ctx, sc, t) => {
+  const u = t - sc.t0;
+  ctx.fillStyle = "#1b1b1c"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#222224"; for (let y = 0; y < H; y += 36) for (let x = (y / 36) % 2 ? 36 : 0; x < W; x += 72) ctx.fillRect(x, y, 36, 36);
+  ctx.strokeStyle = "rgba(220,220,216,0.35)"; ctx.lineWidth = 1.3;
+  ctx.beginPath(); ctx.arc(960 + 20 * Math.sin(u * 0.3), 540, 470, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(960, 540, 640 + 8 * u, 0, Math.PI * 2); ctx.stroke();
+  const rows = [[470, 560, 315, 70, sc.crops], [870, 300, 168, -110, sc.crops2]];
+  rows.forEach(([cy, pw, ph, speed, crops], ri) => {
+    const step = pw + 70, n = Math.ceil(W / step) + 2, off = ((u * speed) % step + step) % step;
+    for (let i = -1; i < n; i++) {
+      const x = i * step + off - step, idx = ((i - Math.floor(u * speed / step)) % crops.length + crops.length) % crops.length;
+      const c = crops[idx], vp = { x, y: cy - ph / 2, w: pw, h: ph };
+      drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n: c[0] }], c0: [c[1], c[2], c[3]], c1: [c[1], c[2], c[3] * 0.93], keyLight: true, longShadow: true, r0: 0, r1: 0 }, t, vp);
+      ctx.strokeStyle = "rgba(235,235,232,0.8)"; ctx.lineWidth = 1.5; ctx.strokeRect(x + 0.5, cy - ph / 2 + 0.5, pw - 1, ph - 1);
+      if (ri === 0) { ctx.fillStyle = "rgba(235,235,232,0.5)"; for (let k = 0; k < 6; k++) ctx.fillRect(x + 8 + k * 9, cy + ph / 2 + 10, 4, 2); }
+    }
+  });
+  return { drift: u * 6 };
+};
+// rapid 0.12-0.25 s close-up cuts with white flash frames between
+R.flash_cut_cluster = (ctx, sc, t) => {
+  const u = t - sc.t0, i = Math.min(sc.subs.length - 1, Math.floor(u / sc.sub));
+  const c = sc.subs[i], f = u - i * sc.sub;
+  drawShot(ctx, { t0: sc.t0 + i * sc.sub, t1: sc.t0 + (i + 1) * sc.sub, layers: [{ n: c[0] }], c0: [c[1], c[2], c[3]], c1: [c[1] + 30, c[2], c[3] * 0.94], keyLight: true, longShadow: true, r0: 0.8, r1: -0.4 }, t);
+  return { white: f < 1 / 30 ? 0.85 : 0, drift: 0 };
+};
+// sunset: thick letterbox, desaturated orange sky with drifting dark clouds, figure against it (accent, once)
+R.sunset_letterbox = (ctx, sc, t) => {
+  const u = t - sc.t0, k = 1 - Math.pow(1 - clamp(u / (sc.t1 - sc.t0)), 2.2);
+  const g = ctx.createLinearGradient(0, 260, 0, 820);
+  g.addColorStop(0, "#2b2220"); g.addColorStop(0.42, "#9a4f27"); g.addColorStop(0.55, "#d9722b"); g.addColorStop(0.7, "#7a3a20"); g.addColorStop(1, "#1d1716");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = 0.55;
+  for (let i = 0; i < 16; i++) { const x = ((hash(i * 7) * 2400 - u * (12 + hash(i) * 14)) % 2400 + 2400) % 2400 - 240, y = 300 + hash(i * 3) * 420, r = 120 + hash(i * 5) * 260;
+    ctx.save(); ctx.translate(x, y); ctx.scale(1, 0.22); ctx.drawImage(A2.dotDark, -r, -r, r * 2, r * 2); ctx.restore(); }
+  ctx.restore();
+  const sh = sc.shots[0], cr = cropAt(sh, t);
+  ctx.save(); roll(ctx, cr); drawLayers(ctx, { ...sh, shadow: false }, cr, t); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = "rgba(120,72,50,1)"; ctx.globalAlpha = 0.55; ctx.fillRect(0, 0, W, H); ctx.restore();
+  return { bars: 264, drift: k * 20 };
+};
+R.black_line = () => { return { still: true }; };
+// white mirror: one figure upright, the other flipped upside down facing it; framed vertical lyric in the middle
+R.mirror_flip = (ctx, sc, t) => {
+  const u = t - sc.t0, k = 1 - Math.pow(1 - clamp(u / (sc.t1 - sc.t0)), 2.2);
+  ctx.fillStyle = "#f2f1ee"; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate((-1.2 + 2.0 * k) * Math.PI / 180); ctx.translate(-W / 2, -H / 2);
+  ctx.globalAlpha = 0.85;
+  drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n: "nurse" }], c0: [1150, 1350, 2500], c1: [1120, 1320, 2300], shadow: false, plain: true, r0: 0, r1: 0 }, t, { x: -120, y: 0, w: 1150, h: H });
+  drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n: "patient", flipV: true, mirror: true }], c0: [1120, 2450, 2500], c1: [1150, 2480, 2300], shadow: false, plain: true, r0: 0, r1: 0 }, t, { x: 890, y: 0, w: 1150, h: H });
+  ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = "rgba(245,243,236,0.35)"; ctx.fillRect(0, 0, W, H); ctx.restore();
+  ctx.strokeStyle = "rgba(40,40,42,0.75)"; ctx.lineWidth = 1.2; ctx.strokeRect(905, 190, 110, 700);
+  return { drift: k * 20, hudDark: true };
+};
+// kinetic cluster: dark strip with one small line, then a grid of panels with glitch blocks and a giant keyword
+R.kinetic_cluster = (ctx, sc, t) => {
+  const u = t - sc.t0;
+  ctx.fillStyle = "#050606"; ctx.fillRect(0, 0, W, H);
+  if (u < sc.strip) {
+    const vp = { x: 0, y: 340, w: W, h: 400 };
+    drawShot(ctx, { t0: sc.t0, t1: sc.t0 + sc.strip, layers: [{ n: "nurse" }], c0: [1060, 870, 1500], c1: [1040, 865, 1400], keyLight: true, r0: 0, r1: 0 }, t, vp);
+    ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = "rgba(70,78,76,1)"; ctx.fillRect(0, 340, W, 400); ctx.restore();
+    return { still: true, hud: false };
+  }
+  const cell = [640, 360], beat = Math.floor((u - sc.strip) / 0.23);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+    const id = (r * 3 + c + beat) % sc.crops.length, cp = sc.crops[id];
+    drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n: cp[0] }], c0: [cp[1], cp[2], cp[3]], c1: [cp[1] + 40, cp[2], cp[3] * 0.92], keyLight: true, r0: 0, r1: 0 }, t, { x: c * cell[0], y: r * cell[1], w: cell[0], h: cell[1] });
+  }
+  ctx.strokeStyle = "rgba(10,10,10,1)"; ctx.lineWidth = 6;
+  for (let i = 1; i < 3; i++) { ctx.beginPath(); ctx.moveTo(i * 640, 0); ctx.lineTo(i * 640, H); ctx.moveTo(0, i * 360); ctx.lineTo(W, i * 360); ctx.stroke(); }
+  return { glitchAt: sc.t0 + sc.strip, drift: 0 };
+};
+// full body, then the exposure climbs to white
+R.full_body_whiteout = (ctx, sc, t) => {
+  const cr = drawShot(ctx, shotAt(sc, t), t), u = (t - sc.t0) / (sc.t1 - sc.t0);
+  return { white: sease(clamp((u - 0.45) / 0.55)) * 0.95, drift: cr.k * 30 };
+};
+// white, soft: the two figures blurred and overlapping (first hint that they are one)
+R.white_soft = (ctx, sc, t) => {
+  const u = t - sc.t0, k = 1 - Math.pow(1 - clamp(u / (sc.t1 - sc.t0)), 2.2);
+  ctx.fillStyle = "#f4f3f0"; ctx.fillRect(0, 0, W, H);
+  const sh = { t0: sc.t0, t1: sc.t1, c0: [1000, 1250, 2600], c1: [990, 1220, 2300], shadow: false, plain: true, focus: "half", r0: 0.5, r1: -0.5,
+    layers: [{ n: "nurse", ox: 160 - 140 * k, alpha: 0.32 }, { n: "patient", ox: -160 + 140 * k, alpha: 0.42 }] };
+  ctx.save(); ctx.globalAlpha = 0.9; const cr = cropAt(sh, t); roll(ctx, cr); drawLayers(ctx, sh, cr, t); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = "rgba(246,245,240,0.3)"; ctx.fillRect(0, 0, W, H); ctx.restore();
+  return { drift: k * 20, hudDark: true };
+};
+R.fade_out = () => ({ still: true, hud: false });
+
 // ---------------------------------------------------------------- scene table (types from scene_plan.json, timed to this song)
 let SCENES2;
 function buildScenes() {
@@ -246,54 +377,147 @@ function buildScenes() {
         7: { lvl: "A", layout: "vert", x: 860 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
         8: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
-    { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
-    { type: "hud_portrait", t0: 34.14, t1: s(13),
+    // ---- title card: shadows on concrete, full frame opens
+    { type: "title_card_shadow", t0: 20.0, t1: 34.14, tin: "blur", titleAt: snapOnset(23.75, 0.3), lightOverlay: true },
+    // ---- verse 2: HUD portrait, crops cut every ~5 s
+    { type: "hud_portrait", t0: 34.14, t1: s(13), tin: "cut",
       shots: [
-        { t0: 34.14, t1: s(11), layers: [P()], c0: [1000, 1260, 2300], c1: [990, 1230, 2120], lightX: 200, fx: ["leak", "dust"] },
-        { t0: s(11), t1: s(12), layers: [P()], c0: [905, 930, 1000], c1: [925, 920, 900], dof: true, dark: false },
-        { t0: s(12), t1: s(13), layers: [P()], c0: [700, 1640, 1200], c1: [760, 1620, 1100], pan: -1 },
+        { t0: 34.14, t1: s(11), layers: [P()], c0: [1060, 1300, 2420], c1: [1000, 1250, 2220] },
+        { t0: s(11), t1: s(13), tin: "bleed", layers: [P()], c0: [1010, 930, 1500], c1: [930, 905, 1330] },
       ],
       text: {
-        9: { lvl: "A", layout: "line", x: 1640, y: 505, size: 40, mirror: { x: 300, y: 560 } },
-        10: { lvl: "A", layout: "vert", x: 1720, y: 250, size: 38, cols: ["この世界に", "産み落とされたモンスター"] },
-        11: { lvl: "A", layout: "vert", x: 300, y: 260, size: 40, cols: ["そこは", "一見散漫な"], mirror: { x: 1620, y: 300 } },
-        12: { lvl: "A", layout: "line", x: 960, y: 930, size: 36 },
+        9: { lvl: "A", layout: "vert", x: 1480, y: 250, size: 30, gap: 1.3, cols: ["僕は", "新旧曖昧な"], mirror: { x: 440, y: 300 } },
+        10: { lvl: "A", layout: "vert", x: 1480, y: 250, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
+        11: { lvl: "A", layout: "vert", x: 1500, y: 250, size: 30, gap: 1.3, cols: ["そこは", "一見散漫な"] },
+        12: { lvl: "A", layout: "vert", x: 1500, y: 250, size: 30, gap: 1.3, cols: ["手のひらから", "振り落とされたようだ"] },
       } },
-    { type: "blur_focus_pull", t0: s(13), t1: s(17) },
-    { type: "filmstrip", t0: s(17), t1: 61.3 },
-    { type: "flash_cut_cluster", t0: 61.3, t1: 62.11 },
-    { type: "giant_type", t0: 62.11, t1: s(22),
+    // ---- eye close-up, background blurred, focus pulls in
+    { type: "blur_focus_pull", t0: s(13), t1: s(17), tin: "whip",
       shots: [
-        { t0: 62.11, t1: s(21), layers: [P()], c0: [960, 1250, 1900], c1: [950, 1215, 1760], lightX: 600, fx: ["beam", "dust", "scratch"] },
-        { t0: s(21), t1: s(22), layers: [P()], c0: [820, 1520, 1300], c1: [780, 1490, 1180], lightX: 900 },
+        { t0: s(13), t1: s(15), layers: [N()], c0: [980, 960, 1700], c1: [1120, 900, 1480], focus: "pull", dof: true },
+        { t0: s(15), t1: s(17), tin: "blur", layers: [N()], c0: [1300, 1200, 2000], c1: [1180, 1130, 1760], dof: true },
+      ],
+      text: {
+        13: { lvl: "A", layout: "vert", x: 1560, y: 230, size: 30, gap: 1.3, cols: ["外側に", "放ったスライダー"] },
+        14: { lvl: "A", layout: "vert", x: 1560, y: 230, size: 30, gap: 1.3, cols: ["予想通り", "空振るバッター"] },
+        15: { lvl: "A", layout: "line", x: 1360, y: 820, size: 30 },
+        16: { lvl: "A", layout: "line", x: 1360, y: 820, size: 30 },
+      } },
+    // ---- pre-chorus: film strip (dark checker)
+    { type: "filmstrip", t0: s(17), t1: 61.3, tin: "flash", lightOverlay: false,
+      crops: [["patient", 910, 900, 1500], ["nurse", 1040, 900, 1500], ["patient", 1100, 1500, 2200], ["nurse", 1350, 1600, 2000]],
+      crops2: [["nurse", 1040, 880, 1300], ["patient", 1600, 760, 1200], ["nurse", 1450, 1600, 1400], ["patient", 910, 880, 1300]],
+      text: {
+        17: { lvl: "A", layout: "line", x: 960, y: 690, size: 28 },
+        18: { lvl: "A", layout: "line", x: 960, y: 690, size: 28 },
+        19: { lvl: "A", layout: "line", x: 960, y: 690, size: 28 },
+      } },
+    { type: "flash_cut_cluster", t0: 61.3, t1: 62.11, tin: "glitch", sub: 0.2, lightOverlay: false,
+      subs: [["nurse", 1300, 1500, 1200], ["patient", 910, 870, 900], ["nurse", 1040, 870, 900], ["patient", 1000, 1350, 1400]] },
+    // ---- chorus 1: giant type over the figure
+    { type: "giant_type", t0: 62.11, t1: s(22), tin: "bleed",
+      shots: [
+        { t0: 62.11, t1: s(21), layers: [P()], c0: [1010, 1300, 2300], c1: [960, 1240, 2080] },
+        { t0: s(21), t1: s(22), tin: "cut", layers: [N()], c0: [1150, 1350, 2300], c1: [1100, 1290, 2060] },
       ],
       text: {
         20: { lvl: "B", x: 0, y: 500, rot: -5, size: 0.31 * H, weight: 300, red: "愛",
               rows: [{ t: "嗚呼", y: 300, scale: 0.55 }, { t: "人類最後に", x: 330, y: 300 }, { t: "愛を持ったって", x: 1190, y: 560 }] },
-        21: { lvl: "B", x: -40, y: 300, rot: -7, size: 0.34 * H, weight: 300,
-              rows: [{ t: "僕に居場所は", y: 300 }, { t: "ないでしょうか", x: 560, y: 590 }] },
+        21: { lvl: "B", x: -40, y: 470, rot: -7, size: 0.32 * H, weight: 300,
+              rows: [{ t: "僕に居場所は", y: 300 }, { t: "ないでしょうか", x: 760, y: 540 }] },
       } },
-    { type: "hud_portrait_n", t0: s(22), t1: s(23) },
-    { type: "giant_type_n", t0: s(23), t1: s(25) },
-    { type: "red_burst", t0: s(25), t1: 82.54, accent: 1,
+    { type: "hud_portrait", t0: s(22), t1: s(23), tin: "whip",
+      shots: [{ t0: s(22), t1: s(23), layers: [P()], c0: [1050, 930, 1560], c1: [960, 900, 1380] }],
+      text: { 22: { lvl: "A", layout: "vert", x: 1480, y: 230, size: 30, gap: 1.3, cols: ["心中泣いて", "痛いから", "思い出してよ"], mirror: { x: 430, y: 280 } } } },
+    { type: "giant_type", t0: s(23), t1: s(25), tin: "flash",
+      shots: [
+        { t0: s(23), t1: s(24), layers: [N()], c0: [1080, 1320, 2300], c1: [1020, 1260, 2100] },
+        { t0: s(24), t1: s(25), tin: "cut", layers: [P()], c0: [880, 1350, 2300], c1: [960, 1290, 2100] },
+      ],
+      text: {
+        23: { lvl: "B", x: 10, y: 520, rot: -6, size: 0.31 * H, weight: 300, red: "愛",
+              rows: [{ t: "人類最後に", y: 300 }, { t: "愛を持ったって", x: 900, y: 560 }] },
+        24: { lvl: "B", x: -30, y: 470, rot: -6, size: 0.3 * H, weight: 300,
+              rows: [{ t: "それを知る日は", y: 300 }, { t: "ないでしょうなんて", x: 700, y: 560 }] },
+      } },
+    // ---- accent 1: crimson smear in black space
+    { type: "red_burst", t0: s(25), t1: 82.54, tin: "black", accent: 1, lightOverlay: false,
       shots: [{ t0: s(25), t1: 82.54, layers: [P()], c0: [930, 1250, 1900], c1: [930, 1250, 2150], focus: "half", shadow: false }],
-      text: { 25: { lvl: "A", layout: "line", x: 960, y: 930, size: 34 } } },
-    { type: "white_flash_glitch", t0: 82.54, t1: s(26) },
-    { type: "sunset_letterbox", t0: s(26), t1: s(28), accent: 2 },
-    { type: "black_line", t0: s(28), t1: s(29) },
-    { type: "mirror_flip", t0: s(29), t1: s(30) },
-    { type: "kinetic_cluster", t0: s(30), t1: s(31) },
-    { type: "hud_two_shot", t0: s(31), t1: s(33) },
-    { type: "red_burst", t0: s(33), t1: s(35), accent: 3 },
-    { type: "giant_type", t0: s(35), t1: s(36) },
-    { type: "full_body_whiteout", t0: s(36), t1: e(36) },
-    { type: "white_soft", t0: e(36), t1: s(37) },
-    { type: "black_line", t0: s(37), t1: s(38) },
-    { type: "hud_two_shot", t0: s(38), t1: s(40) },
-    { type: "giant_type", t0: s(40), t1: e(40) },
-    { type: "title_card_shadow", t0: e(40), t1: 142.3 },
-    { type: "fade_out", t0: 142.3, t1: 143.4 },
+      text: { 25: { lvl: "A", layout: "line", x: 960, y: 900, size: 30 } } },
+    // ---- credits on the wall, then white over-exposure with a short glitch
+    { type: "white_flash_glitch", t0: 82.54, t1: s(26), tin: "cut", lightOverlay: true },
+    // ---- accent 2: sunset (orange only here)
+    { type: "sunset_letterbox", t0: s(26), t1: s(28), tin: "flash", accent: 2, hud: false, lightOverlay: false,
+      shots: [{ t0: s(26), t1: s(28), layers: [P()], c0: [1000, 1500, 2700], c1: [980, 1440, 2450], r0: -0.5, r1: 0.5 }],
+      text: {
+        26: { lvl: "A", layout: "vert", x: 1300, y: 300, size: 28, gap: 1.3, cols: ["有終最後の", "火を灯したって"], red: "火" },
+        27: { lvl: "A", layout: "vert", x: 1300, y: 300, size: 28, gap: 1.3, cols: ["心苦しく", "なるでしょうか"] },
+      } },
+    // ---- quiet: black screen, one small line
+    { type: "black_line", t0: s(28), t1: 92.2, tin: "black", hud: false, lightOverlay: false,
+      text: { 28: { lvl: "A", layout: "vert", x: 975, y: 330, size: 24, gap: 1.4, cols: ["本当は咲いてみたいってこと", "思い出したんだ"] } } },
+    { type: "hud_portrait", t0: 92.2, t1: s(29), tin: "blur",
+      shots: [{ t0: 92.2, t1: s(29), layers: [P()], c0: [1080, 1450, 2300], c1: [1010, 1390, 2080] }],
+      text: { 28: { lvl: "A", layout: "vert", x: 1480, y: 260, size: 30, gap: 1.3, cols: ["本当は咲いて", "みたいってこと", "思い出したんだ"] } } },
+    // ---- emotion flips: white, one figure upside down facing the other
+    { type: "mirror_flip", t0: s(29), t1: s(30), tin: "flash", lightOverlay: false,
+      text: { 29: { lvl: "A", layout: "vert", x: 975, y: 230, size: 34, gap: 1.35, ink: "dark", cols: ["たどり着いたんだ", "正体と擬態したアイを"] } } },
+    // ---- kinetic cluster: one line on a dark strip, then a grid + giant keyword
+    { type: "kinetic_cluster", t0: s(30), t1: s(31), tin: "cut", strip: 0.9, lightOverlay: false, hud: false,
+      crops: [["patient", 1050, 1500, 1500], ["nurse", 1400, 1600, 1500], ["patient", 1600, 760, 1300], ["nurse", 1150, 1450, 1500], ["patient", 700, 1700, 1300], ["nurse", 1450, 2000, 1500]],
+      text: { 30: (t) => (t - s(30) < 0.9 ? { lvl: "A", layout: "line", x: 960, y: 540, size: 28 }
+        : { lvl: "C", text: "嗚呼", x: 960, y: 560, size: 0.5 * H * (1 + 0.06 * (Math.floor((t - s(30)) / 0.23) % 3)), weight: 200 }) } },
+    // ---- two-shot: both on the wall, vertical lyrics in the gap
+    { type: "hud_two_shot", t0: s(31), t1: s(33), tin: "bleed",
+      shots: [
+        { t0: s(31), t1: s(32), layers: [P({ ox: -560 }), N({ ox: 640 })], c0: [1080, 1300, 3600], c1: [1080, 1250, 3300] },
+        { t0: s(32), t1: s(33), tin: "cut", layers: [P({ ox: -480 }), N({ ox: 560 })], c0: [1080, 1050, 2900], c1: [1080, 1010, 2650] },
+      ],
+      text: {
+        31: { lvl: "A", layout: "vert", x: 990, ink: "dark", y: 260, size: 30, gap: 1.3, cols: ["僕の印は", "ないでしょうか"] },
+        32: { lvl: "B", x: 20, y: 560, rot: -6, size: 0.28 * H, weight: 300, rows: [{ t: "きっとふさわしくないけど", y: 300, scale: 0.55 }, { t: "思い出してよ", x: 600, y: 540 }] },
+      } },
+    // ---- accent 3: crimson smear again (the other figure)
+    { type: "red_burst", t0: s(33), t1: s(35), tin: "glitch", accent: 3, lightOverlay: false,
+      shots: [{ t0: s(33), t1: s(35), layers: [N()], c0: [1060, 1250, 1900], c1: [1060, 1250, 2150], focus: "half", shadow: false }],
+      text: {
+        33: { lvl: "A", layout: "line", x: 960, y: 900, size: 30 },
+        34: { lvl: "A", layout: "line", x: 960, y: 900, size: 30 },
+      } },
+    // ---- climax: the two faces close in, giant type
+    { type: "giant_type", t0: s(35), t1: s(36), tin: "flash",
+      shots: [{ t0: s(35), t1: s(36), layers: [P({ ox: -620, ox1: -300 }), N({ ox: 700, ox1: 380 })], c0: [1080, 1150, 3300], c1: [1080, 1080, 2700] }],
+      text: { 35: { lvl: "B", x: 0, y: 600, rot: -6, size: 0.3 * H, weight: 300, rows: [{ t: "やっと", y: 300, scale: 0.6 }, { t: "僕を見つけたんだ", x: 260, y: 300 }, { t: "嗚呼", x: 1300, y: 560 }] } } },
+    { type: "full_body_whiteout", t0: s(36), t1: e(36), tin: "cut",
+      shots: [{ t0: s(36), t1: e(36), layers: [P()], c0: [1065, 1950, 5600], c1: [1065, 1900, 5000] }],
+      text: { 36: { lvl: "A", layout: "vert", x: 1400, ink: "dark", y: 260, size: 30, gap: 1.3, cols: ["こうやって", "アイは終わった"] } } },
+    { type: "white_soft", t0: e(36), t1: s(37), tin: "blur", lightOverlay: false, hud: false },
+    // ---- outro
+    { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
+      text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
+    { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
+      shots: [
+        { t0: s(38), t1: s(39), layers: [P({ ox: -560 }), N({ ox: 640 })], c0: [1080, 1250, 3400], c1: [1080, 1200, 3100] },
+        { t0: s(39), t1: s(40), tin: "cut", layers: [P({ ox: -520, ox1: -260 }), N({ ox: 600, ox1: 300 })], c0: [1080, 1150, 3000], c1: [1080, 1100, 2700] },
+      ],
+      text: {
+        38: { lvl: "A", layout: "vert", x: 1000, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
+        39: { lvl: "A", layout: "vert", x: 1000, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
+      } },
+    // ---- one: the nurse dissolves into the patient, colour returns
+    { type: "giant_type", t0: s(40), t1: e(40), tin: "flash",
+      shots: [{ t0: s(40), t1: e(40), layers: [N({ alpha: (t) => 0.5 * (1 - sease((t - s(40)) / 1.6)) }), P({ color: (t) => 0.55 * sease((t - s(40) - 0.4) / 2.0) })], c0: [1000, 1250, 2600], c1: [960, 1180, 2300] }],
+      text: { 40: { lvl: "B", x: 10, y: 560, rot: -5, size: 0.3 * H, weight: 300, rows: [{ t: "今この世界と", y: 300 }, { t: "一つになった。", x: 700, y: 560 }] } } },
+    { type: "title_card_shadow", t0: e(40), t1: 142.3, tin: "blur", merge: true, titleAt: e(40) + 0.4, credits: true, lightOverlay: true },
+    { type: "fade_out", t0: 142.3, t1: 143.4, tin: "black", hud: false },
   ];
+  for (const sc of SCENES2) {
+    if (sc.lightOverlay === undefined) sc.lightOverlay = true;
+    (sc.shots || []).forEach((sh, i) => {
+      if (sc.t0 >= 20 && !sh.dustBack && sh.keyLight === undefined) { sh.keyLight = true; sh.longShadow = sh.longShadow ?? true; }
+      if (i === 0 && !sh.tin && sc.tin) sh.tin = sc.tin;
+    });
+  }
   for (const sc of SCENES2) (sc.shots || []).forEach((sh, i) => {
     const d = (i + Math.round(sc.t0)) % 2 ? 1 : -1;
     if (sh.r0 === undefined) sh.r0 = 0.9 * d;
@@ -302,7 +526,7 @@ function buildScenes() {
   for (let i = 1; i < SCENES2.length; i++) if (SCENES2[i].type === SCENES2[i - 1].type) throw new Error("adjacent scenes share a type at " + SCENES2[i].t0);
   // every B/C row set must spell the lyric exactly
   for (const sc of SCENES2) for (const [id, sp] of Object.entries(sc.text || {}))
-    if (sp.lvl === "B" && sp.rows.map((r) => r.t).join("") !== L2(+id).ja) throw new Error(`B rows for ${id} != lyric`);
+    if (typeof sp !== "function" && sp.lvl === "B" && sp.rows.map((r) => r.t).join("") !== L2(+id).ja) throw new Error(`B rows for ${id} != lyric`);
 }
 function charT2(i, k) { const c = L2(i).chars; return c[Math.min(k, c.length - 1)]; }
 const sceneAt = (t) => SCENES2.find((s) => t >= s.t0 && t < s.t1) || SCENES2[SCENES2.length - 1];
@@ -374,7 +598,7 @@ function drawLightOverlay(ctx, t) {
   ctx.restore();
 }
 
-let IMG, IX, MASK = 0;
+let IMG, IX, MASK = 0, NOTEXT = false;
 function renderImage(t) { // the picture (wall, figure, light) without text/HUD
   const ctx = IX; ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
   ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
@@ -393,41 +617,72 @@ function composeFrame(t, measure = false) {
   }
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
   ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
-  const cam = handheld(t), tr = transitionAt(t);
+  const cam = info.still ? { dx: 0, dy: 0, r: 0, s: 1 } : handheld(t), tr = transitionAt(t);
+  const ov = info.still ? 1 : 1.035;
   ctx.save();
-  ctx.translate(W / 2 + cam.dx, H / 2 + cam.dy); ctx.rotate(cam.r); ctx.scale(cam.s * 1.035, cam.s * 1.035); ctx.translate(-W / 2, -H / 2);  // 3.5 % overscan
-  if (!tr) ctx.drawImage(IMG, 0, 0, W, H);
+  ctx.translate(W / 2 + cam.dx, H / 2 + cam.dy); ctx.rotate(cam.r); ctx.scale(cam.s * ov, cam.s * ov); ctx.translate(-W / 2, -H / 2);  // 3.5 % overscan
+  const tri = tr ? 1 - Math.abs(tr.u * 2 - 1) : 0;    // 0 -> 1 at the cut -> 0
+  if (!tr || tr.kind === "cut" || tr.kind === "flash" || tr.kind === "black") ctx.drawImage(IMG, 0, 0, W, H);
   else if (tr.kind === "whip") {          // horizontal blur + fast pan, no white; image scaled so no edge shows
     const u = tr.u, k = u < 0.5 ? sease(u * 2) : 1 - sease((u - 0.5) * 2), pan = (u < 0.5 ? -1 : 1) * 200 * k, z = 1 + 0.32 * k;
     ctx.save(); ctx.translate(W / 2 + pan, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2); blitBlur(ctx, IMG, 40 + 220 * k, 0); ctx.restore();
+  } else if (tr.kind === "blur") {        // focus blur out / in
+    ctx.filter = `blur(${(26 * tri * PX2).toFixed(1)}px)`; ctx.drawImage(IMG, 0, 0, W, H); ctx.filter = "none";
+  } else if (tr.kind === "glitch") {      // pixel-block slices, < 0.2 s
+    ctx.drawImage(IMG, 0, 0, W, H); glitchSlices(ctx, t, tri);
   } else {                                 // light bleed: exposure up + diagonal blur, peak near white, new shot resolves
     const u = tr.u, ang = -30 * Math.PI / 180;
     const blur = u < 3 / 8 ? lerp(40, 120, u / (3 / 8)) : u < 5 / 8 ? 120 : lerp(120, 0, (u - 5 / 8) / (3 / 8));
     blitBlur(ctx, IMG, blur, ang);
   }
+  if (info.glitchAt !== undefined && t >= info.glitchAt && t < info.glitchAt + 0.18) glitchSlices(ctx, t, 1);
   ctx.restore();
   INK_DARK = 0;
-  if (tr && tr.kind !== "whip") {         // exposure curve: rises to near-white at frames 3-4, falls back on the new shot
+  if (tr && tr.kind === "bleed") {        // exposure curve: rises to near-white at frames 3-4, falls back on the new shot
     const u = tr.u, ex = u < 3 / 8 ? sease(u / (3 / 8)) * 0.88 : u < 5 / 8 ? 0.94 : (1 - sease((u - 5 / 8) / (3 / 8))) * 0.88;
     INK_DARK = clamp((ex - 0.35) / 0.5);
     ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = `rgba(250,249,244,${ex})`; ctx.fillRect(0, 0, W, H);
     if (u >= 3 / 8 && u < 5 / 8) { ctx.globalAlpha = 0.9; ctx.translate(W / 2, H / 2); ctx.rotate(STRIPE_ANG); ctx.translate(-3000 + (t * 60) % 1500, -1500); ctx.drawImage(A2.stripeTex, 0, 0); }
     ctx.restore();
   }
-  // brightness breathing +-3 % (0.3 Hz) and +-1.5 % per-frame flicker on the picture
-  // light flicker stepped at 15 fps like the reference (its picture mean jumps ~+-10 % between frames)
-  const f = 0.02 * Math.sin(2 * Math.PI * 0.3 * t) + FLICKER * (hash(Math.floor(t * 15) + 77) - 0.5) * 2;
-  ctx.fillStyle = f > 0 ? `rgba(255,255,255,${f})` : `rgba(0,0,0,${-f})`; ctx.fillRect(0, 0, W, H);
+  if (tr && tr.kind === "flash") { const ex = Math.max(0, 1 - Math.abs(tr.u - 0.5) * 4) * 0.9; INK_DARK = clamp((ex - 0.35) / 0.5); ctx.fillStyle = `rgba(250,249,245,${ex})`; ctx.fillRect(0, 0, W, H); }
+  if (tr && tr.kind === "black") { ctx.fillStyle = `rgba(0,0,0,${tri})`; ctx.fillRect(0, 0, W, H); }
+  if (info.white) { ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = `rgba(250,249,245,${info.white})`; ctx.fillRect(0, 0, W, H); ctx.restore(); INK_DARK = Math.max(INK_DARK, clamp((info.white - 0.4) / 0.4)); }
+  // brightness breathing and light flicker (15 fps steps)
+  if (!info.still) {
+    const f = 0.02 * Math.sin(2 * Math.PI * 0.3 * t) + FLICKER * (hash(Math.floor(t * 15) + 77) - 0.5) * 2;
+    ctx.fillStyle = f > 0 ? `rgba(255,255,255,${f})` : `rgba(0,0,0,${-f})`; ctx.fillRect(0, 0, W, H);
+  }
   // lyrics ride the camera at 40 % (parallax), never cut by transitions
   ctx.save(); ctx.translate(cam.dx * 0.4, cam.dy * 0.4);
-  for (const [id, spec] of Object.entries(sc.text || {})) drawLyric(ctx, spec, L2(+id), t);
+  if (!NOTEXT) for (const [id, sp] of Object.entries(sc.text || {})) drawLyric(ctx, typeof sp === "function" ? sp(t) : sp, L2(+id), t);
+  if (info.credits) drawCredits2(ctx, info.credits, ...(info.creditPos || []));
+  if (info.title) drawTitleBox(ctx, info.title, 960, 470);
   ctx.restore();
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0);
   ctx.globalAlpha = sc.vignette ?? 0.8; ctx.drawImage(A2.vignette, 0, 0, W, H); ctx.globalAlpha = 1;
   post(ctx, t);
-  if (sc.hud !== false && R[sc.type]) drawHUD2(ctx, t, 1, info.drift || 0);
+  if (sc.hud !== false && info.hud !== false && R[sc.type]) drawHUD2(ctx, t, 1, info.drift || 0, info.hudDark);
   drawBars(ctx, info.bars || 0);
+  if (sc.type === "fade_out") { ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H); }
   drawKo(ctx, t);
+}
+function glitchSlices(ctx, t, amt) {
+  const fr = Math.floor(t * 30);
+  for (let i = 0; i < 10; i++) {
+    const y = hash2(fr, i) * H, h = 10 + hash2(i, fr) * 70, off = (hash2(fr + 7, i) - 0.5) * 180 * amt;
+    ctx.drawImage(IMG, 0, y * PX2, IMG.width, h * PX2, off, y, W, h);
+    if (i % 3 === 0) { ctx.fillStyle = `rgba(${i % 2 ? 230 : 20},${i % 2 ? 230 : 20},${i % 2 ? 228 : 22},0.55)`; ctx.fillRect(hash2(i, fr + 3) * W, y, 40 + hash2(fr, i + 9) * 260, h * 0.4); }
+  }
+}
+function drawCredits2(ctx, a, x0 = 620, y0 = 330) {
+  const rows = [["Music", "ろくろ"], ["Vocal", "暁山瑞希"], ["Movie", "meel"]];
+  ctx.save(); ctx.globalAlpha = a * 0.9; ctx.fillStyle = "#ecece8"; ctx.textBaseline = "middle";
+  ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 6;
+  rows.forEach(([k, v], i) => { const y = y0 + i * 54;
+    ctx.font = "300 26px UI"; ctx.fillText(k + "  /", x0, y);
+    ctx.font = "300 30px LyricMincho"; ctx.fillText(v, x0 + 140, y); });
+  ctx.restore();
 }
 // final: 180-degree shutter = average of 3 samples across 1/60 s; preview: single sample
 let SUBS = 1;
@@ -448,7 +703,12 @@ async function init2(width = 960, opts = {}) {
   IMG = cnv(CV2.width, CV2.height); IX = IMG.getContext("2d"); ACC = cnv(CV2.width, CV2.height);
   SUBS = opts.post ? 3 : 1;
   CUTS = [];
-  for (const sc of SCENES2) (sc.shots || []).forEach((sh, i) => { if (sh.tin) CUTS.push({ t: sh.t0, kind: sh.tin }); });
+  for (const sc of SCENES2) {
+    (sc.shots || []).forEach((sh) => { if (sh.tin) CUTS.push({ t: sh.t0, kind: sh.tin }); });
+    if (!sc.shots && sc.tin) CUTS.push({ t: sc.t0, kind: sc.tin });
+  }
+  CUTS.sort((a, b) => a.t - b.t);
+  for (let i = 1; i < CUTS.length; i++) if (CUTS[i].t >= 20 && CUTS[i].kind === CUTS[i - 1].kind) throw new Error(`same transition twice in a row at ${CUTS[i].t}: ${CUTS[i].kind}`);
   return { fallbacks: A2.fontFallbacks, duration: D.duration };
 }
 window.init = init2;
@@ -470,7 +730,7 @@ window.lumaStats = (t) => {
 };
 window.seek = (t) => render2(t);
 window.needsBlur = () => false;
-window.stillTimes = () => [3.6, 8.9, 12.0, 16.2, 18.8, 36.3, 66.95, 81.6];
+window.stillTimes = () => [24, 30, 37, 42, 46, 51, 57, 61.6, 65.5, 69, 72, 76, 79, 81.5, 84, 86.5, 90.5, 94, 98, 101.2, 103, 106, 110, 114, 118, 122.5, 126.5, 129.6, 132, 135, 138.5, 141];
 window.faceCheck = (times) => times.map((t) => { const sc = sceneAt(t); const sh = sc.shots && (sc.shots.find((s) => t >= s.t0 && t < s.t1)); return sh ? { t, eyes: eyeRects(sh, t) } : { t, eyes: [] }; });
 // Camera probe: screen position of a fixed stage point (shot crop centre at mid-shot) incl. Ken Burns, roll and handheld.
 window.camProbe = (t) => {
@@ -483,4 +743,25 @@ window.camProbe = (t) => {
   const z = cam.s * 1.035, c2 = Math.cos(cam.r), s2 = Math.sin(cam.r);           // handheld
   [x, y] = [cx + cam.dx + z * ((x - cx) * c2 - (y - cy) * s2), cy + cam.dy + z * ((x - cx) * s2 + (y - cy) * c2)];
   return { t, shot: sh.t0, x, y, kbx: (P[0] - cr.x0) * cr.s, kby: (P[1] - cr.y0) * cr.s, scale: cr.s };
+};
+// Text safety: Japanese glyph pixels inside the eye/face boxes, and contrast under the glyphs.
+window.textCheck = (t) => {
+  const sc = sceneAt(t), Wd = CV2.width, Hd = CV2.height;
+  MASK = 2; composeFrame(t, true); const face = CX2.getImageData(0, 0, Wd, Hd).data; MASK = 0;
+  NOTEXT = true; composeFrame(t); NOTEXT = false; const pic = CX2.getImageData(0, 0, Wd, Hd).data;
+  // text alone, same camera parallax as composeFrame
+  const cam = handheld(t);
+  CX2.setTransform(PX2, 0, 0, PX2, 0, 0); CX2.clearRect(0, 0, W, H); CX2.save(); CX2.translate(cam.dx * 0.4, cam.dy * 0.4);
+  const saveInk = INK_DARK; INK_DARK = 0;
+  for (const [id, sp] of Object.entries(sc.text || {})) drawLyric(CX2, typeof sp === "function" ? sp(t) : sp, L2(+id), t);
+  INK_DARK = saveInk; CX2.restore();
+  const txt = CX2.getImageData(0, 0, Wd, Hd).data;
+  let n = 0, onFace = 0, lum = 0, inkL = 0;
+  for (let i = 0; i < txt.length; i += 4) {
+    if (txt[i + 3] < 120) continue;
+    n++; if (face[i] > 200 && face[i + 1] < 60) onFace++;
+    lum += 0.299 * pic[i] + 0.587 * pic[i + 1] + 0.114 * pic[i + 2];
+    inkL += 0.299 * txt[i] + 0.587 * txt[i + 1] + 0.114 * txt[i + 2];
+  }
+  return { t, textPx: n, onFace, picUnderText: n ? Math.round(lum / n) : null, ink: n ? Math.round(inkL / n) : null };
 };
