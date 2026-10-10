@@ -210,10 +210,10 @@ R.giant_type = (ctx, sc, t) => {
 R.blur_focus_pull = R.hud_portrait;
 // Two-shot. With sc.split: each figure in its own panel, a dark band with a red thread between them that narrows
 // in steps on the lyric hits (each step snaps fast, then settles), until it closes.
-const STEP_DUR = 1.3;   // each narrowing step eases in and out over 1.3 s
+const STEP_DUR = 0.8;   // each narrowing step snaps fast, then decelerates over 0.8 s
 function stepKeys(keys, t) {
   let v = keys[0][1];
-  for (let i = 1; i < keys.length; i++) { const [kt, kv] = keys[i]; if (t < kt) break; const u = clamp((t - kt) / STEP_DUR); v = lerp(v, kv, u * u * (3 - 2 * u)); }
+  for (let i = 1; i < keys.length; i++) { const [kt, kv] = keys[i]; if (t < kt) break; const u = clamp((t - kt) / STEP_DUR); v = lerp(v, kv, 1 - Math.pow(1 - u, 3)); }
   return v;
 }
 R.hud_two_shot = (ctx, sc, t) => {
@@ -568,7 +568,7 @@ function buildScenes() {
     { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
       text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
     { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
-      split: [[s(38) - 0.4, 260], [s(38) + 0.9, 190], [s(39) - 0.4, 120], [s(39) + 1.0, 50], [s(40) - 1.6, 0]],
+      split: [[s(38), 260], [s(38) + 1.4, 190], [s(39), 120], [s(39) + 1.6, 50], [s(40) - 0.95, 0]],
       text: {
         38: { lvl: "A", layout: "vert", x: 170, y: 230, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
         39: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
