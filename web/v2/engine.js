@@ -24,7 +24,7 @@ function drawShot(ctx, shot, t, vp = FULL) {
   ctx.save();
   if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
   ctx.save(); roll(ctx, cr);
-  drawWall(ctx, shot, cr); drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
+  drawWall(ctx, shot, cr); if (shot.keyLight) drawKeyLight(ctx, vp); else drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
   if (shot.thread) drawThread2(ctx, shot, cr, t);
   ctx.restore();
   for (const f of shot.fx || []) FX[f](ctx, t - shot.t0, vp, shot);   // decoration above the character
@@ -99,9 +99,14 @@ function drawThread2(ctx, shot, cr, t) {
 function drawWall(ctx, shot, cr) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
-  ctx.fillStyle = shot.dark ? "#6a6c6d" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
+  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#76787a" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
+}
+function drawKeyLight(ctx, vp) { // soft light from the upper left, opposite side and bottom fall off
+  const g = ctx.createLinearGradient(vp.x, vp.y, vp.x + vp.w * 0.9, vp.y + vp.h * 1.4);
+  g.addColorStop(0, "rgba(255,255,250,0.30)"); g.addColorStop(0.45, "rgba(255,255,250,0)"); g.addColorStop(0.46, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.55)");
+  ctx.save(); ctx.globalCompositeOperation = "soft-light"; ctx.fillStyle = g; ctx.fillRect(vp.x - 200, vp.y - 200, vp.w + 400, vp.h + 400); ctx.restore();
 }
 function drawLight(ctx, t, shot) { // diagonal light sliding across the wall
   const p = (t - shot.t0) * (shot.lightSpeed ?? 22) + (shot.lightX ?? 300);
@@ -116,7 +121,10 @@ function drawLayers(ctx, shot, cr, t) {
     ctx.save(); ctx.translate(ox, oy);
     if (L.mirror) { ctx.translate(C.w, 0); ctx.scale(-1, 1); }
     if (L.flipV) { ctx.translate(0, C.h); ctx.scale(1, -1); }
-    if (shot.shadow !== false) { ctx.globalAlpha = 0.55 * (L.alpha ?? 1); ctx.drawImage(C.shadow, 110, 50, C.w, C.h); }
+    if (shot.shadow !== false) {
+      const [sx, sy, sa] = shot.longShadow ? [260, 150, 0.62] : [110, 50, 0.55];
+      ctx.globalAlpha = sa * (L.alpha ?? 1); ctx.drawImage(C.shadow, sx, sy, C.w * 1.03, C.h * 1.03);
+    }
     // focus: blurred -> sharp (pull) or constant blur
     const sharp = shot.focus === "pull" ? sease((t - shot.t0 - 0.15) / 1.1) : shot.focus === "soft" ? 0 : shot.focus === "half" ? 0.3 : 1;
     if (sharp < 1) { ctx.globalAlpha = (L.alpha ?? 1) * (1 - sharp * 0.999); ctx.drawImage(C.blur, 0, 0, C.w, C.h); }
@@ -141,7 +149,7 @@ const R = {};
 const shotAt = (sc, t) => sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
 R.hud_portrait = (ctx, sc, t) => { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; };
 R.giant_type = R.hud_portrait;
-R.letterbox_closeup = (ctx, sc, t) => { drawShot(ctx, shotAt(sc, t), t); return { bars: 78 }; };
+R.letterbox_closeup = (ctx, sc, t) => { drawShot(ctx, shotAt(sc, t), t); return { bars: sc.bars ?? 78 }; };
 // left/right split: the right panel pushes in and shoves the left image aside
 R.split_slide = (ctx, sc, t) => {
   const [left, right] = sc.shots, k = sease((t - sc.slideAt) / 0.7), div = lerp(W, W / 2, k);
@@ -182,37 +190,27 @@ function buildScenes() {
   const s = (i) => L2(i).start, e = (i) => L2(i).end;
   const P = (o = {}) => ({ n: "patient", ...o }), N = (o = {}) => ({ n: "nurse", ...o });
   SCENES2 = [
-    { type: "letterbox_closeup", t0: 0, t1: s(8), hud: false,
+    { type: "letterbox_closeup", t0: 0, t1: 20.0, hud: false, bars: 264, vignette: 0.55,
       shots: [
-        { t0: 0, t1: s(2), layers: [P()], c0: [900, 1500, 1450], c1: [905, 1460, 1320], lightX: -200, fx: ["leak", "dust"] },
-        { t0: s(2), t1: 3.4, layers: [P()], c0: [880, 540, 1050], c1: [900, 520, 960], fx: ["blinds", "dust"] },
-        { t0: 3.4, t1: s(3), layers: [P()], c0: [620, 1730, 1050], c1: [580, 1710, 960], fx: ["beam", "dust"] },
-        { t0: s(3), t1: s(4), layers: [P()], c0: [870, 1105, 780], c1: [925, 1095, 720], focus: "pull", dof: true, fx: ["leak", "scratch"], leakSide: -1 },
-        { t0: s(4), t1: 8.3, layers: [P()], c0: [905, 1240, 860], c1: [930, 1215, 780], fx: ["blinds"] },
-        { t0: 8.3, t1: s(5), layers: [P()], c0: [1490, 1380, 900], c1: [1500, 1330, 820], fx: ["haze", "dust"] },
-        { t0: s(5), t1: s(6), layers: [P()], c0: [1700, 760, 980], c1: [1640, 790, 880], lightX: 500, fx: ["beam", "dust"],
-          thread: { t0: s(5), t1: e(5), p: [[1478, 805], [1640, 690], [1820, 1000], [2200, 760]] } },
-        { t0: s(6), t1: 13.5, layers: [P()], c0: [1640, 980, 900], c1: [1700, 960, 820], fx: ["leak", "scratch"],
-          thread: { t0: s(5) - 9, t1: s(5) - 8, p: [[1478, 805], [1640, 690], [1820, 1000], [2200, 760]] } },
-        { t0: 13.5, t1: s(7), layers: [P()], c0: [1150, 1520, 1100], c1: [1110, 1490, 1000], fx: ["blinds", "haze"] },
-        { t0: s(7), t1: 15.9, layers: [P()], c0: [895, 845, 720], c1: [905, 835, 650], focus: "pull", dof: true, fx: ["leak", "dust"] },
-        { t0: 15.9, t1: s(8), layers: [P()], c0: [1230, 900, 820], c1: [1190, 880, 740], dof: true, fx: ["beam", "scratch"] },
+        // upper body centre (garment + crossed arms), wall on both sides
+        { t0: 0, t1: s(4), layers: [P()], c0: [1080, 1440, 2500], c1: [1060, 1410, 2340], keyLight: true, longShadow: true, r0: -0.4, r1: 0.3, fx: ["dust"] },
+        // face, eyes visible, room on the right for the lyric
+        { t0: s(4), t1: s(6), layers: [P()], c0: [920, 880, 1560], c1: [910, 868, 1440], keyLight: true, longShadow: true, r0: 0.3, r1: -0.3, fx: ["leak"] },
+        // second figure: chest and the clipboard held in both hands
+        { t0: s(6), t1: s(8), layers: [N()], c0: [1240, 1560, 2050], c1: [1260, 1530, 1900], keyLight: true, longShadow: true, r0: -0.3, r1: 0.3, fx: ["dust"] },
+        // second figure: face
+        { t0: s(8), t1: 20.0, layers: [N()], c0: [1050, 880, 1560], c1: [1042, 868, 1460], keyLight: true, longShadow: true, r0: 0.3, r1: -0.2, fx: ["leak"] },
       ],
       text: {
-        1: { lvl: "A", layout: "vert", x: 1640, y: 230, size: 40, cols: ["僕は", "最上最愛の"] },
-        2: { lvl: "A", layout: "vert", x: 1660, y: 220, size: 38, cols: ["この世界に", "産み落とされた", "モンスター"] },
-        3: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
-        4: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
-        5: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 40, cols: ["赤い糸を", "放ったスパイダー"], red: "糸" },
-        6: { lvl: "A", layout: "vert", x: 330, y: 230, size: 40, cols: ["予想通り", "絡まるハンター"] },
-        7: { lvl: "A", layout: "vert", x: 1760, y: 250, size: 38, cols: ["どうか", "一生淡々と"] },
+        1: { lvl: "A", layout: "vert", x: 1080, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
+        2: { lvl: "A", layout: "vert", x: 1080 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
+        3: { lvl: "A", layout: "vert", x: 1080, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
+        4: { lvl: "A", layout: "vert", x: 1430, y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
+        5: { lvl: "A", layout: "vert", x: 1430, y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
+        6: { lvl: "A", layout: "vert", x: 1225, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
+        7: { lvl: "A", layout: "vert", x: 1225 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
+        8: { lvl: "A", layout: "vert", x: 1480, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
-    { type: "split_slide", t0: s(8), t1: 20.0, hud: false, slideAt: snapOnset(charT2(8, 13), 0.2),
-      shots: [
-        { t0: s(8), t1: 20.0, layers: [P()], c0: [880, 930, 980], c1: [900, 900, 860], dof: true, r0: -0.6, r1: 0.6, fx: ["leak", "dust"] },
-        { t0: s(8), t1: 20.0, layers: [N()], c0: [1042, 840, 600], c1: [1042, 835, 540], dof: true, r0: 0.8, r1: -0.4, fx: ["beam", "haze"], leakSide: -1 },
-      ],
-      text: { 8: { lvl: "A", layout: "vert", x: 170, y: 150, size: 34, cols: ["生きるだけの", "理由をください", "ドクター"] } } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
       shots: [
@@ -281,7 +279,6 @@ function post(ctx, t) {
   // low-contrast bloom: tiny downscale, screen back
   const sm = A2.small, sx = sm.getContext("2d"); sx.globalCompositeOperation = "copy"; sx.drawImage(CV2, 0, 0, 240, 135);
   ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.16; ctx.drawImage(sm, 0, 0, W, H); ctx.restore();
-  ctx.drawImage(A2.vignette, 0, 0, W, H);
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.16;
   ctx.fillStyle = ctx.createPattern(A2.grain[Math.floor(t * 30) % A2.grain.length], "repeat"); ctx.fillRect(0, 0, W, H); ctx.restore();
 }
@@ -291,6 +288,7 @@ function render2(t) {
   const info = (R[sc.type] || R.placeholder)(ctx, sc, t) || {};
   for (const [id, spec] of Object.entries(sc.text || {})) drawLyric(ctx, spec, L2(+id), t);
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0);
+  ctx.globalAlpha = sc.vignette ?? 0.8; ctx.drawImage(A2.vignette, 0, 0, W, H); ctx.globalAlpha = 1;
   post(ctx, t);
   if (sc.hud !== false && R[sc.type]) drawHUD2(ctx, t, 1, info.drift || 0);
   drawBars(ctx, info.bars || 0);

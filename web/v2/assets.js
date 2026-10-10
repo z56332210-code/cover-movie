@@ -39,8 +39,8 @@ async function loadAssets2() {
     for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (r() - 0.5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
     g.putImageData(d, 0, 0); A2.grain.push(c);
   }
-  const v = cnv(W, H), vg = v.getContext("2d"), gr = vg.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.0);
-  gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,0.42)"); vg.fillStyle = gr; vg.fillRect(0, 0, W, H); A2.vignette = v;
+  const v = cnv(W, H), vg = v.getContext("2d"), gr = vg.createRadialGradient(W / 2, H * 0.42, H * 0.25, W / 2, H * 0.42, H * 0.95);
+  gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,0.6)"); vg.fillStyle = gr; vg.fillRect(0, 0, W, H); A2.vignette = v;
   const dot = (rgba) => { const c = cnv(64, 64), g = c.getContext("2d"), q = g.createRadialGradient(32, 32, 0, 32, 32, 32);
     q.addColorStop(0, rgba(1)); q.addColorStop(0.4, rgba(0.5)); q.addColorStop(1, rgba(0)); g.fillStyle = q; g.fillRect(0, 0, 64, 64); return c; };
   A2.dot = dot((a) => `rgba(235,235,232,${a})`);

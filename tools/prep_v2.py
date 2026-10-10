@@ -16,38 +16,43 @@ def fbm(h, w, octaves=6, base=4):
         out += layer * amp; tot += amp; amp *= 0.55
     return out / tot
 
-# ---- concrete wall (2400x1350 so the Ken Burns move never shows an edge)
-H, W = 1350, 2400
-n = fbm(H, W)
-wall = 0.54 + (n - 0.5) * 0.30                       # broad mottling
-fine = rng.normal(0, 0.035, (H, W)).astype(np.float32)
-wall += np.asarray(Image.fromarray(((fine + 0.5) * 255).clip(0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.7)), np.float32) / 255 - 0.5
+# ---- concrete wall: fine, uniform; pits and grain everywhere, a few hairline cracks, no large stains
 from PIL import ImageDraw
-pim = Image.new("L", (W, H), 128); dr = ImageDraw.Draw(pim)   # air pockets: round pits, dark core + faint light rim
-for _ in range(5200):
-    x, y = rng.uniform(0, W), rng.uniform(0, H); r = rng.choice([0.8, 1.2, 1.8, 2.6, 3.8], p=[.35, .3, .2, .1, .05])
-    d = int(rng.uniform(25, 95))
-    dr.ellipse([x - r - 0.8, y - r - 0.8, x + r + 0.8, y + r + 0.8], fill=150)
-    dr.ellipse([x - r, y - r, x + r, y + r], fill=128 - d)
-for _ in range(2500):                                          # light grit
-    x, y = rng.uniform(0, W), rng.uniform(0, H); r = rng.uniform(0.6, 1.4)
-    dr.ellipse([x - r, y - r, x + r, y + r], fill=int(rng.uniform(150, 185)))
-pores = np.asarray(pim.filter(ImageFilter.GaussianBlur(0.6)), np.float32) / 128 - 1
-wall += pores * 0.55
-mid = fbm(H, W, 5, 10)                                         # cloudy mid-frequency blotches
-wall += (mid - 0.5) * 0.22
-stain = fbm(H, W, 4, 2)                               # water stains, darker near the top
-wall -= np.clip(stain - 0.55, 0, 1) * 0.35
-wall -= np.linspace(0.06, 0, H)[:, None]
+H, W = 1350, 2400
+wall = np.full((H, W), 0.56, np.float32)
+wall += (fbm(H, W, 3, 2) - 0.5) * 0.04                              # barely-there large variation
+g = rng.normal(0, 1, (H, W)).astype(np.float32)
+g = np.asarray(Image.fromarray(((g * 0.12 + 0.5) * 255).clip(0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8)), np.float32) / 255 - 0.5
+wall += g * 0.5                                                     # fine aggregate grain
+pim = Image.new("L", (W, H), 128); dr = ImageDraw.Draw(pim)
+for _ in range(16000):                                              # small pits, evenly spread
+    x, y = rng.uniform(0, W), rng.uniform(0, H); r = rng.choice([0.6, 0.9, 1.3, 1.8, 2.6], p=[.3, .3, .22, .13, .05])
+    dr.ellipse([x - r, y - r, x + r, y + r], fill=int(128 - rng.uniform(25, 80)))
+for _ in range(6000):
+    x, y = rng.uniform(0, W), rng.uniform(0, H); r = rng.uniform(0.5, 1.1)
+    dr.ellipse([x - r, y - r, x + r, y + r], fill=int(rng.uniform(140, 165)))
+for _ in range(7):                                                  # hairline cracks
+    x, y = rng.uniform(0, W), rng.uniform(0, H); ang = rng.uniform(0, np.pi)
+    pts = []
+    for _ in range(40):
+        ang += rng.normal(0, 0.35); x += np.cos(ang) * 14; y += np.sin(ang) * 14; pts.append((x, y))
+    dr.line(pts, fill=95, width=1)
+wall += (np.asarray(pim.filter(ImageFilter.GaussianBlur(0.5)), np.float32) / 128 - 1) * 0.45
 Image.fromarray((wall.clip(0, 1) * 255).astype(np.uint8)).save(f"{OUT}/concrete.png", optimize=True)
-Image.fromarray((wall.clip(0, 1) * 255).astype(np.uint8)).resize((W // 2, H // 2)).filter(ImageFilter.GaussianBlur(6)).save(f"{OUT}/concrete_blur.png")
+Image.fromarray((wall.clip(0, 1) * 255).astype(np.uint8)).resize((W // 2, H // 2)).filter(ImageFilter.GaussianBlur(5)).save(f"{OUT}/concrete_blur.png")
 
 # ---- characters: desaturated (12%), slightly darkened whites so they sit on the wall, plus blur + wall shadow
 def desat(im, s=0.12):
     rgb = np.asarray(im.convert("RGB"), np.float32) / 255
-    g = (rgb @ np.array([0.299, 0.587, 0.114], np.float32))[..., None]
-    out = g + (rgb - g) * s
-    out = (out - 0.5) * 1.08 + 0.5; out = out * 0.76 + 0.03                           # whites -> paper grey, keeps line art black
+    mx, mn = rgb.max(-1), rgb.min(-1); sat = (mx - mn) / (mx + 1e-4)
+    r, g_, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    hue = np.degrees(np.arctan2(np.sqrt(3) * (g_ - b), 2 * r - g_ - b)) % 360
+    L = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
+    garment = ((hue > 140) & (hue < 260) & (sat > 0.07)).astype(np.float32)          # jacket, uniform, IV fluid
+    garment = np.asarray(Image.fromarray((garment * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5)), np.float32) / 255
+    Lt = 0.06 + 0.64 * L ** 1.3                                                     # low contrast, whites -> ~0.77
+    Lt = Lt * (1 - 0.68 * garment)                                                   # garments near black
+    out = Lt[..., None] + (rgb - L[..., None]) * s * 0.6
     o = Image.fromarray((out.clip(0, 1) * 255).astype(np.uint8)); o.putalpha(im.getchannel("A")); return o
 for name in ("patient", "nurse"):
     src = Image.open(f"assets/character/{name}.png").convert("RGBA")
