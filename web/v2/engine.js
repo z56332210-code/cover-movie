@@ -12,7 +12,7 @@ const sease = (k) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(k));
 // ---------------------------------------------------------------- shot = layered crop of the art with a slow Ken Burns move
 const FULL = { x: 0, y: 0, w: W, h: H };
 function cropAt(shot, t, vp = FULL) {
-  const k = sease((t - shot.t0) / (shot.t1 - shot.t0));
+  const k = 1 - Math.pow(1 - clamp((t - shot.t0) / (shot.t1 - shot.t0)), 2.6);   // fastest at the cut, decelerating
   const c = shot.c0.map((v, i) => lerp(v, shot.c1[i], k));
   const w = c[2], h = w * vp.h / vp.w, s = vp.w / w;
   // x0/y0 are expressed so that screen = (stage - x0) * s works inside the viewport
@@ -228,13 +228,13 @@ function buildScenes() {
       shots: [
         { t0: 0, t1: 2.4, black: true, layers: [], c0: [0, 0, 1], c1: [0, 0, 1] },
         // upper body centre (garment + crossed arms), wall on both sides
-        { t0: 2.4, t1: 7.3, tin: "bleed", layers: [P()], c0: [1150, 1480, 2560], c1: [1000, 1400, 2260], keyLight: true, dustBack: true, longShadow: true, r0: -0.8, r1: 0.6, focus: "pull", rack: 0.15 },
+        { t0: 2.4, t1: 7.3, tin: "bleed", layers: [P()], c0: [1150, 1480, 2560], c1: [1000, 1400, 2260], keyLight: true, dustBack: true, longShadow: true, r0: -0.8, r1: 0.6 },
         // face, eyes visible
-        { t0: 7.3, t1: 12.3, tin: "bleed", layers: [P()], c0: [990, 900, 1640], c1: [880, 860, 1400], keyLight: true, dustBack: true, longShadow: true, r0: 0.7, r1: -0.7, focus: "pull", rack: 0.15 },
+        { t0: 7.3, t1: 12.3, tin: "bleed", layers: [P()], c0: [990, 900, 1640], c1: [880, 860, 1400], keyLight: true, dustBack: true, longShadow: true, r0: 0.7, r1: -0.7 },
         // second figure: chest and the clipboard held in both hands
-        { t0: 12.3, t1: 17.0, tin: "bleed", layers: [N()], c0: [1160, 1600, 2120], c1: [1300, 1520, 1840], keyLight: true, dustBack: true, longShadow: true, r0: -0.7, r1: 0.7, focus: "pull", rack: 0.15 },
+        { t0: 12.3, t1: 17.0, tin: "bleed", layers: [N()], c0: [1160, 1600, 2120], c1: [1300, 1520, 1840], keyLight: true, dustBack: true, longShadow: true, r0: -0.7, r1: 0.7 },
         // second figure: face (whip pan in)
-        { t0: 17.0, t1: 20.0, tin: "whip", layers: [N()], c0: [1110, 890, 1600], c1: [1010, 860, 1420], keyLight: true, dustBack: true, longShadow: true, r0: 0.7, r1: -0.5, focus: "pull", rack: 0.15 },
+        { t0: 17.0, t1: 20.0, tin: "whip", layers: [N()], c0: [930, 900, 1640], c1: [1100, 860, 1400], keyLight: true, dustBack: true, longShadow: true, r0: -0.6, r1: 0.6 },
       ],
       text: {
         1: { lvl: "A", layout: "vert", x: 1010, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
@@ -244,7 +244,7 @@ function buildScenes() {
         5: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
         6: { lvl: "A", layout: "vert", x: 860, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
         7: { lvl: "A", layout: "vert", x: 860 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
-        8: { lvl: "A", layout: "vert", x: 1290, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
+        8: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
@@ -472,3 +472,15 @@ window.seek = (t) => render2(t);
 window.needsBlur = () => false;
 window.stillTimes = () => [3.6, 8.9, 12.0, 16.2, 18.8, 36.3, 66.95, 81.6];
 window.faceCheck = (times) => times.map((t) => { const sc = sceneAt(t); const sh = sc.shots && (sc.shots.find((s) => t >= s.t0 && t < s.t1)); return sh ? { t, eyes: eyeRects(sh, t) } : { t, eyes: [] }; });
+// Camera probe: screen position of a fixed stage point (shot crop centre at mid-shot) incl. Ken Burns, roll and handheld.
+window.camProbe = (t) => {
+  const sc = sceneAt(t), sh = sc.shots && shotAt(sc, t); if (!sh || sh.black) return null;
+  const cr = cropAt(sh, t), cam = handheld(t);
+  const P = [(sh.c0[0] + sh.c1[0]) / 2, (sh.c0[1] + sh.c1[1]) / 2];
+  let x = (P[0] - cr.x0) * cr.s, y = (P[1] - cr.y0) * cr.s;                       // Ken Burns
+  const cx = W / 2, cy = H / 2, c = Math.cos(cr.rot), s = Math.sin(cr.rot);       // roll
+  [x, y] = [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c];
+  const z = cam.s * 1.035, c2 = Math.cos(cam.r), s2 = Math.sin(cam.r);           // handheld
+  [x, y] = [cx + cam.dx + z * ((x - cx) * c2 - (y - cy) * s2), cy + cam.dy + z * ((x - cx) * s2 + (y - cy) * c2)];
+  return { t, shot: sh.t0, x, y, kbx: (P[0] - cr.x0) * cr.s, kby: (P[1] - cr.y0) * cr.s, scale: cr.s };
+};

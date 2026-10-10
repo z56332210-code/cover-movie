@@ -208,7 +208,22 @@ async function luma(times) {
   return out;
 }
 
+async function camspeed() {
+  const srv = await serve(); const browser = await chromium.launch({ args: ["--disable-gpu"] });
+  const page = await openPage(browser, srv.address().port);
+  const pts = await page.evaluate(() => { const o = []; for (let f = 0; f < 600; f++) o.push(window.camProbe(f / 30)); return o; });
+  await browser.close(); srv.close();
+  const shots = [...new Set(pts.filter(Boolean).map((p) => p.shot))];
+  for (const s0 of shots) {
+    const p = pts.filter((q) => q && q.shot === s0), v = [], kb = [];
+    for (let i = 1; i < p.length; i++) { v.push(Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y)); kb.push(Math.hypot(p[i].kbx - p[i - 1].kbx, p[i].kby - p[i - 1].kby) + Math.abs(p[i].scale - p[i - 1].scale) * 1500); }
+    const n = Math.floor(v.length / 3), m = (a) => (a.reduce((x, y) => x + y, 0) / a.length).toFixed(2);
+    log(`shot @${s0}s  total camera px/frame: ${m(v.slice(0, n))} > ${m(v.slice(n, 2 * n))} > ${m(v.slice(2 * n))}   Ken Burns only: ${m(kb.slice(0, n))} > ${m(kb.slice(n, 2 * n))} > ${m(kb.slice(2 * n))}`);
+  }
+}
+
 const run = async () => {
+  if (flag("camspeed")) return camspeed();
   if (opt("luma")) return luma(opt("luma").split(",").map(Number));
   if (flag("check")) return check();
   if (flag("stills")) return stills();
