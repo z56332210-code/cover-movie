@@ -148,10 +148,10 @@ function buildScenes() {
       } },
     { type: "split_slide", t0: s(8), t1: 20.0, hud: false, slideAt: snapOnset(charT2(8, 13), 0.2),
       shots: [
-        { t0: s(7), t1: 20.0, layers: [P()], c0: [895, 845, 720], c1: [905, 830, 560], dof: true, r0: -0.6, r1: 0.6 },
+        { t0: s(7), t1: 20.0, layers: [P()], c0: [895, 845, 720], c1: [905, 830, 650], dof: true, r0: -0.6, r1: 0.6 },
         { t0: s(8), t1: 20.0, layers: [N()], c0: [1042, 840, 600], c1: [1042, 835, 540], dof: true, r0: 0.8, r1: -0.4 },
       ],
-      text: { 8: { lvl: "A", layout: "vert", x: 175, y: 175, size: 38, cols: ["生きるだけの", "理由をください", "ドクター"] } } },
+      text: { 8: { lvl: "A", layout: "vert", x: 170, y: 150, size: 34, cols: ["生きるだけの", "理由をください", "ドクター"] } } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
       shots: [
