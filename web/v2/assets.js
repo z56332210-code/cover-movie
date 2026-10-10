@@ -44,6 +44,5 @@ async function loadAssets2() {
   const dot = (rgba) => { const c = cnv(64, 64), g = c.getContext("2d"), q = g.createRadialGradient(32, 32, 0, 32, 32, 32);
     q.addColorStop(0, rgba(1)); q.addColorStop(0.4, rgba(0.5)); q.addColorStop(1, rgba(0)); g.fillStyle = q; g.fillRect(0, 0, 64, 64); return c; };
   A2.dot = dot((a) => `rgba(235,235,232,${a})`);
-  A2.redGlow = dot((a) => `rgba(220,30,50,${a})`);
   A2.small = cnv(240, 135);
 }

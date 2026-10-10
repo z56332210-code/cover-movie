@@ -14,8 +14,9 @@ function cropAt(shot, t) {
   const k = sease((t - shot.t0) / (shot.t1 - shot.t0));
   const c = shot.c0.map((v, i) => lerp(v, shot.c1[i], k));
   const w = c[2], h = w * 9 / 16;
-  return { x0: c[0] - w / 2, y0: c[1] - h / 2, w, h, s: W / w, k };
+  return { x0: c[0] - w / 2, y0: c[1] - h / 2, w, h, s: W / w, k, rot: lerp(shot.r0 || 0, shot.r1 || 0, k) * Math.PI / 180 };
 }
+function roll(ctx, cr) { ctx.translate(W / 2, H / 2); ctx.rotate(cr.rot); ctx.translate(-W / 2, -H / 2); }
 function drawWall(ctx, shot, cr, opts) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
@@ -41,10 +42,6 @@ function drawLayers(ctx, shot, cr, t) {
     const sharp = shot.focus === "pull" ? sease((t - shot.t0 - 0.15) / 1.1) : shot.focus === "soft" ? 0 : shot.focus === "half" ? 0.3 : 1;
     if (sharp < 1) { ctx.globalAlpha = (L.alpha ?? 1) * (1 - sharp * 0.999); ctx.drawImage(C.blur, 0, 0, C.w, C.h); }
     if (sharp > 0) { ctx.globalAlpha = (L.alpha ?? 1) * sharp; ctx.drawImage(C.mono, 0, 0); }
-    if (L.eyeGlow) for (const [ex, ey] of KP[L.n].eyes) {
-      const r = 46 + 6 * Math.sin(t * 5); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.9 * L.eyeGlow;
-      ctx.drawImage(A2.redGlow, ex - r, ey - r, r * 2, r * 2); ctx.globalCompositeOperation = "source-over";
-    }
     ctx.restore();
   }
   ctx.restore();
@@ -65,7 +62,9 @@ const R = {};
 R.hud_portrait = (ctx, sc, t) => {
   const shot = sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
   const cr = cropAt(shot, t);
+  ctx.save(); roll(ctx, cr);
   drawWall(ctx, shot, cr); drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
+  ctx.restore();
   return { drift: cr.k * 40 };
 };
 R.giant_type = R.hud_portrait;
@@ -86,12 +85,8 @@ R.red_burst = (ctx, sc, t) => {
     const z = s * grow; ctx.globalAlpha = a; ctx.drawImage(A2.smear[i], x - z / 2, y - z / 2, z, z);
   });
   ctx.globalAlpha = 1;
-  ctx.save(); ctx.globalAlpha = 0.9; drawLayers(ctx, shot, cr, t); ctx.restore();
+  ctx.save(); roll(ctx, cr); ctx.globalAlpha = 0.9; drawLayers(ctx, shot, cr, t); ctx.restore();
   ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = "rgba(40,40,44,1)"; ctx.globalAlpha = 0.72; ctx.fillRect(0, 0, W, H); ctx.restore();
-  // re-light the eyes above the darkening
-  ctx.save(); ctx.scale(cr.s, cr.s); ctx.translate(-cr.x0, -cr.y0); ctx.globalCompositeOperation = "screen";
-  for (const [ex, ey] of KP.patient.eyes) { const r = 30 + 4 * Math.sin(t * 4); ctx.globalAlpha = 0.9; ctx.drawImage(A2.redGlow, ex - r, ey - r, r * 2, r * 2); }
-  ctx.restore();
   return { drift: k * 30 };
 };
 R.placeholder = (ctx, sc, t) => { ctx.fillStyle = "#3a3b3c"; ctx.fillRect(0, 0, W, H); return {}; };
@@ -134,7 +129,7 @@ function buildScenes() {
     { type: "hud_portrait_n", t0: s(22), t1: s(23) },
     { type: "giant_type_n", t0: s(23), t1: s(25) },
     { type: "red_burst", t0: s(25), t1: 82.54, accent: 1,
-      shots: [{ t0: s(25), t1: 82.54, layers: [P({ eyeGlow: 0 })], c0: [930, 1250, 1900], c1: [930, 1250, 2150], focus: "half", shadow: false }],
+      shots: [{ t0: s(25), t1: 82.54, layers: [P()], c0: [930, 1250, 1900], c1: [930, 1250, 2150], focus: "half", shadow: false }],
       text: { 25: { lvl: "A", layout: "line", x: 960, y: 930, size: 34 } } },
     { type: "white_flash_glitch", t0: 82.54, t1: s(26) },
     { type: "sunset_letterbox", t0: s(26), t1: s(28), accent: 2 },
@@ -152,6 +147,11 @@ function buildScenes() {
     { type: "title_card_shadow", t0: e(40), t1: 142.3 },
     { type: "fade_out", t0: 142.3, t1: 143.4 },
   ];
+  for (const sc of SCENES2) (sc.shots || []).forEach((sh, i) => {
+    const d = (i + Math.round(sc.t0)) % 2 ? 1 : -1;
+    if (sh.r0 === undefined) sh.r0 = 0.9 * d;
+    if (sh.r1 === undefined) sh.r1 = -0.5 * d;
+  });
   for (let i = 1; i < SCENES2.length; i++) if (SCENES2[i].type === SCENES2[i - 1].type) throw new Error("adjacent scenes share a type at " + SCENES2[i].t0);
   // every B/C row set must spell the lyric exactly
   for (const sc of SCENES2) for (const [id, sp] of Object.entries(sc.text || {}))
