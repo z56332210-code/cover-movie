@@ -12,7 +12,8 @@ const sease = (k) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(k));
 // ---------------------------------------------------------------- shot = layered crop of the art with a slow Ken Burns move
 const FULL = { x: 0, y: 0, w: W, h: H };
 function cropAt(shot, t, vp = FULL) {
-  const k = 1 - Math.pow(1 - clamp((t - shot.t0) / (shot.t1 - shot.t0)), 2.6);   // fastest at the cut, decelerating
+  const u0 = clamp((t - shot.t0) / (shot.t1 - shot.t0));
+  const k = shot.ease === "inout" ? u0 * u0 * (3 - 2 * u0) : 1 - Math.pow(1 - u0, 2.6);   // default: fastest at the cut, decelerating
   const c = shot.c0.map((v, i) => lerp(v, shot.c1[i], k));
   const w = c[2], h = w * vp.h / vp.w, s = vp.w / w;
   // x0/y0 are expressed so that screen = (stage - x0) * s works inside the viewport
@@ -155,7 +156,22 @@ function drawLayers(ctx, shot, cr, t) {
     let sharp = shot.focus === "pull" ? sease((t - shot.t0 - 0.15) / 1.1) : shot.focus === "soft" ? 0 : shot.focus === "half" ? 0.3 : 1;
     if (shot.rack) sharp *= 1 - shot.rack * (0.5 + 0.5 * Math.sin(2 * Math.PI * (t - shot.t0) / 3.7 - Math.PI / 2));   // slow focus breathing
     if (sharp < 1) { ctx.globalAlpha = (L.alpha ?? 1) * (1 - sharp * 0.999); ctx.drawImage(C.blur, 0, 0, C.w, C.h); }
+    if (L.echo && !MASK) {                                                       // afterimages spreading apart
+      const e = L.echo(t);
+      for (const sgn of [-1, 1]) if (e > 0) { ctx.globalAlpha = 0.22 * (1 - e); ctx.drawImage(C.mono, sgn * 260 * e, -40 * e); }
+    }
     if (sharp > 0) { ctx.globalAlpha = (L.alpha ?? 1) * sharp; ctx.drawImage(C.mono, 0, 0); }
+    if (L.dissolve && !MASK) {                                                   // light particles lifting off the figure
+      const d = L.dissolve(t);
+      if (d > 0) { ctx.save(); ctx.globalCompositeOperation = "screen";
+        C.pts.forEach(([x, y], i) => {
+          const dl = hash(i * 3 + 1) * 0.55, q = clamp((d - dl) / 0.45); if (q <= 0 || q >= 1) return;
+          const qx = x + (hash(i * 5) - 0.5) * 380 * q + Math.sin(q * 6 + i) * 30 * q, qy = y - (260 + hash(i * 7) * 520) * q * q;
+          const r = 10 + hash(i * 11) * 22; ctx.globalAlpha = Math.sin(q * Math.PI) * 0.85;
+          ctx.drawImage(A2.dot, qx - r, qy - r, r * 2, r * 2);
+        });
+        ctx.restore(); }
+    }
     if (L.color) { ctx.globalAlpha = (L.alpha ?? 1) * L.color(t); ctx.drawImage(C.color, 0, 0); }    // colour returns (final merge)
     if (shot.keyLight) { ctx.globalAlpha = 0.5 * (L.alpha ?? 1); ctx.drawImage(C.rim, 0, 0); }       // rim light from behind, upper left
     if (MASK) {                                                                                      // measurement pass
@@ -181,7 +197,14 @@ function eyeRects(shot, t) { // screen-space eye boxes, used by the face-safety 
 const R = {};
 const shotAt = (sc, t) => sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
 R.hud_portrait = (ctx, sc, t) => { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; };
-R.giant_type = R.hud_portrait;
+R.giant_type = (ctx, sc, t) => {
+  const sh = shotAt(sc, t), cr = drawShot(ctx, sh, t);
+  if (sc.pulse !== undefined && t >= sc.pulse) {
+    const u = t - sc.pulse, a = Math.exp(-u * 1.6) * (1 - Math.exp(-u * 30)), hx = (1000 - cr.x0) * cr.s, hy = (1500 - cr.y0) * cr.s, r = 260 + 900 * (1 - Math.exp(-u * 2));
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.8 * a; ctx.drawImage(A2.dot, hx - r, hy - r, r * 2, r * 2); ctx.restore();
+  }
+  return { drift: cr.k * 40 };
+};
 R.blur_focus_pull = R.hud_portrait;
 R.hud_two_shot = R.hud_portrait;
 R.letterbox_closeup = (ctx, sc, t) => {
@@ -262,8 +285,11 @@ R.filmstrip = (ctx, sc, t) => {
   ctx.fillStyle = "#1b1b1c"; ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = "#222224"; for (let y = 0; y < H; y += 36) for (let x = (y / 36) % 2 ? 36 : 0; x < W; x += 72) ctx.fillRect(x, y, 36, 36);
   ctx.strokeStyle = "rgba(220,220,216,0.35)"; ctx.lineWidth = 1.3;
-  ctx.beginPath(); ctx.arc(960 + 20 * Math.sin(u * 0.3), 540, 470, 0, Math.PI * 2); ctx.stroke();
-  ctx.beginPath(); ctx.arc(960, 540, 640 + 8 * u, 0, Math.PI * 2); ctx.stroke();
+  for (const [r, seed, dash] of [[470, 600, null], [640 + 8 * u, 700, [8, 12]]]) {
+    const pts = []; for (let i = 0; i <= 90; i++) { const an = i / 90 * Math.PI * 2 + u * 0.15 * (seed === 600 ? 1 : -1); pts.push([960 + Math.cos(an) * r, 540 + Math.sin(an) * r]); }
+    if (dash) ctx.setLineDash(dash); wobblyPath(ctx, pts, t, seed); ctx.setLineDash([]);
+    for (let k = 0; k < 24; k++) { const an = k / 24 * Math.PI * 2 + u * 0.15; ctx.beginPath(); ctx.moveTo(960 + Math.cos(an) * 470, 540 + Math.sin(an) * 470); ctx.lineTo(960 + Math.cos(an) * 484, 540 + Math.sin(an) * 484); ctx.stroke(); }
+  }
   const rows = [[470, 560, 315, 70, sc.crops], [870, 300, 168, -110, sc.crops2]];
   rows.forEach(([cy, pw, ph, speed, crops], ri) => {
     const step = pw + 70, n = Math.ceil(W / step) + 2, off = ((u * speed) % step + step) % step;
@@ -378,7 +404,7 @@ function buildScenes() {
         8: { lvl: "A", layout: "vert", x: 560, ink: "dark", y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
     // ---- title card: shadows on concrete, full frame opens
-    { type: "title_card_shadow", t0: 20.0, t1: 34.14, tin: "blur", titleAt: snapOnset(23.75, 0.3), lightOverlay: true },
+    { type: "title_card_shadow", t0: 20.0, t1: 34.14, geo: true, tin: "blur", titleAt: snapOnset(23.75, 0.3), lightOverlay: true },
     // ---- verse 2: HUD portrait, crops cut every ~5 s
     { type: "hud_portrait", t0: 34.14, t1: s(13), tin: "cut",
       shots: [
@@ -421,8 +447,8 @@ function buildScenes() {
         { t0: s(21), t1: s(22), tin: "cut", layers: [N()], c0: [1150, 1350, 2300], c1: [1100, 1290, 2060] },
       ],
       text: {
-        20: { lvl: "B", x: 0, y: 500, rot: -5, size: 0.31 * H, weight: 300, red: "愛",
-              rows: [{ t: "嗚呼", y: 300, scale: 0.55 }, { t: "人類最後に", x: 330, y: 300 }, { t: "愛を持ったって", x: 1190, y: 560 }] },
+        20: { lvl: "B", x: 0, y: 560, rot: -5, size: 0.3 * H, weight: 300, red: "愛",
+              rows: [{ t: "嗚呼", y: 300, scale: 0.55 }, { t: "人類最後に", x: 330, y: 300 }, { t: "愛を持ったって", x: 900, y: 520 }] },
         21: { lvl: "B", x: -40, y: 470, rot: -7, size: 0.32 * H, weight: 300,
               rows: [{ t: "僕に居場所は", y: 300 }, { t: "ないでしょうか", x: 760, y: 540 }] },
       } },
@@ -445,7 +471,7 @@ function buildScenes() {
       shots: [{ t0: s(25), t1: 82.54, layers: [P()], c0: [930, 1250, 1900], c1: [930, 1250, 2150], focus: "half", shadow: false }],
       text: { 25: { lvl: "A", layout: "line", x: 960, y: 900, size: 30 } } },
     // ---- credits on the wall, then white over-exposure with a short glitch
-    { type: "white_flash_glitch", t0: 82.54, t1: s(26), tin: "cut", lightOverlay: true },
+    { type: "white_flash_glitch", t0: 82.54, t1: s(26), geo: true, tin: "cut", lightOverlay: true },
     // ---- accent 2: sunset (orange only here)
     { type: "sunset_letterbox", t0: s(26), t1: s(28), tin: "flash", accent: 2, hud: false, lightOverlay: false,
       shots: [{ t0: s(26), t1: s(28), layers: [P()], c0: [1000, 1500, 2700], c1: [980, 1440, 2450], r0: -0.5, r1: 0.5 }],
@@ -491,24 +517,27 @@ function buildScenes() {
     { type: "full_body_whiteout", t0: s(36), t1: e(36), tin: "cut",
       shots: [{ t0: s(36), t1: e(36), layers: [P()], c0: [1065, 1950, 5600], c1: [1065, 1900, 5000] }],
       text: { 36: { lvl: "A", layout: "vert", x: 1400, ink: "dark", y: 260, size: 30, gap: 1.3, cols: ["こうやって", "アイは終わった"] } } },
-    { type: "white_soft", t0: e(36), t1: s(37), tin: "blur", lightOverlay: false, hud: false },
+    { type: "white_soft", t0: e(36), t1: s(37), geo: true, tin: "blur", lightOverlay: false, hud: false },
     // ---- outro
     { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
       text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
     { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
       shots: [
         { t0: s(38), t1: s(39), layers: [P({ ox: -560 }), N({ ox: 640 })], c0: [1080, 1250, 3400], c1: [1080, 1200, 3100] },
-        { t0: s(39), t1: s(40), tin: "cut", layers: [P({ ox: -520, ox1: -260 }), N({ ox: 600, ox1: 300 })], c0: [1080, 1150, 3000], c1: [1080, 1100, 2700] },
+        { t0: s(39), t1: s(40), tin: "cut", ease: "inout", layers: [P({ ox: -520, ox1: 0 }), N({ ox: 600, ox1: 0, alpha: (t) => 1 - 0.35 * sease((t - s(39)) / (s(40) - s(39))) })], c0: [1080, 1150, 3000], c1: [1000, 1120, 2500] },
       ],
       text: {
         38: { lvl: "A", layout: "vert", x: 1000, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
-        39: { lvl: "A", layout: "vert", x: 1000, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
+        39: { lvl: "A", layout: "vert", x: 1700, ink: "dark", y: 250, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
       } },
     // ---- one: the nurse dissolves into the patient, colour returns
     { type: "giant_type", t0: s(40), t1: e(40), tin: "flash",
-      shots: [{ t0: s(40), t1: e(40), layers: [N({ alpha: (t) => 0.5 * (1 - sease((t - s(40)) / 1.6)) }), P({ color: (t) => 0.55 * sease((t - s(40) - 0.4) / 2.0) })], c0: [1000, 1250, 2600], c1: [960, 1180, 2300] }],
-      text: { 40: { lvl: "B", x: 10, y: 560, rot: -5, size: 0.3 * H, weight: 300, rows: [{ t: "今この世界と", y: 300 }, { t: "一つになった。", x: 700, y: 560 }] } } },
-    { type: "title_card_shadow", t0: e(40), t1: 142.3, tin: "blur", merge: true, titleAt: e(40) + 0.4, credits: true, lightOverlay: true },
+      pulse: s(40) + 0.15,
+      shots: [{ t0: s(40), t1: e(40), layers: [
+        N({ alpha: (t) => 0.65 * (1 - sease((t - s(40)) / 0.9)), echo: (t) => clamp((t - s(40)) / 1.4), dissolve: (t) => clamp((t - s(40)) / 2.0) }),
+        P({ color: (t) => 0.55 * sease((t - s(40) - 0.5) / 1.8) })], c0: [1000, 1120, 2500], c1: [940, 1080, 2200] }],
+      text: { 40: { lvl: "B", x: 10, y: 640, rot: -5, size: 0.3 * H, weight: 300, rows: [{ t: "今この世界と", y: 300 }, { t: "一つになった。", x: 700, y: 560 }] } } },
+    { type: "title_card_shadow", t0: e(40), t1: 142.3, geo: true, tin: "blur", merge: true, titleAt: e(40) + 0.4, credits: true, lightOverlay: true },
     { type: "fade_out", t0: 142.3, t1: 143.4, tin: "black", hud: false },
   ];
   for (const sc of SCENES2) {
@@ -662,6 +691,7 @@ function composeFrame(t, measure = false) {
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0);
   ctx.globalAlpha = sc.vignette ?? 0.8; ctx.drawImage(A2.vignette, 0, 0, W, H); ctx.globalAlpha = 1;
   post(ctx, t);
+  if (sc.geo) drawGeo(ctx, t, 1, info.drift || 0, info.hudDark);
   if (sc.hud !== false && info.hud !== false && R[sc.type]) drawHUD2(ctx, t, 1, info.drift || 0, info.hudDark);
   drawBars(ctx, info.bars || 0);
   if (sc.type === "fade_out") { ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H); }

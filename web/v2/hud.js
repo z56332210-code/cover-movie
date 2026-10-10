@@ -46,12 +46,37 @@ function drawHUD2(ctx, t, a, drift, dark) {
   ctx.font = "300 11px UI"; ctx.fillStyle = `rgba(${C},${0.45 * a})`;
   DUMMY.forEach((s, i) => ctx.fillText(s, x0 + 28, 918 + i * 17));
   ctx.restore();
-  // thin crossing lines / arcs over the picture (slow drift with the camera)
-  ctx.save(); ctx.strokeStyle = `rgba(${C},${0.5 * a})`; ctx.lineWidth = 1.4;
-  const d = drift || 0;
-  ctx.beginPath(); ctx.moveTo(-40, 300 + d * 0.6); ctx.bezierCurveTo(500, 160 + d, 1100, 80 + d, 1960, -40 + d * 0.4); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(-40, 1000 - d * 0.3); ctx.bezierCurveTo(700, 820, 1400, 760 - d, 1960, 640 - d * 0.5); ctx.stroke();
-  ctx.beginPath(); ctx.arc(1500 + d, 1300, 980, Math.PI * 1.08, Math.PI * 1.62); ctx.stroke();
+}
+// Geometric layer over the picture: thin lines and circles that boil like drawn-on paper (12 fps jitter)
+// and slowly rotate. Used only in quiet sections (interludes, title/credits cards).
+function boil(t, k, amp = 1.6) { const f = Math.floor(t * 12); return (hash2(f, k) - 0.5) * 2 * amp; }
+function wobblyPath(ctx, pts, t, seed) {
+  ctx.beginPath();
+  pts.forEach(([x, y], i) => { const nx = x + boil(t, seed + i * 2), ny = y + boil(t, seed + i * 2 + 1); i ? ctx.lineTo(nx, ny) : ctx.moveTo(nx, ny); });
+  ctx.stroke();
+}
+function sampleBezier(p0, p1, p2, p3, n = 24) {
+  const o = []; for (let i = 0; i <= n; i++) { const u = i / n, v = 1 - u;
+    o.push([v * v * v * p0[0] + 3 * v * v * u * p1[0] + 3 * v * u * u * p2[0] + u * u * u * p3[0], v * v * v * p0[1] + 3 * v * v * u * p1[1] + 3 * v * u * u * p2[1] + u * u * u * p3[1]]); }
+  return o;
+}
+function drawGeo(ctx, t, a, drift, dark) {
+  if (a <= 0) return;
+  const C = dark ? "40,40,42" : "240,240,236", d = drift || 0;
+  ctx.save(); ctx.strokeStyle = `rgba(${C},${0.5 * a})`; ctx.fillStyle = `rgba(${C},${0.55 * a})`; ctx.lineWidth = 1.4; ctx.lineJoin = "round";
+  wobblyPath(ctx, sampleBezier([-40, 300 + d * 0.6], [500, 160 + d], [1100, 80 + d], [1960, -40 + d * 0.4]), t, 100);
+  wobblyPath(ctx, sampleBezier([-40, 1000 - d * 0.3], [700, 820], [1400, 760 - d], [1960, 640 - d * 0.5]), t, 200);
+  // rotating circles: a large arc with tick marks and a small dashed ring
+  const rot = t * 0.12;
+  const ring = (cx, cy, r, a0, a1, seed, ticks) => {
+    const pts = []; for (let i = 0; i <= 64; i++) { const an = a0 + (a1 - a0) * i / 64 + rot; pts.push([cx + Math.cos(an) * r, cy + Math.sin(an) * r]); }
+    wobblyPath(ctx, pts, t, seed);
+    for (let k = 0; k < ticks; k++) { const an = rot * 1.6 + k * Math.PI * 2 / ticks; const x = cx + Math.cos(an) * r, y = cy + Math.sin(an) * r;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(cx + Math.cos(an) * (r + 12), cy + Math.sin(an) * (r + 12)); ctx.stroke(); }
+  };
+  ring(1500 + d, 1300, 980, Math.PI * 1.08, Math.PI * 1.62, 300, 0);
+  ctx.setLineDash([6, 10]); ring(380, 300, 210, 0, Math.PI * 2, 400, 0); ctx.setLineDash([]);
+  ring(380, 300, 250, 0, Math.PI * 1.3, 500, 12);
   ctx.restore();
 }
 

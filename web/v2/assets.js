@@ -32,7 +32,11 @@ async function loadAssets2() {
     // crisper cast shadow for the title card (silhouette, small blur), half resolution, baked once
     const ss = cnv(1080, 1920), sx2 = ss.getContext("2d"); sx2.filter = "blur(5px)"; sx2.drawImage(sil, 0, 0, 1080, 1920);
     sx2.filter = "none"; sx2.globalCompositeOperation = "source-in"; sx2.fillStyle = "#0a0a0c"; sx2.fillRect(0, 0, 1080, 1920);
-    A2.ch[n] = { mono, blur, shadow, color, rim, sil, shadowSharp: ss, w: 2160, h: 3840 };
+    // points inside the silhouette (stage px), for the particle dissolve
+    const pc = cnv(270, 480), px = pc.getContext("2d", { willReadFrequently: true }); px.drawImage(sil, 0, 0, 270, 480);
+    const pd = px.getImageData(0, 0, 270, 480).data, pts = [], r = rng(n === "nurse" ? 77 : 78);
+    while (pts.length < 520) { const x = r() * 270 | 0, y = r() * 480 | 0; if (pd[(y * 270 + x) * 4 + 3] > 160) pts.push([x * 8 + r() * 8, y * 8 + r() * 8]); }
+    A2.ch[n] = { mono, blur, shadow, color, rim, sil, shadowSharp: ss, pts, w: 2160, h: 3840 };
   }
   A2.wall = await img("img/v2/concrete.png");
   A2.wallBlur = await img("img/v2/concrete_blur.png");
