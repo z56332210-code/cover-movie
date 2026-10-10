@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "preview": "node tools/render.mjs --preview",
-    "stills": "node tools/render.mjs --preview --stills",
-    "bench": "node tools/render.mjs --bench chorus2",
-    "render": "node tools/render.mjs"
+    "render": "node tools/render.mjs --final",
+    "bench": "node tools/render.mjs --final --bench chorus2",
+    "preview": "node tools/render.mjs --fps 30",
+    "stills": "node tools/render.mjs --stills",
+    "check": "node tools/render.mjs --textcheck"
   },
   "dependencies": {
     "playwright": "1.56.1"
