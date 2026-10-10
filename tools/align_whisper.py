@@ -58,6 +58,14 @@ for k, o in enumerate(out):
         nxt_s = next((out[j]["start"] for j in range(k + 1, len(out)) if out[j]["start"] is not None and out[j]["cover"] >= 0.3), prev_e + 3)
         o["start"], o["end"], o["flag"] = prev_e + 0.1, nxt_s - 0.1, "interpolated"
 
+# snap starts to the measured 16th-note grid when Whisper is close to it
+A = json.load(open("data/analysis.json")); bt = np.array(A["beats"])
+grid = np.sort(np.concatenate([bt] + [bt[:-1] + (bt[1:] - bt[:-1]) * q for q in (0.25, 0.5, 0.75)]))
+for o in out:
+    g = grid[np.argmin(np.abs(grid - o["start"]))]
+    if abs(g - o["start"]) < 0.12: o["start"] = float(g)
+    o["start"] = max(0.0, o["start"])
+
 # display windows: no overlap, min 0.4 s, hold short gaps
 for k, o in enumerate(out):
     nxt = out[k + 1]["start"] if k + 1 < len(out) else 143.0
