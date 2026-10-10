@@ -53,7 +53,7 @@ async function loadAssets2() {
   A2.blinds = bl;
   // window-blind light: 6 soft bright bars, period 1500 px so it can scroll seamlessly; blur ~60 px, baked once
   const SP = cnv(3000, 3000), sx = SP.getContext("2d"); sx.fillStyle = "#000"; sx.fillRect(0, 0, 3000, 3000);
-  sx.filter = "blur(60px)";
+  sx.filter = "blur(80px)";
   A2.stripes = [[120, 150, 1], [380, 90, 0.75], [560, 200, 0.95], [860, 70, 0.6], [1050, 160, 0.9], [1290, 110, 0.7]];
   for (const off of [0, 1500]) for (const [c, w, b] of A2.stripes) { sx.fillStyle = `rgba(255,255,250,${b})`; sx.fillRect(c + off - w / 2, -200, w, 3400); }
   A2.stripeTex = SP;

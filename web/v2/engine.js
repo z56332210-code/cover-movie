@@ -286,12 +286,12 @@ function charT2(i, k) { const c = L2(i).chars; return c[Math.min(k, c.length - 1
 const sceneAt = (t) => SCENES2.find((s) => t >= s.t0 && t < s.t1) || SCENES2[SCENES2.length - 1];
 
 // ---------------------------------------------------------------- frame
-let CV2, CX2, PX2 = 1, GRAIN = 0.12, FLICKER = 0.12;
+let CV2, CX2, PX2 = 1, GRAIN = 0.07, FLICKER = 0.05;
 function post(ctx, t) {
   // film grain: ~2 px clumps, new random offset every frame (part of the look in preview and final)
   const fr = Math.floor(t * 30), tile = A2.grain[fr % A2.grain.length];
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = GRAIN;
-  ctx.translate(-hash(fr) * 512, -hash(fr + 9) * 512); ctx.scale(2, 2);
+  ctx.translate(-hash(fr) * 256, -hash(fr + 9) * 256);
   ctx.fillStyle = ctx.createPattern(tile, "repeat"); ctx.fillRect(0, 0, W, H); ctx.restore();
   if (!POST) return;
   // low-contrast bloom: tiny downscale, screen back
@@ -392,7 +392,7 @@ function composeFrame(t, measure = false) {
   }
   // brightness breathing +-3 % (0.3 Hz) and +-1.5 % per-frame flicker on the picture
   // light flicker stepped at 15 fps like the reference (its picture mean jumps ~+-10 % between frames)
-  const f = 0.03 * Math.sin(2 * Math.PI * 0.3 * t) + FLICKER * (hash(Math.floor(t * 15) + 77) - 0.5) * 2;
+  const f = 0.02 * Math.sin(2 * Math.PI * 0.3 * t) + FLICKER * (hash(Math.floor(t * 15) + 77) - 0.5) * 2;
   ctx.fillStyle = f > 0 ? `rgba(255,255,255,${f})` : `rgba(0,0,0,${-f})`; ctx.fillRect(0, 0, W, H);
   // lyrics ride the camera at 40 % (parallax), never cut by transitions
   ctx.save(); ctx.translate(cam.dx * 0.4, cam.dy * 0.4);

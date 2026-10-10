@@ -58,19 +58,24 @@ def backlight(alpha, bbox):
     G = 0.33 - 0.19 * d
     A = alpha / 255.0; k = 4
     sh = np.zeros_like(A); sh[k:, k:] = A[:-k, :-k]
-    rim = np.clip(A - sh, 0, 1) * (1 - 0.7 * d)
-    return G.astype(np.float32), rim.astype(np.float32)
+    rim = np.clip(A - sh, 0, 1) * (1 - 0.75 * d) ** 1.5      # fades out smoothly toward the dark side
+    return G.astype(np.float32), rim.astype(np.float32), d
 
 for name in ("patient", "nurse"):
     src = Image.open(f"assets/character/{name}.png").convert("RGBA")
     src.save(f"{OUT}/{name}_color.png", optimize=True)
     m = desat(src); m.save(f"{OUT}/{name}_flat.png", optimize=True)                    # untouched (for reference / colour return)
-    G, rim = backlight(np.asarray(src.getchannel("A"), np.float32), src.getchannel("A").getbbox())
+    G, rim, d = backlight(np.asarray(src.getchannel("A"), np.float32), src.getchannel("A").getbbox())
     if name == "nurse": G = G * 0.8                                                     # brighter costume -> a bit more backlight falloff
     lit = (np.asarray(m.convert("RGB"), np.float32) * G[..., None]).clip(0, 255).astype(np.uint8)
     Lm = Image.fromarray(lit); Lm.putalpha(src.getchannel("A")); Lm.save(f"{OUT}/{name}_mono.png", optimize=True)   # flat x backlight multiply
     Lm.resize((1080, 1920), Image.LANCZOS).filter(ImageFilter.GaussianBlur(10)).save(f"{OUT}/{name}_blur.png", optimize=True)
-    rimA = Image.fromarray((np.clip(rim, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    # rim: crisp core where the light is strong, a little blur so its fading end melts into the figure
+    core = Image.fromarray((np.clip(rim, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    soft = Image.fromarray((np.clip(rim * 1.6, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(5))
+    wsoft = np.clip(d * 1.6, 0, 1)                                      # more blur where the rim fades into shadow
+    mix = np.asarray(core, np.float32) * (1 - wsoft) + np.asarray(soft, np.float32) * wsoft * 0.85
+    rimA = Image.fromarray(mix.clip(0, 255).astype(np.uint8))
     rimimg = Image.new("RGBA", src.size, (245, 245, 240, 0)); rimimg.putalpha(rimA); rimimg.save(f"{OUT}/{name}_rim.png", optimize=True)
     a = src.getchannel("A").resize((1080, 1920), Image.LANCZOS).filter(ImageFilter.GaussianBlur(40))           # soft, wide shadow
     sh = Image.new("RGBA", a.size, (8, 8, 10, 0)); sh.putalpha(a); sh.save(f"{OUT}/{name}_shadow.png", optimize=True)
