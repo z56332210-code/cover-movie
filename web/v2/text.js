@@ -15,7 +15,7 @@ function glyphAlpha(line, i, t, enterDur = 0.28) {
 function drawGlyph(ctx, ch, x, y, size, weight, color, a, blur, rot = 0, shade = 0) {
   if (a <= 0.003) return;
   ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot);
-  if (shade) { ctx.shadowColor = `rgba(0,0,0,${(shade * a).toFixed(3)})`; ctx.shadowBlur = size * 0.06; }
+  if (shade) { ctx.shadowColor = `rgba(0,0,0,${(shade * a).toFixed(3)})`; ctx.shadowBlur = Math.max(6, size * 0.06); }
   ctx.font = `${weight} ${size}px LyricMincho`;
   if (POST && blur > 0.4) ctx.filter = `blur(${(blur * size / 120).toFixed(1)}px)`;
   ctx.fillStyle = color.replace("A", a.toFixed(3)); ctx.fillText(ch, 0, 0);
@@ -37,7 +37,7 @@ function drawA(ctx, spec, line, t) {
         [...col].forEach((ch, k) => {
           const g = glyphAlpha(line, i, t); let dx = 0, dy = 0;
           if (SMALL_K.has(ch)) { dx = size * 0.1; dy = -size * 0.1; }
-          drawGlyph(ctx, ch, -ci * size * 1.5 + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0);
+          drawGlyph(ctx, ch, -ci * size * 1.5 + dx, k * size * 1.12 + dy, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, VROT.has(ch) ? Math.PI / 2 : 0, 0.7);
           i++;
         });
       });
@@ -45,7 +45,7 @@ function drawA(ctx, spec, line, t) {
       ctx.font = `${w} ${size}px LyricMincho`; const track = size * 0.08;
       const widths = chars.map((c) => ctx.measureText(c).width + track), total = widths.reduce((s, v) => s + v, 0);
       let x = spec.align === "left" ? 0 : spec.align === "right" ? -total : -total / 2;
-      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t); drawGlyph(ctx, ch, x + widths[i] / 2, 0, size, w, colorOf(spec, ch, i), g.a * amul, g.blur); x += widths[i]; });
+      chars.forEach((ch, i) => { const g = glyphAlpha(line, i, t); drawGlyph(ctx, ch, x + widths[i] / 2, 0, size, w, colorOf(spec, ch, i), g.a * amul, g.blur, 0, 0.7); x += widths[i]; });
     }
     ctx.restore();
   };

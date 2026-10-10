@@ -10,17 +10,43 @@ const KP = {
 const sease = (k) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(k));
 
 // ---------------------------------------------------------------- shot = layered crop of the art with a slow Ken Burns move
-function cropAt(shot, t) {
+const FULL = { x: 0, y: 0, w: W, h: H };
+function cropAt(shot, t, vp = FULL) {
   const k = sease((t - shot.t0) / (shot.t1 - shot.t0));
   const c = shot.c0.map((v, i) => lerp(v, shot.c1[i], k));
-  const w = c[2], h = w * 9 / 16;
-  return { x0: c[0] - w / 2, y0: c[1] - h / 2, w, h, s: W / w, k, rot: lerp(shot.r0 || 0, shot.r1 || 0, k) * Math.PI / 180 };
+  const w = c[2], h = w * vp.h / vp.w, s = vp.w / w;
+  // x0/y0 are expressed so that screen = (stage - x0) * s works inside the viewport
+  return { x0: c[0] - w / 2 - vp.x / s, y0: c[1] - h / 2 - vp.y / s, w, h, s, k, vp, rot: lerp(shot.r0 || 0, shot.r1 || 0, k) * Math.PI / 180 };
 }
-function roll(ctx, cr) { ctx.translate(W / 2, H / 2); ctx.rotate(cr.rot); ctx.translate(-W / 2, -H / 2); }
-function drawWall(ctx, shot, cr, opts) {
+function roll(ctx, cr) { const v = cr.vp || FULL, cx = v.x + v.w / 2, cy = v.y + v.h / 2; ctx.translate(cx, cy); ctx.rotate(cr.rot); ctx.translate(-cx, -cy); }
+function drawShot(ctx, shot, t, vp = FULL) {
+  const cr = cropAt(shot, t, vp);
+  ctx.save();
+  if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
+  roll(ctx, cr);
+  drawWall(ctx, shot, cr); drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
+  if (shot.thread) drawThread2(ctx, shot, cr, t);
+  ctx.restore();
+  return cr;
+}
+// thin red thread (kept from the demo): drawn progressively along the IV line on 赤い糸
+function drawThread2(ctx, shot, cr, t) {
+  const th = shot.thread, k = clamp((t - th.t0) / (th.t1 - th.t0));
+  if (k <= 0) return;
+  ctx.save(); ctx.scale(cr.s, cr.s); ctx.translate(-cr.x0, -cr.y0);
+  ctx.strokeStyle = "rgba(179,18,43,0.9)"; ctx.lineWidth = 2.2 / cr.s * 1.4; ctx.lineCap = "round";
+  ctx.beginPath(); const N = 60;
+  for (let i = 0; i <= N * k; i++) {
+    const u = i / N, x = (1 - u) ** 3 * th.p[0][0] + 3 * u * (1 - u) ** 2 * th.p[1][0] + 3 * u * u * (1 - u) * th.p[2][0] + u ** 3 * th.p[3][0];
+    const y = (1 - u) ** 3 * th.p[0][1] + 3 * u * (1 - u) ** 2 * th.p[1][1] + 3 * u * u * (1 - u) * th.p[2][1] + u ** 3 * th.p[3][1];
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function drawWall(ctx, shot, cr) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
-  ctx.fillStyle = shot.dark ? "#6a6c6d" : "#8a8c8d"; ctx.fillRect(0, 0, W, H);       // wall_gray token
+  ctx.fillStyle = shot.dark ? "#6a6c6d" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
 }
@@ -59,15 +85,21 @@ function eyeRects(shot, t) { // screen-space eye boxes, used by the face-safety 
 
 // ---------------------------------------------------------------- scene renderers by type
 const R = {};
-R.hud_portrait = (ctx, sc, t) => {
-  const shot = sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
-  const cr = cropAt(shot, t);
-  ctx.save(); roll(ctx, cr);
-  drawWall(ctx, shot, cr); drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
-  ctx.restore();
-  return { drift: cr.k * 40 };
-};
+const shotAt = (sc, t) => sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
+R.hud_portrait = (ctx, sc, t) => { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; };
 R.giant_type = R.hud_portrait;
+R.letterbox_closeup = (ctx, sc, t) => { drawShot(ctx, shotAt(sc, t), t); return { bars: 78 }; };
+// left/right split: the right panel pushes in and shoves the left image aside
+R.split_slide = (ctx, sc, t) => {
+  const [left, right] = sc.shots, k = sease((t - sc.slideAt) / 0.7), div = lerp(W, W / 2, k);
+  drawShot(ctx, left, t, { x: div - W, y: 0, w: W, h: H });
+  ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = "rgba(255,255,255,0.06)"; ctx.fillRect(0, 0, div, H); ctx.restore(); // left a touch brighter
+  if (k > 0) {
+    drawShot(ctx, right, t, { x: div, y: 0, w: W / 2, h: H });
+    ctx.fillStyle = "rgba(236,236,232,0.7)"; ctx.fillRect(div - 1, 0, 2, H);
+  }
+  return { bars: 78 };
+};
 R.red_burst = (ctx, sc, t) => {
   const shot = sc.shots[0], cr = cropAt(shot, t), k = (t - sc.t0) / (sc.t1 - sc.t0);
   ctx.fillStyle = "#050506"; ctx.fillRect(0, 0, W, H);
@@ -97,8 +129,29 @@ function buildScenes() {
   const s = (i) => L2(i).start, e = (i) => L2(i).end;
   const P = (o = {}) => ({ n: "patient", ...o }), N = (o = {}) => ({ n: "nurse", ...o });
   SCENES2 = [
-    { type: "letterbox_closeup", t0: 0, t1: s(8) },
-    { type: "split_slide", t0: s(8), t1: 20.0 },
+    { type: "letterbox_closeup", t0: 0, t1: s(8), hud: false,
+      shots: [
+        { t0: 0, t1: s(3), layers: [P()], c0: [900, 1490, 1450], c1: [905, 1445, 1300], lightX: -200 },
+        { t0: s(3), t1: s(5), layers: [P()], c0: [870, 1105, 780], c1: [935, 1092, 700], focus: "pull", dof: true },
+        { t0: s(5), t1: s(7), layers: [P()], c0: [1700, 760, 980], c1: [1640, 790, 880], lightX: 500,
+          thread: { t0: s(5), t1: e(5), p: [[1478, 805], [1640, 690], [1820, 1000], [2200, 760]] } },
+        { t0: s(7), t1: s(8), layers: [P()], c0: [895, 845, 720], c1: [900, 835, 620], focus: "pull", dof: true },
+      ],
+      text: {
+        1: { lvl: "A", layout: "vert", x: 1640, y: 230, size: 40, cols: ["僕は", "最上最愛の"] },
+        2: { lvl: "A", layout: "vert", x: 1660, y: 220, size: 38, cols: ["この世界に", "産み落とされた", "モンスター"] },
+        3: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
+        4: { lvl: "A", layout: "line", x: 960, y: 900, size: 34 },
+        5: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 40, cols: ["赤い糸を", "放ったスパイダー"], red: "糸" },
+        6: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 40, cols: ["予想通り", "絡まるハンター"] },
+        7: { lvl: "A", layout: "vert", x: 1760, y: 250, size: 38, cols: ["どうか", "一生淡々と"] },
+      } },
+    { type: "split_slide", t0: s(8), t1: 20.0, hud: false, slideAt: snapOnset(charT2(8, 13), 0.2),
+      shots: [
+        { t0: s(7), t1: 20.0, layers: [P()], c0: [895, 845, 720], c1: [905, 830, 560], dof: true, r0: -0.6, r1: 0.6 },
+        { t0: s(8), t1: 20.0, layers: [N()], c0: [1042, 840, 600], c1: [1042, 835, 540], dof: true, r0: 0.8, r1: -0.4 },
+      ],
+      text: { 8: { lvl: "A", layout: "vert", x: 175, y: 175, size: 38, cols: ["生きるだけの", "理由をください", "ドクター"] } } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),
       shots: [
@@ -157,6 +210,7 @@ function buildScenes() {
   for (const sc of SCENES2) for (const [id, sp] of Object.entries(sc.text || {}))
     if (sp.lvl === "B" && sp.rows.map((r) => r.t).join("") !== L2(+id).ja) throw new Error(`B rows for ${id} != lyric`);
 }
+function charT2(i, k) { const c = L2(i).chars; return c[Math.min(k, c.length - 1)]; }
 const sceneAt = (t) => SCENES2.find((s) => t >= s.t0 && t < s.t1) || SCENES2[SCENES2.length - 1];
 
 // ---------------------------------------------------------------- frame
@@ -178,7 +232,7 @@ function render2(t) {
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0);
   post(ctx, t);
   if (sc.hud !== false && R[sc.type]) drawHUD2(ctx, t, 1, info.drift || 0);
-  drawBars(ctx);
+  drawBars(ctx, info.bars || 0);
   drawKo(ctx, t);
 }
 async function init2(width = 960, opts = {}) {
@@ -190,5 +244,5 @@ async function init2(width = 960, opts = {}) {
 window.init = init2;
 window.seek = (t) => render2(t);
 window.needsBlur = () => false;
-window.stillTimes = () => [36.3, 66.95, 81.6];
+window.stillTimes = () => [3.6, 8.9, 12.0, 16.2, 18.8, 36.3, 66.95, 81.6];
 window.faceCheck = (times) => times.map((t) => { const sc = sceneAt(t); const sh = sc.shots && (sc.shots.find((s) => t >= s.t0 && t < s.t1)); return sh ? { t, eyes: eyeRects(sh, t) } : { t, eyes: [] }; });
