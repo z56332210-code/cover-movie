@@ -99,7 +99,7 @@ function drawThread2(ctx, shot, cr, t) {
 function drawWall(ctx, shot, cr) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
-  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#76787a" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
+  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#55575a" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
 }
@@ -202,14 +202,14 @@ function buildScenes() {
         { t0: s(8), t1: 20.0, layers: [N()], c0: [1050, 880, 1560], c1: [1042, 868, 1460], keyLight: true, longShadow: true, r0: 0.3, r1: -0.2, fx: ["leak"] },
       ],
       text: {
-        1: { lvl: "A", layout: "vert", x: 1080, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
-        2: { lvl: "A", layout: "vert", x: 1080 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
-        3: { lvl: "A", layout: "vert", x: 1080, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
-        4: { lvl: "A", layout: "vert", x: 1430, y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
-        5: { lvl: "A", layout: "vert", x: 1430, y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
-        6: { lvl: "A", layout: "vert", x: 1225, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
-        7: { lvl: "A", layout: "vert", x: 1225 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
-        8: { lvl: "A", layout: "vert", x: 1480, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
+        1: { lvl: "A", layout: "vert", x: 470, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
+        2: { lvl: "A", layout: "vert", x: 470 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
+        3: { lvl: "A", layout: "vert", x: 470, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
+        4: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
+        5: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
+        6: { lvl: "A", layout: "vert", x: 1560, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
+        7: { lvl: "A", layout: "vert", x: 1560 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
+        8: { lvl: "A", layout: "vert", x: 1590, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
     { type: "hud_portrait", t0: 34.14, t1: s(13),

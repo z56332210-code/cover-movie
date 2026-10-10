@@ -50,8 +50,8 @@ def desat(im, s=0.12):
     L = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
     garment = ((hue > 140) & (hue < 260) & (sat > 0.07)).astype(np.float32)          # jacket, uniform, IV fluid
     garment = np.asarray(Image.fromarray((garment * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5)), np.float32) / 255
-    Lt = 0.06 + 0.64 * L ** 1.3                                                     # low contrast, whites -> ~0.77
-    Lt = Lt * (1 - 0.68 * garment)                                                   # garments near black
+    Lt = 0.04 + 0.80 * L ** 1.15                                                     # low contrast, whites -> ~0.77
+    # garments keep their own value (no extra darkening)
     out = Lt[..., None] + (rgb - L[..., None]) * s * 0.6
     o = Image.fromarray((out.clip(0, 1) * 255).astype(np.uint8)); o.putalpha(im.getchannel("A")); return o
 for name in ("patient", "nurse"):
