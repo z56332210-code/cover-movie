@@ -24,10 +24,12 @@ function drawShot(ctx, shot, t, vp = FULL) {
   ctx.save();
   if (vp !== FULL) { ctx.beginPath(); ctx.rect(vp.x, vp.y, vp.w, vp.h); ctx.clip(); }
   ctx.save(); roll(ctx, cr);
-  drawWall(ctx, shot, cr); if (shot.keyLight) drawKeyLight(ctx, vp); else drawLight(ctx, t, shot); drawLayers(ctx, shot, cr, t);
+  if (MASK) { ctx.fillStyle = "#000"; ctx.fillRect(-200, -200, W + 400, H + 400); }
+  else { drawWall(ctx, shot, cr); if (shot.keyLight) drawKeyLight(ctx, vp); else drawLight(ctx, t, shot); }
+  drawLayers(ctx, shot, cr, t);
   if (shot.thread) drawThread2(ctx, shot, cr, t);
   ctx.restore();
-  for (const f of shot.fx || []) FX[f](ctx, t - shot.t0, vp, shot);   // decoration above the character
+  if (!MASK) for (const f of shot.fx || []) FX[f](ctx, t - shot.t0, vp, shot);   // decoration above the character
   ctx.restore();
   return cr;
 }
@@ -99,13 +101,13 @@ function drawThread2(ctx, shot, cr, t) {
 function drawWall(ctx, shot, cr) {
   const img = shot.dof ? A2.wallBlur : A2.wall;
   const z = 1.0 + 0.06 * cr.k, dx = -180 - 120 * cr.k * (shot.pan || 1), dy = -120;
-  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#55575a" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
+  ctx.fillStyle = shot.dark ? "#5e6061" : shot.keyLight ? "#b4b6b8" : "#8a8c8d"; ctx.fillRect(-100, -100, W + 200, H + 200);       // wall_gray token
   ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.75;
   ctx.drawImage(img, dx, dy, 2400 * z, 1350 * z); ctx.restore();
 }
 function drawKeyLight(ctx, vp) { // soft light from the upper left, opposite side and bottom fall off
   const g = ctx.createLinearGradient(vp.x, vp.y, vp.x + vp.w * 0.9, vp.y + vp.h * 1.4);
-  g.addColorStop(0, "rgba(255,255,250,0.30)"); g.addColorStop(0.45, "rgba(255,255,250,0)"); g.addColorStop(0.46, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.55)");
+  g.addColorStop(0, "rgba(255,255,250,0.30)"); g.addColorStop(0.45, "rgba(255,255,250,0)"); g.addColorStop(0.46, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.38)");
   ctx.save(); ctx.globalCompositeOperation = "soft-light"; ctx.fillStyle = g; ctx.fillRect(vp.x - 200, vp.y - 200, vp.w + 400, vp.h + 400); ctx.restore();
 }
 function drawLight(ctx, t, shot) { // diagonal light sliding across the wall
@@ -121,14 +123,20 @@ function drawLayers(ctx, shot, cr, t) {
     ctx.save(); ctx.translate(ox, oy);
     if (L.mirror) { ctx.translate(C.w, 0); ctx.scale(-1, 1); }
     if (L.flipV) { ctx.translate(0, C.h); ctx.scale(1, -1); }
-    if (shot.shadow !== false) {
-      const [sx, sy, sa] = shot.longShadow ? [260, 150, 0.62] : [110, 50, 0.55];
+    if (shot.shadow !== false && !MASK) {
+      const [sx, sy, sa] = shot.longShadow ? [300, 190, 0.36] : [110, 50, 0.4];
       ctx.globalAlpha = sa * (L.alpha ?? 1); ctx.drawImage(C.shadow, sx, sy, C.w * 1.03, C.h * 1.03);
     }
     // focus: blurred -> sharp (pull) or constant blur
-    const sharp = shot.focus === "pull" ? sease((t - shot.t0 - 0.15) / 1.1) : shot.focus === "soft" ? 0 : shot.focus === "half" ? 0.3 : 1;
+    let sharp = shot.focus === "pull" ? sease((t - shot.t0 - 0.15) / 1.1) : shot.focus === "soft" ? 0 : shot.focus === "half" ? 0.3 : 1;
+    if (shot.rack) sharp *= 1 - shot.rack * (0.5 + 0.5 * Math.sin(2 * Math.PI * (t - shot.t0) / 3.7 - Math.PI / 2));   // slow focus breathing
     if (sharp < 1) { ctx.globalAlpha = (L.alpha ?? 1) * (1 - sharp * 0.999); ctx.drawImage(C.blur, 0, 0, C.w, C.h); }
     if (sharp > 0) { ctx.globalAlpha = (L.alpha ?? 1) * sharp; ctx.drawImage(C.mono, 0, 0); }
+    if (shot.keyLight) { ctx.globalAlpha = 0.5 * (L.alpha ?? 1); ctx.drawImage(C.rim, 0, 0); }       // rim light from behind, upper left
+    if (MASK) {                                                                                      // measurement pass
+      ctx.globalAlpha = 1; ctx.fillStyle = "#000"; ctx.drawImage(C.sil, 0, 0);
+      if (MASK === 2) { const b = KP[L.n].eyeBox; ctx.fillStyle = "#f00"; ctx.fillRect(b[0] - 30, b[1] - 60, b[2] - b[0] + 60, b[3] - b[1] + 260); }
+    }
     ctx.restore();
   }
   ctx.restore();
@@ -149,7 +157,11 @@ const R = {};
 const shotAt = (sc, t) => sc.shots.find((s) => t >= s.t0 && t < s.t1) || sc.shots[sc.shots.length - 1];
 R.hud_portrait = (ctx, sc, t) => { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; };
 R.giant_type = R.hud_portrait;
-R.letterbox_closeup = (ctx, sc, t) => { drawShot(ctx, shotAt(sc, t), t); return { bars: sc.bars ?? 78 }; };
+R.letterbox_closeup = (ctx, sc, t) => {
+  const sh = shotAt(sc, t);
+  if (sh.black) { ctx.fillStyle = "#000"; ctx.fillRect(-100, -100, W + 200, H + 200); return { bars: sc.bars ?? 78, black: true }; }
+  drawShot(ctx, sh, t); return { bars: sc.bars ?? 78 };
+};
 // left/right split: the right panel pushes in and shoves the left image aside
 R.split_slide = (ctx, sc, t) => {
   const [left, right] = sc.shots, k = sease((t - sc.slideAt) / 0.7), div = lerp(W, W / 2, k);
@@ -190,25 +202,26 @@ function buildScenes() {
   const s = (i) => L2(i).start, e = (i) => L2(i).end;
   const P = (o = {}) => ({ n: "patient", ...o }), N = (o = {}) => ({ n: "nurse", ...o });
   SCENES2 = [
-    { type: "letterbox_closeup", t0: 0, t1: 20.0, hud: false, bars: 264, vignette: 0.55,
+    { type: "letterbox_closeup", t0: 0, t1: 20.0, hud: false, bars: 264, vignette: 0.55, lightOverlay: true,
       shots: [
+        { t0: 0, t1: 2.4, black: true, layers: [], c0: [0, 0, 1], c1: [0, 0, 1] },
         // upper body centre (garment + crossed arms), wall on both sides
-        { t0: 0, t1: s(4), layers: [P()], c0: [1080, 1440, 2500], c1: [1060, 1410, 2340], keyLight: true, longShadow: true, r0: -0.4, r1: 0.3, fx: ["dust"] },
-        // face, eyes visible, room on the right for the lyric
-        { t0: s(4), t1: s(6), layers: [P()], c0: [920, 880, 1560], c1: [910, 868, 1440], keyLight: true, longShadow: true, r0: 0.3, r1: -0.3, fx: ["leak"] },
+        { t0: 2.4, t1: 7.3, tin: "bleed", layers: [P()], c0: [1150, 1480, 2560], c1: [1000, 1400, 2260], keyLight: true, longShadow: true, r0: -0.8, r1: 0.6, focus: "pull", rack: 0.15 },
+        // face, eyes visible
+        { t0: 7.3, t1: 12.3, tin: "bleed", layers: [P()], c0: [990, 900, 1640], c1: [880, 860, 1400], keyLight: true, longShadow: true, r0: 0.7, r1: -0.7, focus: "pull", rack: 0.15 },
         // second figure: chest and the clipboard held in both hands
-        { t0: s(6), t1: s(8), layers: [N()], c0: [1240, 1560, 2050], c1: [1260, 1530, 1900], keyLight: true, longShadow: true, r0: -0.3, r1: 0.3, fx: ["dust"] },
-        // second figure: face
-        { t0: s(8), t1: 20.0, layers: [N()], c0: [1050, 880, 1560], c1: [1042, 868, 1460], keyLight: true, longShadow: true, r0: 0.3, r1: -0.2, fx: ["leak"] },
+        { t0: 12.3, t1: 17.0, tin: "bleed", layers: [N()], c0: [1160, 1600, 2120], c1: [1300, 1520, 1840], keyLight: true, longShadow: true, r0: -0.7, r1: 0.7, focus: "pull", rack: 0.15 },
+        // second figure: face (whip pan in)
+        { t0: 17.0, t1: 20.0, tin: "whip", layers: [N()], c0: [1110, 890, 1600], c1: [1010, 860, 1420], keyLight: true, longShadow: true, r0: 0.7, r1: -0.5, focus: "pull", rack: 0.15 },
       ],
       text: {
-        1: { lvl: "A", layout: "vert", x: 470, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
-        2: { lvl: "A", layout: "vert", x: 470 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
-        3: { lvl: "A", layout: "vert", x: 470, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
+        1: { lvl: "A", layout: "vert", x: 1010, y: 345, size: 29, cols: ["僕は最上最愛の"], holdUntil: 2 },
+        2: { lvl: "A", layout: "vert", x: 1010 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["この世界に産み落とされた", "モンスター"] },
+        3: { lvl: "A", layout: "vert", x: 1010, y: 345, size: 29, gap: 1.3, cols: ["そこは", "従順傀儡の"] },
         4: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["嫌な時代に", "振り落とされたもんだ"] },
         5: { lvl: "A", layout: "vert", x: 560, y: 345, size: 29, gap: 1.3, cols: ["赤い糸を", "放ったスパイダー"] },
-        6: { lvl: "A", layout: "vert", x: 1560, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
-        7: { lvl: "A", layout: "vert", x: 1560 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
+        6: { lvl: "A", layout: "vert", x: 860, y: 345, size: 29, cols: ["予想通り絡まるハンター"], holdUntil: 7 },
+        7: { lvl: "A", layout: "vert", x: 860 - 29 * 1.3, y: 345, size: 29, gap: 1.3, cols: ["どうか", "一生淡々と"] },
         8: { lvl: "A", layout: "vert", x: 1590, y: 345, size: 29, gap: 1.3, cols: ["生きるだけの", "理由をください", "ドクター"] },
       } },
     { type: "title_card_shadow", t0: 20.0, t1: 34.14 },
@@ -273,20 +286,118 @@ function charT2(i, k) { const c = L2(i).chars; return c[Math.min(k, c.length - 1
 const sceneAt = (t) => SCENES2.find((s) => t >= s.t0 && t < s.t1) || SCENES2[SCENES2.length - 1];
 
 // ---------------------------------------------------------------- frame
-let CV2, CX2, PX2 = 1;
+let CV2, CX2, PX2 = 1, GRAIN = 0.12, FLICKER = 0.12;
 function post(ctx, t) {
+  // film grain: ~2 px clumps, new random offset every frame (part of the look in preview and final)
+  const fr = Math.floor(t * 30), tile = A2.grain[fr % A2.grain.length];
+  ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = GRAIN;
+  ctx.translate(-hash(fr) * 512, -hash(fr + 9) * 512); ctx.scale(2, 2);
+  ctx.fillStyle = ctx.createPattern(tile, "repeat"); ctx.fillRect(0, 0, W, H); ctx.restore();
   if (!POST) return;
   // low-contrast bloom: tiny downscale, screen back
   const sm = A2.small, sx = sm.getContext("2d"); sx.globalCompositeOperation = "copy"; sx.drawImage(CV2, 0, 0, 240, 135);
   ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.16; ctx.drawImage(sm, 0, 0, W, H); ctx.restore();
-  ctx.save(); ctx.globalCompositeOperation = "overlay"; ctx.globalAlpha = 0.16;
-  ctx.fillStyle = ctx.createPattern(A2.grain[Math.floor(t * 30) % A2.grain.length], "repeat"); ctx.fillRect(0, 0, W, H); ctx.restore();
 }
-function render2(t) {
-  const ctx = CX2; ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
+// ---- camera: smoothed value noise (deterministic), breathing scale, cut kick
+function vnoise(x, seed) { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return (lerp(hash2(i, seed), hash2(i + 1, seed), u) - 0.5) * 2; }
+let CUTS = [];
+function handheld(t) {
+  let dx = 4.4 * (vnoise(t * 0.8, 11) + 0.5 * vnoise(t * 1.4, 12));          // ~2 px std horizontally
+  let dy = 5.6 * (vnoise(t * 0.7, 21) + 0.5 * vnoise(t * 1.3, 22));          // a little more vertically
+  const r = 0.15 * vnoise(t * 0.4, 31) * Math.PI / 180;
+  const s = 1.0075 + 0.0075 * Math.sin(2 * Math.PI * t / 3.0);                // breathing 1.000-1.015, 3 s period
+  for (let i = 0; i < CUTS.length; i++) {                                     // impact shake right after each cut
+    const dt = t - CUTS[i].t; if (dt < 0 || dt > 0.45) continue;
+    const a = 18 * Math.exp(-dt * 14) * Math.cos(dt * 30), ang = hash(i * 7 + 3) * Math.PI * 2;
+    dx += a * Math.cos(ang); dy += a * Math.sin(ang);
+  }
+  return { dx, dy, r, s };
+}
+// ---- transitions on the image layer only (8 frames at 30 fps centred on the cut)
+const TR_HALF = 4 / 30;
+function transitionAt(t) {
+  for (const c of CUTS) { const u = (t - (c.t - TR_HALF)) / (2 * TR_HALF); if (u >= 0 && u < 1) return { kind: c.kind, u, from: c.from }; }
+  return null;
+}
+function blitBlur(ctx, img, len, ang, alpha = 1) { // directional blur by averaging shifted copies
+  const n = len < 2 ? 1 : 7;
+  for (let i = 0; i < n; i++) {
+    const o = n === 1 ? 0 : (i / (n - 1) - 0.5) * len;
+    ctx.globalAlpha = alpha / (i + 1) * (n === 1 ? 1 : 1);
+    ctx.drawImage(img, Math.cos(ang) * o, Math.sin(ang) * o, W, H);
+  }
+  ctx.globalAlpha = 1;
+}
+// ---- light overlay: blind bars + dust lit only inside the bars
+const STRIPE_ANG = -20 * Math.PI / 180;
+function stripeIntensity(x, y, flow) {
+  const xr = (x - W / 2) * Math.cos(-STRIPE_ANG) - (y - H / 2) * Math.sin(-STRIPE_ANG) + 1500 - flow;
+  const p = ((xr % 1500) + 1500) % 1500; let v = 0;
+  for (const [c, w, b] of A2.stripes) for (const k of [-1500, 0, 1500]) { const d = (p - c - k) / (w * 0.5 + 60); v += b * Math.exp(-d * d); }
+  return Math.min(1, v);
+}
+function drawLightOverlay(ctx, t) {
+  const flow = (t * 60) % 1500, breathe = 1 + 0.2 * Math.sin(2 * Math.PI * t / 4.5);
+  ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 0.2 * breathe;
+  ctx.translate(W / 2, H / 2); ctx.rotate(STRIPE_ANG); ctx.translate(-1500 + flow - 1500, -1500); ctx.drawImage(A2.stripeTex, 0, 0); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = "screen";
+  for (let i = 0; i < 32; i++) {
+    const x = ((hash(i * 3 + 1) * W + t * (hash(i) - 0.5) * 18) % W + W) % W, y = ((hash(i * 5 + 2) * H - t * (4 + hash(i * 7) * 9)) % H + H) % H;
+    const lit = stripeIntensity(x, y, flow); if (lit < 0.05) continue;
+    const r = 1.5 + hash(i * 11) * (i < 6 ? 14 : 3.5);
+    ctx.globalAlpha = lit * (i < 6 ? 0.18 : 0.75); ctx.drawImage(A2.dot, x - r, y - r, r * 2, r * 2);
+  }
+  ctx.restore();
+}
+
+let IMG, IX, MASK = 0;
+function renderImage(t) { // the picture (wall, figure, light) without text/HUD
+  const ctx = IX; ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
   const sc = sceneAt(t);
   const info = (R[sc.type] || R.placeholder)(ctx, sc, t) || {};
+  if (!info.black && sc.lightOverlay && !MASK) drawLightOverlay(ctx, t);
+  return { sc, info };
+}
+function composeFrame(t, measure = false) {
+  const ctx = CX2;
+  const { sc, info } = renderImage(t);
+  if (measure) {   // geometry only: same camera, no transitions/text/grain/overlays
+    ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+    const cam = handheld(t); ctx.save(); ctx.translate(W / 2 + cam.dx, H / 2 + cam.dy); ctx.rotate(cam.r); ctx.scale(cam.s * 1.035, cam.s * 1.035); ctx.translate(-W / 2, -H / 2);
+    ctx.drawImage(IMG, 0, 0, W, H); ctx.restore(); drawBars(ctx, info.bars || 0); return;
+  }
+  ctx.setTransform(PX2, 0, 0, PX2, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.filter = "none";
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+  const cam = handheld(t), tr = transitionAt(t);
+  ctx.save();
+  ctx.translate(W / 2 + cam.dx, H / 2 + cam.dy); ctx.rotate(cam.r); ctx.scale(cam.s * 1.035, cam.s * 1.035); ctx.translate(-W / 2, -H / 2);  // 3.5 % overscan
+  if (!tr) ctx.drawImage(IMG, 0, 0, W, H);
+  else if (tr.kind === "whip") {          // horizontal blur + fast pan, no white; image scaled so no edge shows
+    const u = tr.u, k = u < 0.5 ? sease(u * 2) : 1 - sease((u - 0.5) * 2), pan = (u < 0.5 ? -1 : 1) * 200 * k, z = 1 + 0.32 * k;
+    ctx.save(); ctx.translate(W / 2 + pan, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2); blitBlur(ctx, IMG, 40 + 220 * k, 0); ctx.restore();
+  } else {                                 // light bleed: exposure up + diagonal blur, peak near white, new shot resolves
+    const u = tr.u, ang = -30 * Math.PI / 180;
+    const blur = u < 3 / 8 ? lerp(40, 120, u / (3 / 8)) : u < 5 / 8 ? 120 : lerp(120, 0, (u - 5 / 8) / (3 / 8));
+    blitBlur(ctx, IMG, blur, ang);
+  }
+  ctx.restore();
+  INK_DARK = 0;
+  if (tr && tr.kind !== "whip") {         // exposure curve: rises to near-white at frames 3-4, falls back on the new shot
+    const u = tr.u, ex = u < 3 / 8 ? sease(u / (3 / 8)) * 0.88 : u < 5 / 8 ? 0.94 : (1 - sease((u - 5 / 8) / (3 / 8))) * 0.88;
+    INK_DARK = clamp((ex - 0.35) / 0.5);
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = `rgba(250,249,244,${ex})`; ctx.fillRect(0, 0, W, H);
+    if (u >= 3 / 8 && u < 5 / 8) { ctx.globalAlpha = 0.9; ctx.translate(W / 2, H / 2); ctx.rotate(STRIPE_ANG); ctx.translate(-3000 + (t * 60) % 1500, -1500); ctx.drawImage(A2.stripeTex, 0, 0); }
+    ctx.restore();
+  }
+  // brightness breathing +-3 % (0.3 Hz) and +-1.5 % per-frame flicker on the picture
+  // light flicker stepped at 15 fps like the reference (its picture mean jumps ~+-10 % between frames)
+  const f = 0.03 * Math.sin(2 * Math.PI * 0.3 * t) + FLICKER * (hash(Math.floor(t * 15) + 77) - 0.5) * 2;
+  ctx.fillStyle = f > 0 ? `rgba(255,255,255,${f})` : `rgba(0,0,0,${-f})`; ctx.fillRect(0, 0, W, H);
+  // lyrics ride the camera at 40 % (parallax), never cut by transitions
+  ctx.save(); ctx.translate(cam.dx * 0.4, cam.dy * 0.4);
   for (const [id, spec] of Object.entries(sc.text || {})) drawLyric(ctx, spec, L2(+id), t);
+  ctx.restore();
   ctx.setTransform(PX2, 0, 0, PX2, 0, 0);
   ctx.globalAlpha = sc.vignette ?? 0.8; ctx.drawImage(A2.vignette, 0, 0, W, H); ctx.globalAlpha = 1;
   post(ctx, t);
@@ -294,13 +405,45 @@ function render2(t) {
   drawBars(ctx, info.bars || 0);
   drawKo(ctx, t);
 }
+// final: 180-degree shutter = average of 3 samples across 1/60 s; preview: single sample
+let SUBS = 1;
+function render2(t) {
+  if (SUBS === 1) return composeFrame(t);
+  const acc = ACC, ax = acc.getContext("2d");
+  for (let i = 0; i < SUBS; i++) {
+    composeFrame(t + (i / (SUBS - 1) - 0.5) / 60);
+    ax.globalAlpha = 1 / (i + 1); ax.globalCompositeOperation = "source-over"; ax.drawImage(CV2, 0, 0);
+  }
+  CX2.setTransform(1, 0, 0, 1, 0, 0); CX2.globalAlpha = 1; CX2.drawImage(acc, 0, 0);
+}
+let ACC;
 async function init2(width = 960, opts = {}) {
   PX2 = width / W; POST = !!opts.post;
   CV2 = document.getElementById("c"); CV2.width = width; CV2.height = Math.round(H * PX2); CX2 = CV2.getContext("2d");
   await loadAssets2(); buildScenes();
+  IMG = cnv(CV2.width, CV2.height); IX = IMG.getContext("2d"); ACC = cnv(CV2.width, CV2.height);
+  SUBS = opts.post ? 3 : 1;
+  CUTS = [];
+  for (const sc of SCENES2) (sc.shots || []).forEach((sh, i) => { if (sh.tin) CUTS.push({ t: sh.t0, kind: sh.tin }); });
   return { fallbacks: A2.fontFallbacks, duration: D.duration };
 }
 window.init = init2;
+// Mean luminance of figure / wall / face regions of the final picture at time t.
+window.lumaStats = (t) => {
+  const grab = () => CX2.getImageData(0, 0, CV2.width, CV2.height).data;
+  composeFrame(t); const pic = grab();
+  MASK = 1; composeFrame(t, true); const m1 = grab();
+  MASK = 2; composeFrame(t, true); const m2 = grab(); MASK = 0;
+  let fs = 0, fn = 0, ws = 0, wn = 0, cs = 0, cn = 0;
+  const Wd = CV2.width, rowBar = [];
+  for (let r = 0; r < CV2.height; r++) { let m = 0; for (let x = 0; x < Wd; x += 8) m += m1[(r * Wd + x) * 4 + 2]; rowBar.push(m / (Wd / 8) < 8 && (() => { let q = 0; for (let x = 0; x < Wd; x += 8) q += pic[(r * Wd + x) * 4]; return q / (Wd / 8) < 6; })()); }
+  for (let i = 0; i < pic.length; i += 4) {
+    const y = 0.299 * pic[i] + 0.587 * pic[i + 1] + 0.114 * pic[i + 2];
+    const fig = m1[i] > 200 && m1[i + 1] > 200, face = fig && m2[i] > 200 && m2[i + 1] < 60, bar = rowBar[Math.floor(i / 4 / Wd)];
+    if (face) { cs += y; cn++; } else if (fig) { fs += y; fn++; } else if (!bar) { ws += y; wn++; }
+  }
+  return { t, figure: fn ? +(fs / fn).toFixed(1) : null, wall: wn ? +(ws / wn).toFixed(1) : null, face: cn ? +(cs / cn).toFixed(1) : null };
+};
 window.seek = (t) => render2(t);
 window.needsBlur = () => false;
 window.stillTimes = () => [3.6, 8.9, 12.0, 16.2, 18.8, 36.3, 66.95, 81.6];

@@ -26,8 +26,10 @@ async function loadAssets2() {
   const names = ["patient", "nurse"];
   A2.ch = {};
   for (const n of names) {
-    const [mono, blur, shadow, color] = await Promise.all(["mono", "blur", "shadow", "color"].map((k) => img(`img/v2/${n}_${k}.png`)));
-    A2.ch[n] = { mono, blur, shadow, color, w: 2160, h: 3840 };
+    const [mono, blur, shadow, color, rim] = await Promise.all(["mono", "blur", "shadow", "color", "rim"].map((k) => img(`img/v2/${n}_${k}.png`)));
+    // white silhouette, used only by the measurement pass
+    const sil = cnv(2160, 3840), sg = sil.getContext("2d"); sg.drawImage(mono, 0, 0); sg.globalCompositeOperation = "source-in"; sg.fillStyle = "#fff"; sg.fillRect(0, 0, 2160, 3840);
+    A2.ch[n] = { mono, blur, shadow, color, rim, sil, w: 2160, h: 3840 };
   }
   A2.wall = await img("img/v2/concrete.png");
   A2.wallBlur = await img("img/v2/concrete_blur.png");
@@ -49,4 +51,10 @@ async function loadAssets2() {
   const bl = cnv(1400, 1400), bx = bl.getContext("2d"); bx.filter = "blur(18px)"; bx.fillStyle = "rgba(0,0,0,1)";
   for (let y = 40; y < 1400; y += 150) bx.fillRect(-50, y, 1500, 62);
   A2.blinds = bl;
+  // window-blind light: 6 soft bright bars, period 1500 px so it can scroll seamlessly; blur ~60 px, baked once
+  const SP = cnv(3000, 3000), sx = SP.getContext("2d"); sx.fillStyle = "#000"; sx.fillRect(0, 0, 3000, 3000);
+  sx.filter = "blur(60px)";
+  A2.stripes = [[120, 150, 1], [380, 90, 0.75], [560, 200, 0.95], [860, 70, 0.6], [1050, 160, 0.9], [1290, 110, 0.7]];
+  for (const off of [0, 1500]) for (const [c, w, b] of A2.stripes) { sx.fillStyle = `rgba(255,255,250,${b})`; sx.fillRect(c + off - w / 2, -200, w, 3400); }
+  A2.stripeTex = SP;
 }

@@ -198,7 +198,18 @@ async function check() {
   return bad;
 }
 
+async function luma(times) {
+  const srv = await serve(); const browser = await chromium.launch({ args: ["--disable-gpu"] });
+  const page = await openPage(browser, srv.address().port);
+  const out = [];
+  for (const t of times) out.push(await page.evaluate((t) => window.lumaStats(t), t));
+  await browser.close(); srv.close();
+  for (const r of out) log(`luma t=${r.t}: figure ${r.figure}  face ${r.face}  wall ${r.wall}`);
+  return out;
+}
+
 const run = async () => {
+  if (opt("luma")) return luma(opt("luma").split(",").map(Number));
   if (flag("check")) return check();
   if (flag("stills")) return stills();
   if (opt("range")) return rangeClip(opt("range"));

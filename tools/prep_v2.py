@@ -41,26 +41,38 @@ wall += (np.asarray(pim.filter(ImageFilter.GaussianBlur(0.5)), np.float32) / 128
 Image.fromarray((wall.clip(0, 1) * 255).astype(np.uint8)).save(f"{OUT}/concrete.png", optimize=True)
 Image.fromarray((wall.clip(0, 1) * 255).astype(np.uint8)).resize((W // 2, H // 2)).filter(ImageFilter.GaussianBlur(5)).save(f"{OUT}/concrete_blur.png")
 
-# ---- characters: desaturated (12%), slightly darkened whites so they sit on the wall, plus blur + wall shadow
+# ---- characters: illustration untouched except the global 12 % saturation rule; lighting is separate layers
 def desat(im, s=0.12):
     rgb = np.asarray(im.convert("RGB"), np.float32) / 255
-    mx, mn = rgb.max(-1), rgb.min(-1); sat = (mx - mn) / (mx + 1e-4)
-    r, g_, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    hue = np.degrees(np.arctan2(np.sqrt(3) * (g_ - b), 2 * r - g_ - b)) % 360
-    L = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
-    garment = ((hue > 140) & (hue < 260) & (sat > 0.07)).astype(np.float32)          # jacket, uniform, IV fluid
-    garment = np.asarray(Image.fromarray((garment * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5)), np.float32) / 255
-    Lt = 0.04 + 0.80 * L ** 1.15                                                     # low contrast, whites -> ~0.77
-    # garments keep their own value (no extra darkening)
-    out = Lt[..., None] + (rgb - L[..., None]) * s * 0.6
-    o = Image.fromarray((out.clip(0, 1) * 255).astype(np.uint8)); o.putalpha(im.getchannel("A")); return o
+    g = (rgb @ np.array([0.299, 0.587, 0.114], np.float32))[..., None]
+    o = Image.fromarray(((g + (rgb - g) * s).clip(0, 1) * 255).astype(np.uint8)); o.putalpha(im.getchannel("A")); return o
+
+def backlight(alpha, bbox):
+    """Source behind the figure, upper left. G = multiply gradient (less dark toward the light, darker on the far
+    side and toward the feet); rim = thin edge on the light-facing contour."""
+    h, w = alpha.shape
+    x0, y0, x1, y1 = bbox
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    u = (xx - x0) / (x1 - x0); v = (yy - y0) / (y1 - y0)
+    d = np.clip((u * 0.55 + v * 0.85) / 1.25, 0, 1); d = d * d * (3 - 2 * d)
+    G = 0.33 - 0.19 * d
+    A = alpha / 255.0; k = 4
+    sh = np.zeros_like(A); sh[k:, k:] = A[:-k, :-k]
+    rim = np.clip(A - sh, 0, 1) * (1 - 0.7 * d)
+    return G.astype(np.float32), rim.astype(np.float32)
+
 for name in ("patient", "nurse"):
     src = Image.open(f"assets/character/{name}.png").convert("RGBA")
     src.save(f"{OUT}/{name}_color.png", optimize=True)
-    m = desat(src); m.save(f"{OUT}/{name}_mono.png", optimize=True)
-    small = m.resize((1080, 1920), Image.LANCZOS)
-    small.filter(ImageFilter.GaussianBlur(10)).save(f"{OUT}/{name}_blur.png", optimize=True)
-    a = src.getchannel("A").resize((1080, 1920), Image.LANCZOS).filter(ImageFilter.GaussianBlur(14))
+    m = desat(src); m.save(f"{OUT}/{name}_flat.png", optimize=True)                    # untouched (for reference / colour return)
+    G, rim = backlight(np.asarray(src.getchannel("A"), np.float32), src.getchannel("A").getbbox())
+    if name == "nurse": G = G * 0.8                                                     # brighter costume -> a bit more backlight falloff
+    lit = (np.asarray(m.convert("RGB"), np.float32) * G[..., None]).clip(0, 255).astype(np.uint8)
+    Lm = Image.fromarray(lit); Lm.putalpha(src.getchannel("A")); Lm.save(f"{OUT}/{name}_mono.png", optimize=True)   # flat x backlight multiply
+    Lm.resize((1080, 1920), Image.LANCZOS).filter(ImageFilter.GaussianBlur(10)).save(f"{OUT}/{name}_blur.png", optimize=True)
+    rimA = Image.fromarray((np.clip(rim, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    rimimg = Image.new("RGBA", src.size, (245, 245, 240, 0)); rimimg.putalpha(rimA); rimimg.save(f"{OUT}/{name}_rim.png", optimize=True)
+    a = src.getchannel("A").resize((1080, 1920), Image.LANCZOS).filter(ImageFilter.GaussianBlur(40))           # soft, wide shadow
     sh = Image.new("RGBA", a.size, (8, 8, 10, 0)); sh.putalpha(a); sh.save(f"{OUT}/{name}_shadow.png", optimize=True)
 
 # ---- crimson smears (red_burst): ragged blobs, soft core, used only in accent scenes

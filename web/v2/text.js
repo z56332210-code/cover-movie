@@ -1,7 +1,9 @@
 // Japanese typography, three levels (scene_plan tokens.text_levels). Thin mincho only.
 // Characters appear one by one on their sung time: fade + blur -> sharp. Exit: blur + fade. No bounce.
 "use strict";
-const INK_W = "rgba(233,233,230,A)", RED = "rgba(179,18,43,A)";
+const RED = "rgba(179,18,43,A)";
+let INK_DARK = 0;   // 0..1: lyrics darken while the picture flashes to white, so they never disappear in a transition
+Object.defineProperty(globalThis, "INK_W", { get: () => { const v = Math.round(233 - (233 - 38) * INK_DARK); return `rgba(${v},${v},${v - 2},A)`; } });
 const isKana = (c) => /[぀-ヿ]/.test(c);
 const SMALL_K = new Set([..."ぁぃぅぇぉっゃゅょァィゥェォッャュョ"]);
 const VROT = new Set(["ー", "〜", "…"]);
