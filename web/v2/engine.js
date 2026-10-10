@@ -4,8 +4,9 @@
 const L2 = (i) => lyric(i);
 // measured character landmarks in source pixels (2160x3840 art)
 const KP = {
-  patient: { eyes: [[826, 830], [964, 824]], eyeBox: [780, 770, 1010, 880], face: [910, 880] },
-  nurse: { eyes: [[974, 826], [1110, 820]], eyeBox: [930, 765, 1160, 875], face: [1040, 880] },
+  // align: nose line x, eye line y (measured on the source art) - used to join the two half faces
+  patient: { eyes: [[815, 855], [975, 835]], eyeBox: [780, 770, 1010, 880], face: [910, 880], align: [885, 845] },
+  nurse: { eyes: [[970, 815], [1120, 805]], eyeBox: [930, 765, 1160, 875], face: [1040, 880], align: [1025, 810] },
 };
 const sease = (k) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(k));
 
@@ -209,18 +210,19 @@ R.giant_type = (ctx, sc, t) => {
 R.blur_focus_pull = R.hud_portrait;
 // Two-shot. With sc.split: each figure in its own panel, a dark band with a red thread between them that narrows
 // in steps on the lyric hits (each step snaps fast, then settles), until it closes.
+const STEP_DUR = 1.3;   // each narrowing step eases in and out over 1.3 s
 function stepKeys(keys, t) {
   let v = keys[0][1];
-  for (let i = 1; i < keys.length; i++) { const [kt, kv] = keys[i]; if (t < kt) break; const u = clamp((t - kt) / 0.55); v = lerp(v, kv, 1 - Math.pow(1 - u, 3)); }
+  for (let i = 1; i < keys.length; i++) { const [kt, kv] = keys[i]; if (t < kt) break; const u = clamp((t - kt) / STEP_DUR); v = lerp(v, kv, u * u * (3 - 2 * u)); }
   return v;
 }
 R.hud_two_shot = (ctx, sc, t) => {
   if (!sc.split) { const cr = drawShot(ctx, shotAt(sc, t), t); return { drift: cr.k * 40 }; }
   const g = stepKeys(sc.split, t), half = (W - g) / 2, c = clamp(1 - g / sc.split[0][1]);
   const scale = lerp(0.62, 1.12, Math.pow(c, 1.6));              // closer as the band narrows
-  const fy = lerp(330, 470, c);                                  // face height on screen
+  const fy = lerp(300, 430, c);                                  // eye line height on screen (same for both)
   const panel = (n, vp, faceTargetX, dir) => {
-    const F = KP[n].face, cx = F[0] - (faceTargetX - (vp.x + vp.w / 2)) / scale, cy = F[1] - (fy - H / 2) / scale;
+    const F = KP[n].align, cx = F[0] - (faceTargetX - (vp.x + vp.w / 2)) / scale, cy = F[1] - (fy - H / 2) / scale;
     drawShot(ctx, { t0: sc.t0, t1: sc.t1, layers: [{ n }], c0: [cx, cy, vp.w / scale], c1: [cx, cy, vp.w / scale], r0: 0, r1: 0, keyLight: true, longShadow: true }, t, vp);
   };
   // each face travels toward the seam; at c = 1 both face centres sit exactly on it (one face, two halves)
@@ -566,7 +568,7 @@ function buildScenes() {
     { type: "black_line", t0: s(37), t1: s(38), tin: "black", hud: false, lightOverlay: false,
       text: { 37: { lvl: "A", layout: "line", x: 960, y: 540, size: 26 } } },
     { type: "hud_two_shot", t0: s(38), t1: s(40), tin: "bleed",
-      split: [[s(38), 260], [s(38) + 1.4, 190], [s(39), 120], [s(39) + 1.6, 50], [s(40) - 0.75, 0]],
+      split: [[s(38) - 0.4, 260], [s(38) + 0.9, 190], [s(39) - 0.4, 120], [s(39) + 1.0, 50], [s(40) - 1.6, 0]],
       text: {
         38: { lvl: "A", layout: "vert", x: 170, y: 230, size: 30, gap: 1.3, cols: ["この世界に", "産み落とされた", "モンスター"] },
         39: { lvl: "A", layout: "vert", x: 1720, y: 230, size: 30, gap: 1.3, cols: ["僕は人生最大の", "したり顔で"] },
