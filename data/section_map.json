@@ -1,0 +1,93 @@
+{
+ "decisions": {
+  "interlude": "credits x4 (3 bars each) over A character one-shot; music credit in outro",
+  "B_scene": "verse1 second half (lines 6-10) as B mono manga: box text -> giant black glyphs",
+  "palette_check": "allow mixes between the 4 colours + greys; flag anything else (glitch strips exempt)",
+  "reuse": "key visual reused (intro, verse1 instrumental, pre); chorus layout reused (chorus1, last chorus)"
+ },
+ "sections": [
+  {
+   "name": "silence",
+   "t0": 0.0,
+   "t1": 1.765,
+   "ref": null
+  },
+  {
+   "name": "intro",
+   "t0": 1.765,
+   "t1": 8.09,
+   "ref": "intro (ref bars 1-3 + 8; 4 of 8 bars)"
+  },
+  {
+   "name": "verse1",
+   "t0": 8.09,
+   "t1": 39.67,
+   "ref": "verse1 full"
+  },
+  {
+   "name": "pre",
+   "t0": 39.67,
+   "t1": 55.46,
+   "ref": "pre-chorus full"
+  },
+  {
+   "name": "chorus1",
+   "t0": 55.46,
+   "t1": 68.09,
+   "ref": "chorus1 full"
+  },
+  {
+   "name": "interlude",
+   "t0": 68.09,
+   "t1": 87.05,
+   "ref": "ref interlude2 (credits) last 12 of 16 bars"
+  },
+  {
+   "name": "bridge",
+   "t0": 87.05,
+   "t1": 93.37,
+   "ref": "bridge full"
+  },
+  {
+   "name": "chorus_last",
+   "t0": 93.37,
+   "t1": 115.46,
+   "ref": "last chorus full (14 bars)"
+  },
+  {
+   "name": "outro",
+   "t0": 115.46,
+   "t1": 125.92,
+   "ref": "outro, 6 of 10 bars + tail"
+  }
+ ],
+ "lyric_lines": {
+  "verse1_a": [
+   1,
+   5
+  ],
+  "verse1_inst": null,
+  "verse1_b": [
+   6,
+   10
+  ],
+  "pre": [
+   11,
+   15
+  ],
+  "chorus1": [
+   16,
+   21
+  ],
+  "interlude": null,
+  "bridge": [
+   22,
+   23
+  ],
+  "chorus_last": [
+   24,
+   33
+  ],
+  "outro": null
+ }
+}
