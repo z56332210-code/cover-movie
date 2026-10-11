@@ -68,13 +68,13 @@ for o in out:
 
 # display windows: no overlap, min 0.4 s, hold short gaps
 for k, o in enumerate(out):
-    nxt = out[k + 1]["start"] if k + 1 < len(out) else 143.0
+    nxt = out[k + 1]["start"] if k + 1 < len(out) else A["duration"]
     if o["end"] > nxt - 0.05: o["end"] = nxt - 0.05
     if nxt - o["end"] < 0.8: o["end"] = nxt - 0.05          # bridge tiny gaps so subtitles don't flicker
     else: o["end"] = min(o["end"] + 0.4, nxt - 0.05)        # short tail hold
     if o["end"] - o["start"] < 0.4: o["flag"] = "short"
     for sec in sections:
-        if sec["start"] - 1.0 <= o["start"] < sec["end"]: o["section"] = sec["name"]
+        if sec["t0"] - 1.0 <= o["start"] < sec["t1"]: o["section"] = sec["name"]
     o["start"], o["end"] = round(o["start"], 2), round(o["end"], 2)
 
 # per-character sung time (matched chars from Whisper, the rest interpolated) for karaoke-synced reveals
@@ -97,9 +97,10 @@ for k, (r, o) in enumerate(zip(rows, out)):
     full = np.maximum.accumulate(np.clip(full, o["start"], max(o["start"], o["end"] - 0.25)))
     o["chars"] = [round(float(x), 3) for x in full]
 
-# MANUAL: Whisper merged 嗚呼人 of line 30 into one timestamp; spread them across the sung span
+# MANUAL fixes (filled in after reviewing the table)
+MANUAL = {}
 for o in out:
-    if o["id"] == 30: o["chars"][0:3] = [101.18, 101.5, 101.95]
+    for idx, t in MANUAL.get(o["id"], {}).items(): o["chars"][idx] = t
 json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o.get("section","?"):8s} {o["start"]:7.2f}-{o["end"]:7.2f} cov {o["cover"]:.2f} {o.get("flag","")} {o["ja"]}')
