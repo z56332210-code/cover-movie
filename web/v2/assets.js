@@ -1,0 +1,69 @@
+// v2 assets: thin fonts, concrete wall, desaturated full-resolution characters. Loaded once, cached.
+"use strict";
+const A2 = {};
+function cnv(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+function img(src) { return new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => err(new Error(src)); i.src = src; }); }
+
+const FONTS2 = [
+  ["LyricMincho", "fonts/serif-200.woff2", "200"], ["LyricMincho", "fonts/serif-300.woff2", "300"], ["LyricMincho", "fonts/serif-400.woff2", "400"],
+  ["UI", "fonts/inter-300.woff2", "300"], ["Sub", "fonts/pretendard-300.woff2", "300"],
+];
+async function loadFonts2() {
+  for (const [fam, url, w] of FONTS2) { const f = new FontFace(fam, `url(${url})`, { weight: w }); await f.load(); document.fonts.add(f); }
+  await document.fonts.ready;
+  const x = cnv(8, 8).getContext("2d"), miss = [];
+  const probe = (fam, w, s) => { for (const c of new Set(s)) { if (!c.trim()) continue;
+    const m = (fb) => { x.font = `${w} 100px ${fam}, ${fb}`; return x.measureText(c).width; };
+    if (!(m("monospace") === m("serif") && m("serif") === m("sans-serif"))) miss.push(fam + ":" + c); } };
+  const ja = D.lyrics.map((l) => l.ja).join("") + "スロウダウナー作詞・作曲ろくろ暁山瑞希";
+  probe("LyricMincho", 200, ja); probe("LyricMincho", 300, ja); probe("UI", 300, "SLOWDOWNER Vocal Movie meel");
+  probe("Sub", 300, D.lyrics.map((l) => l.ko).join(""));
+  A2.fontFallbacks = miss;
+}
+
+async function loadAssets2() {
+  await loadFonts2();
+  const names = ["patient", "nurse"];
+  A2.ch = {};
+  for (const n of names) {
+    const [mono, blur, shadow, color, rim] = await Promise.all(["mono", "blur", "shadow", "color", "rim"].map((k) => img(`img/v2/${n}_${k}.png`)));
+    // white silhouette, used only by the measurement pass
+    const sil = cnv(2160, 3840), sg = sil.getContext("2d"); sg.drawImage(mono, 0, 0); sg.globalCompositeOperation = "source-in"; sg.fillStyle = "#fff"; sg.fillRect(0, 0, 2160, 3840);
+    // crisper cast shadow for the title card (silhouette, small blur), half resolution, baked once
+    const ss = cnv(1080, 1920), sx2 = ss.getContext("2d"); sx2.filter = "blur(5px)"; sx2.drawImage(sil, 0, 0, 1080, 1920);
+    sx2.filter = "none"; sx2.globalCompositeOperation = "source-in"; sx2.fillStyle = "#0a0a0c"; sx2.fillRect(0, 0, 1080, 1920);
+    // points inside the silhouette (stage px), for the particle dissolve
+    const pc = cnv(270, 480), px = pc.getContext("2d", { willReadFrequently: true }); px.drawImage(sil, 0, 0, 270, 480);
+    const pd = px.getImageData(0, 0, 270, 480).data, pts = [], r = rng(n === "nurse" ? 77 : 78);
+    while (pts.length < 520) { const x = r() * 270 | 0, y = r() * 480 | 0; if (pd[(y * 270 + x) * 4 + 3] > 160) pts.push([x * 8 + r() * 8, y * 8 + r() * 8]); }
+    A2.ch[n] = { mono, blur, shadow, color, rim, sil, shadowSharp: ss, pts, w: 2160, h: 3840 };
+  }
+  A2.wall = await img("img/v2/concrete.png");
+  A2.wallBlur = await img("img/v2/concrete_blur.png");
+  A2.smear = await Promise.all([0, 1, 2].map((k) => img(`img/v2/smear${k}.png`)));
+  // grain tiles + vignette + soft dot sprite (dust/bokeh) + eye glow, baked once
+  A2.grain = [];
+  for (let k = 0; k < 6; k++) {
+    const c = cnv(256, 256), g = c.getContext("2d"), d = g.createImageData(256, 256), r = rng(500 + k);
+    for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (r() - 0.5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+    g.putImageData(d, 0, 0); A2.grain.push(c);
+  }
+  const v = cnv(W, H), vg = v.getContext("2d"), gr = vg.createRadialGradient(W / 2, H * 0.42, H * 0.25, W / 2, H * 0.42, H * 0.95);
+  gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,0.6)"); vg.fillStyle = gr; vg.fillRect(0, 0, W, H); A2.vignette = v;
+  const dot = (rgba) => { const c = cnv(64, 64), g = c.getContext("2d"), q = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    q.addColorStop(0, rgba(1)); q.addColorStop(0.4, rgba(0.5)); q.addColorStop(1, rgba(0)); g.fillStyle = q; g.fillRect(0, 0, 64, 64); return c; };
+  A2.dot = dot((a) => `rgba(235,235,232,${a})`);
+  A2.dotDark = dot((a) => `rgba(28,28,30,${a})`);
+  A2.dotMid = dot((a) => `rgba(172,172,169,${a})`);   // foreground dust: a little brighter than the backlit figure
+  A2.small = cnv(240, 135);
+  // blinds shadow: soft dark slats, baked once (drawn rotated and sliding as an overlay)
+  const bl = cnv(1400, 1400), bx = bl.getContext("2d"); bx.filter = "blur(18px)"; bx.fillStyle = "rgba(0,0,0,1)";
+  for (let y = 40; y < 1400; y += 150) bx.fillRect(-50, y, 1500, 62);
+  A2.blinds = bl;
+  // window-blind light: 6 soft bright bars, period 1500 px so it can scroll seamlessly; blur ~60 px, baked once
+  const SP = cnv(3000, 3000), sx = SP.getContext("2d"); sx.fillStyle = "#000"; sx.fillRect(0, 0, 3000, 3000);
+  sx.filter = "blur(80px)";
+  A2.stripes = [[120, 150, 1], [380, 90, 0.75], [560, 200, 0.95], [860, 70, 0.6], [1050, 160, 0.9], [1290, 110, 0.7]];
+  for (const off of [0, 1500]) for (const [c, w, b] of A2.stripes) { sx.fillStyle = `rgba(255,255,250,${b})`; sx.fillRect(c + off - w / 2, -200, w, 3400); }
+  A2.stripeTex = SP;
+}

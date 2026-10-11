@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>スロウダウナー lyric video</title>
+<style>
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+  body.play canvas { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; margin: auto; }
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; display: none; gap: 8px; padding: 8px; background: rgba(0,0,0,.6); color: #ddd; font: 13px sans-serif; align-items: center; }
+  body.play #bar { display: flex; }
+  #bar input[type=range] { flex: 1; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="bar"><button id="pp">▶</button><input id="pos" type="range" min="0" max="143.3" step="0.01" value="0"><span id="tc">0.00</span></div>
+<script src="data.js"></script>
+<script src="core.js"></script>
+<script src="v2/assets.js"></script>
+<script src="v2/hud.js"></script>
+<script src="v2/text.js"></script>
+<script src="v2/engine.js"></script>
+<script>
+  // Render mode (default): the renderer calls window.init(width) then window.seek(t) per frame.
+  // Play mode (?play): real-time preview in a browser, driven by the audio clock.
+  const q = new URLSearchParams(location.search);
+  if (q.has("play")) {
+    document.body.classList.add("play");
+    const audio = new Audio("song.mp3");
+    init(+(q.get("w") || 1280), { post: q.has("post") }).then(() => {
+      const pos = document.getElementById("pos"), tc = document.getElementById("tc");
+      document.getElementById("pp").onclick = () => audio.paused ? audio.play() : audio.pause();
+      pos.oninput = () => { audio.currentTime = +pos.value; seek(+pos.value); };
+      const loop = () => { const t = audio.currentTime; seek(t); pos.value = t; tc.textContent = t.toFixed(2); requestAnimationFrame(loop); };
+      loop();
+    });
+  }
+</script>
+</body>
+</html>
