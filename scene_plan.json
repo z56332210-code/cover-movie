@@ -1,0 +1,1569 @@
+{
+ "source": "reference.mp4 (Venom cover), 203.25 s, 1280x720 30fps",
+ "bpm": 152.0,
+ "beat_s": 0.39474,
+ "bar_s": 1.57895,
+ "first_downbeat": 1.6951,
+ "cut_lead_frames": 2,
+ "palette": {
+  "lav": "#F1B5FB",
+  "mag": "#EB008D",
+  "navy": "#15183C",
+  "white": "#FFFFFF",
+  "black": "#000000"
+ },
+ "sections": {
+  "silence": {
+   "t0": 0.033,
+   "t1": 1.633
+  },
+  "intro": {
+   "t0": 1.633,
+   "t1": 14.303
+  },
+  "verse1": {
+   "t0": 14.303,
+   "t1": 45.203
+  },
+  "pre": {
+   "t0": 45.203,
+   "t1": 61.563
+  },
+  "chorus1": {
+   "t0": 61.563,
+   "t1": 74.263
+  },
+  "interlude1": {
+   "t0": 74.263,
+   "t1": 86.903
+  },
+  "verse2": {
+   "t0": 86.903,
+   "t1": 99.363
+  },
+  "pre2": {
+   "t0": 99.363,
+   "t1": 113.663
+  },
+  "chorus2": {
+   "t0": 113.663,
+   "t1": 126.363
+  },
+  "interlude2": {
+   "t0": 126.363,
+   "t1": 151.633
+  },
+  "bridge": {
+   "t0": 151.633,
+   "t1": 157.933
+  },
+  "chorus3": {
+   "t0": 157.933,
+   "t1": 179.633
+  },
+  "outro": {
+   "t0": 179.633,
+   "t1": 195.533
+  },
+  "end": {
+   "t0": 195.533,
+   "t1": 203.25
+  }
+ },
+ "shots": [
+  {
+   "i": 0,
+   "t0": 0.033,
+   "t1": 1.233,
+   "dur": 1.2,
+   "beats": 3.04,
+   "bars": 0.76,
+   "start_bar": -1.05,
+   "type": "D",
+   "method": "-",
+   "trans_in": "start",
+   "section": "silence",
+   "note": "black",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 1,
+   "t0": 1.233,
+   "t1": 1.633,
+   "dur": 0.4,
+   "beats": 1.01,
+   "bars": 0.25,
+   "start_bar": -0.29,
+   "type": "D",
+   "method": "-",
+   "trans_in": "flash_magenta",
+   "section": "silence",
+   "note": "magenta solid 0.4s",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 2,
+   "t0": 1.633,
+   "t1": 13.833,
+   "dur": 12.2,
+   "beats": 30.91,
+   "bars": 7.73,
+   "start_bar": -0.04,
+   "type": "C",
+   "method": "title",
+   "trans_in": "cut",
+   "section": "intro",
+   "note": "key visual: silhouette + props around, handwritten title logo, tiny glitch strips",
+   "cam_thirds_px_s": [
+    0.7,
+    0.7,
+    0.6
+   ]
+  },
+  {
+   "i": 3,
+   "t0": 13.833,
+   "t1": 14.303,
+   "dur": 0.47,
+   "beats": 1.19,
+   "bars": 0.3,
+   "start_bar": 7.69,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "intro",
+   "note": "black gap ~1 beat",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 4,
+   "t0": 14.303,
+   "t1": 20.163,
+   "dur": 5.86,
+   "beats": 14.85,
+   "bars": 3.71,
+   "start_bar": 7.99,
+   "type": "A",
+   "method": "1b",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "prop close-up (sheep/syringe/pill), ink + halftone, slow pan",
+   "cam_thirds_px_s": [
+    85.2,
+    11.5,
+    80.6
+   ]
+  },
+  {
+   "i": 5,
+   "t0": 20.163,
+   "t1": 23.263,
+   "dur": 3.1,
+   "beats": 7.85,
+   "bars": 1.96,
+   "start_bar": 11.7,
+   "type": "A",
+   "method": "3",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "prop close-up guitar/harp, band text along guitar neck, words revealed in chunks",
+   "cam_thirds_px_s": [
+    156.5,
+    58.1,
+    31.6
+   ]
+  },
+  {
+   "i": 6,
+   "t0": 23.263,
+   "t1": 23.763,
+   "dur": 0.5,
+   "beats": 1.27,
+   "bars": 0.32,
+   "start_bar": 13.66,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 7,
+   "t0": 23.763,
+   "t1": 26.503,
+   "dur": 2.74,
+   "beats": 6.94,
+   "bars": 1.74,
+   "start_bar": 13.98,
+   "type": "A",
+   "method": "1",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "character close-up (eye bar), navy box text right, fast zoom-out then settle",
+   "cam_thirds_px_s": [
+    178.4,
+    40.8,
+    12.7
+   ]
+  },
+  {
+   "i": 8,
+   "t0": 26.503,
+   "t1": 26.963,
+   "dur": 0.46,
+   "beats": 1.17,
+   "bars": 0.29,
+   "start_bar": 15.71,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 9,
+   "t0": 26.963,
+   "t1": 32.733,
+   "dur": 5.77,
+   "beats": 14.62,
+   "bars": 3.65,
+   "start_bar": 16.0,
+   "type": "C",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "key visual silhouette, frequent glitch strips",
+   "cam_thirds_px_s": [
+    0.9,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "i": 10,
+   "t0": 32.733,
+   "t1": 33.233,
+   "dur": 0.5,
+   "beats": 1.27,
+   "bars": 0.32,
+   "start_bar": 19.66,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 11,
+   "t0": 33.233,
+   "t1": 39.133,
+   "dur": 5.9,
+   "beats": 14.95,
+   "bars": 3.74,
+   "start_bar": 19.97,
+   "type": "A",
+   "method": "1b",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "prop close-up harp/guitar, small white text",
+   "cam_thirds_px_s": [
+    113.5,
+    12.0,
+    86.8
+   ]
+  },
+  {
+   "i": 12,
+   "t0": 39.133,
+   "t1": 39.533,
+   "dur": 0.4,
+   "beats": 1.01,
+   "bars": 0.25,
+   "start_bar": 23.71,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 13,
+   "t0": 39.533,
+   "t1": 42.303,
+   "dur": 2.77,
+   "beats": 7.02,
+   "bars": 1.75,
+   "start_bar": 23.96,
+   "type": "A",
+   "method": "3",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "props mid, two-line diagonal band",
+   "cam_thirds_px_s": [
+    172.2,
+    64.7,
+    36.6
+   ]
+  },
+  {
+   "i": 14,
+   "t0": 42.303,
+   "t1": 42.733,
+   "dur": 0.43,
+   "beats": 1.09,
+   "bars": 0.27,
+   "start_bar": 25.72,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 15,
+   "t0": 42.733,
+   "t1": 45.203,
+   "dur": 2.47,
+   "beats": 6.26,
+   "bars": 1.56,
+   "start_bar": 25.99,
+   "type": "A",
+   "method": "1",
+   "trans_in": "cut",
+   "section": "verse1",
+   "note": "character close-up, navy box text left",
+   "cam_thirds_px_s": [
+    211.0,
+    49.0,
+    17.4
+   ]
+  },
+  {
+   "i": 16,
+   "t0": 45.203,
+   "t1": 45.503,
+   "dur": 0.3,
+   "beats": 0.76,
+   "bars": 0.19,
+   "start_bar": 27.56,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "pre",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 17,
+   "t0": 45.503,
+   "t1": 47.163,
+   "dur": 1.66,
+   "beats": 4.21,
+   "bars": 1.05,
+   "start_bar": 27.75,
+   "type": "A",
+   "method": "5",
+   "trans_in": "cut",
+   "section": "pre",
+   "note": "lavender + magenta ink blot, small vertical text in blot centre",
+   "cam_thirds_px_s": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "i": 18,
+   "t0": 47.163,
+   "t1": 50.533,
+   "dur": 3.37,
+   "beats": 8.54,
+   "bars": 2.13,
+   "start_bar": 28.8,
+   "type": "C",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "pre",
+   "note": "silhouette bust in ink, small vertical text both sides",
+   "cam_thirds_px_s": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "i": 19,
+   "t0": 50.533,
+   "t1": 51.503,
+   "dur": 0.97,
+   "beats": 2.46,
+   "bars": 0.61,
+   "start_bar": 30.93,
+   "type": "C",
+   "method": "2b",
+   "trans_in": "ink_wipe",
+   "section": "pre",
+   "note": "magenta ink blobs grow in steps (~0.1s) to cover frame in ~1s",
+   "cam_thirds_px_s": [
+    0.3,
+    0.3,
+    1.0
+   ]
+  },
+  {
+   "i": 20,
+   "t0": 51.503,
+   "t1": 51.763,
+   "dur": 0.26,
+   "beats": 0.66,
+   "bars": 0.16,
+   "start_bar": 31.55,
+   "type": "D",
+   "method": "-",
+   "trans_in": "flash_navy",
+   "section": "pre",
+   "note": "navy solid 0.27s",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 21,
+   "t0": 51.763,
+   "t1": 57.033,
+   "dur": 5.27,
+   "beats": 13.35,
+   "bars": 3.34,
+   "start_bar": 31.71,
+   "type": "C",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "pre",
+   "note": "key visual silhouette, small vertical text",
+   "cam_thirds_px_s": [
+    0.7,
+    0.7,
+    0.6
+   ]
+  },
+  {
+   "i": 22,
+   "t0": 57.033,
+   "t1": 57.833,
+   "dur": 0.8,
+   "beats": 2.03,
+   "bars": 0.51,
+   "start_bar": 35.05,
+   "type": "C",
+   "method": "6",
+   "trans_in": "cut",
+   "section": "pre",
+   "note": "big white slanted 'ベノベノム' over silhouette (no cut, text event)",
+   "cam_thirds_px_s": [
+    1.8,
+    1.5,
+    1.4
+   ]
+  },
+  {
+   "i": 23,
+   "t0": 57.833,
+   "t1": 58.903,
+   "dur": 1.07,
+   "beats": 2.71,
+   "bars": 0.68,
+   "start_bar": 35.55,
+   "type": "D",
+   "method": "small",
+   "trans_in": "flash_magenta",
+   "section": "pre",
+   "note": "magenta solid, tiny text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 24,
+   "t0": 58.903,
+   "t1": 59.303,
+   "dur": 0.4,
+   "beats": 1.01,
+   "bars": 0.25,
+   "start_bar": 36.23,
+   "type": "D",
+   "method": "-",
+   "trans_in": "cut",
+   "section": "pre",
+   "note": "navy solid",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 25,
+   "t0": 59.303,
+   "t1": 60.933,
+   "dur": 1.63,
+   "beats": 4.13,
+   "bars": 1.03,
+   "start_bar": 36.49,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "pre",
+   "note": "black, framed manga panel flickers in (B inset) then magenta ink blobs",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 26,
+   "t0": 60.933,
+   "t1": 61.563,
+   "dur": 0.63,
+   "beats": 1.6,
+   "bars": 0.4,
+   "start_bar": 37.52,
+   "type": "D",
+   "method": "small",
+   "trans_in": "ink_wipe",
+   "section": "pre",
+   "note": "magenta solid + white italic 'あらま' (pickup)",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 27,
+   "t0": 61.563,
+   "t1": 66.403,
+   "dur": 4.84,
+   "beats": 12.26,
+   "bars": 3.07,
+   "start_bar": 37.92,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "character wide + giant cut glyphs magenta/navy, one glyph per syllable, pop-in",
+   "cam_thirds_px_s": [
+    4.3,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "i": 28,
+   "t0": 66.403,
+   "t1": 67.933,
+   "dur": 1.53,
+   "beats": 3.88,
+   "bars": 0.97,
+   "start_bar": 40.98,
+   "type": "A",
+   "method": "5",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "ink blot centre text",
+   "cam_thirds_px_s": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "i": 29,
+   "t0": 67.933,
+   "t1": 68.833,
+   "dur": 0.9,
+   "beats": 2.28,
+   "bars": 0.57,
+   "start_bar": 41.95,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "giant glyphs 存在感 then ink blobs",
+   "cam_thirds_px_s": [
+    0.6,
+    0.3,
+    2.5
+   ]
+  },
+  {
+   "i": 30,
+   "t0": 68.833,
+   "t1": 69.503,
+   "dur": 0.67,
+   "beats": 1.7,
+   "bars": 0.42,
+   "start_bar": 42.52,
+   "type": "D",
+   "method": "2b",
+   "trans_in": "ink_wipe",
+   "section": "chorus1",
+   "note": "magenta ink field, white vertical text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 31,
+   "t0": 69.503,
+   "t1": 70.203,
+   "dur": 0.7,
+   "beats": 1.77,
+   "bars": 0.44,
+   "start_bar": 42.95,
+   "type": "A",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "props + ink, white vertical text",
+   "cam_thirds_px_s": [
+    2.7,
+    2.5,
+    2.2
+   ]
+  },
+  {
+   "i": 32,
+   "t0": 70.203,
+   "t1": 71.063,
+   "dur": 0.86,
+   "beats": 2.18,
+   "bars": 0.54,
+   "start_bar": 43.39,
+   "type": "D",
+   "method": "small",
+   "trans_in": "black",
+   "section": "chorus1",
+   "note": "black + tiny text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 33,
+   "t0": 71.063,
+   "t1": 73.833,
+   "dur": 2.77,
+   "beats": 7.02,
+   "bars": 1.75,
+   "start_bar": 43.93,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "giant 愛/哀 split magenta|navy",
+   "cam_thirds_px_s": [
+    2.9,
+    3.6,
+    0.8
+   ]
+  },
+  {
+   "i": 34,
+   "t0": 73.833,
+   "t1": 74.263,
+   "dur": 0.43,
+   "beats": 1.09,
+   "bars": 0.27,
+   "start_bar": 45.69,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus1",
+   "note": "close-up 'めっ!' navy glyphs",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 35,
+   "t0": 74.263,
+   "t1": 86.463,
+   "dur": 12.2,
+   "beats": 30.91,
+   "bars": 7.73,
+   "start_bar": 45.96,
+   "type": "A",
+   "method": "-",
+   "trans_in": "cut",
+   "section": "interlude1",
+   "note": "props wide + ink, no lyric, slow zoom",
+   "cam_thirds_px_s": [
+    1.5,
+    1.4,
+    1.3
+   ]
+  },
+  {
+   "i": 36,
+   "t0": 86.463,
+   "t1": 86.903,
+   "dur": 0.44,
+   "beats": 1.11,
+   "bars": 0.28,
+   "start_bar": 53.69,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "interlude1",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 37,
+   "t0": 86.903,
+   "t1": 90.033,
+   "dur": 3.13,
+   "beats": 7.93,
+   "bars": 1.98,
+   "start_bar": 53.97,
+   "type": "B",
+   "method": "1",
+   "trans_in": "cut",
+   "section": "verse2",
+   "note": "mono manga props, white bg + halftone, navy box text",
+   "cam_thirds_px_s": [
+    75.6,
+    16.8,
+    5.6
+   ]
+  },
+  {
+   "i": 38,
+   "t0": 90.033,
+   "t1": 92.803,
+   "dur": 2.77,
+   "beats": 7.02,
+   "bars": 1.75,
+   "start_bar": 55.95,
+   "type": "B",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "verse2",
+   "note": "giant black glyph rows over manga props (text event)",
+   "cam_thirds_px_s": [
+    225.6,
+    56.1,
+    14.2
+   ]
+  },
+  {
+   "i": 39,
+   "t0": 92.803,
+   "t1": 93.203,
+   "dur": 0.4,
+   "beats": 1.01,
+   "bars": 0.25,
+   "start_bar": 57.7,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse2",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 40,
+   "t0": 93.203,
+   "t1": 98.833,
+   "dur": 5.63,
+   "beats": 14.26,
+   "bars": 3.57,
+   "start_bar": 57.96,
+   "type": "B",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "verse2",
+   "note": "mono character + giant black glyphs",
+   "cam_thirds_px_s": [
+    8.1,
+    7.3,
+    5.2
+   ]
+  },
+  {
+   "i": 41,
+   "t0": 98.833,
+   "t1": 99.363,
+   "dur": 0.53,
+   "beats": 1.34,
+   "bars": 0.34,
+   "start_bar": 61.52,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "verse2",
+   "note": "black gap",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 42,
+   "t0": 99.363,
+   "t1": 106.033,
+   "dur": 6.67,
+   "beats": 16.9,
+   "bars": 4.22,
+   "start_bar": 61.86,
+   "type": "B",
+   "method": "2",
+   "trans_in": "cut",
+   "section": "pre2",
+   "note": "mono character, magenta accents kept, vertical text on black bars",
+   "cam_thirds_px_s": [
+    2.2,
+    1.8,
+    1.8
+   ]
+  },
+  {
+   "i": 43,
+   "t0": 106.033,
+   "t1": 111.563,
+   "dur": 5.53,
+   "beats": 14.01,
+   "bars": 3.5,
+   "start_bar": 66.08,
+   "type": "B",
+   "method": "6",
+   "trans_in": "cut",
+   "section": "pre2",
+   "note": "giant magenta slanted glyphs over mono character (text event)",
+   "cam_thirds_px_s": [
+    3.5,
+    1.4,
+    3.6
+   ]
+  },
+  {
+   "i": 44,
+   "t0": 111.563,
+   "t1": 112.433,
+   "dur": 0.87,
+   "beats": 2.2,
+   "bars": 0.55,
+   "start_bar": 69.58,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "pre2",
+   "note": "black + magenta ink blobs",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 45,
+   "t0": 112.433,
+   "t1": 113.663,
+   "dur": 1.23,
+   "beats": 3.12,
+   "bars": 0.78,
+   "start_bar": 70.13,
+   "type": "D",
+   "method": "6",
+   "trans_in": "ink_wipe",
+   "section": "pre2",
+   "note": "magenta solid, big white italic 'あら'",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 46,
+   "t0": 113.663,
+   "t1": 118.503,
+   "dur": 4.84,
+   "beats": 12.26,
+   "bars": 3.07,
+   "start_bar": 70.91,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "character wide + giant glyphs (chorus1 layout reused)",
+   "cam_thirds_px_s": [
+    4.6,
+    0.7,
+    0.9
+   ]
+  },
+  {
+   "i": 47,
+   "t0": 118.503,
+   "t1": 120.033,
+   "dur": 1.53,
+   "beats": 3.88,
+   "bars": 0.97,
+   "start_bar": 73.98,
+   "type": "A",
+   "method": "5",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "ink blot centre text",
+   "cam_thirds_px_s": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "i": 48,
+   "t0": 120.033,
+   "t1": 120.933,
+   "dur": 0.9,
+   "beats": 2.28,
+   "bars": 0.57,
+   "start_bar": 74.95,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "giant 存在 then ink blobs",
+   "cam_thirds_px_s": [
+    0.5,
+    0.3,
+    2.6
+   ]
+  },
+  {
+   "i": 49,
+   "t0": 120.933,
+   "t1": 121.603,
+   "dur": 0.67,
+   "beats": 1.7,
+   "bars": 0.42,
+   "start_bar": 75.52,
+   "type": "D",
+   "method": "2b",
+   "trans_in": "ink_wipe",
+   "section": "chorus2",
+   "note": "magenta field, white vertical text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 50,
+   "t0": 121.603,
+   "t1": 122.303,
+   "dur": 0.7,
+   "beats": 1.77,
+   "bars": 0.44,
+   "start_bar": 75.94,
+   "type": "A",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "props + ink, white vertical text",
+   "cam_thirds_px_s": [
+    2.2,
+    2.3,
+    1.9
+   ]
+  },
+  {
+   "i": 51,
+   "t0": 122.303,
+   "t1": 123.163,
+   "dur": 0.86,
+   "beats": 2.18,
+   "bars": 0.54,
+   "start_bar": 76.39,
+   "type": "D",
+   "method": "small",
+   "trans_in": "black",
+   "section": "chorus2",
+   "note": "black + tiny text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 52,
+   "t0": 123.163,
+   "t1": 125.933,
+   "dur": 2.77,
+   "beats": 7.02,
+   "bars": 1.75,
+   "start_bar": 76.93,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "giant 愛/哀 split",
+   "cam_thirds_px_s": [
+    3.6,
+    3.8,
+    0.7
+   ]
+  },
+  {
+   "i": 53,
+   "t0": 125.933,
+   "t1": 126.363,
+   "dur": 0.43,
+   "beats": 1.09,
+   "bars": 0.27,
+   "start_bar": 78.68,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus2",
+   "note": "close-up 'めっ!'",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 54,
+   "t0": 126.363,
+   "t1": 151.633,
+   "dur": 25.27,
+   "beats": 64.02,
+   "bars": 16.0,
+   "start_bar": 78.96,
+   "type": "A",
+   "method": "credit",
+   "trans_in": "cut",
+   "section": "interlude2",
+   "note": "character wide, credits one by one (vocal/mix/Illustration/Movie), ~4 bars each",
+   "cam_thirds_px_s": [
+    1.9,
+    1.4,
+    1.1
+   ]
+  },
+  {
+   "i": 55,
+   "t0": 151.633,
+   "t1": 157.933,
+   "dur": 6.3,
+   "beats": 15.96,
+   "bars": 3.99,
+   "start_bar": 94.96,
+   "type": "E",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "bridge",
+   "note": "grey character + motion blur on white, blurred giant magenta glyphs, magenta slice glitch",
+   "cam_thirds_px_s": [
+    17.7,
+    14.1,
+    15.4
+   ]
+  },
+  {
+   "i": 56,
+   "t0": 157.933,
+   "t1": 164.203,
+   "dur": 6.27,
+   "beats": 15.88,
+   "bars": 3.97,
+   "start_bar": 98.95,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "character wide + giant glyphs, pills denser",
+   "cam_thirds_px_s": [
+    1.3,
+    2.4,
+    93.5
+   ]
+  },
+  {
+   "i": 57,
+   "t0": 164.203,
+   "t1": 164.863,
+   "dur": 0.66,
+   "beats": 1.67,
+   "bars": 0.42,
+   "start_bar": 102.92,
+   "type": "E",
+   "method": "-",
+   "trans_in": "grey_blur",
+   "section": "chorus3",
+   "note": "white/grey motion-blur whip 0.6s",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 58,
+   "t0": 164.863,
+   "t1": 169.063,
+   "dur": 4.2,
+   "beats": 10.64,
+   "bars": 2.66,
+   "start_bar": 103.34,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "giant glyphs, navy pills fill background",
+   "cam_thirds_px_s": [
+    8.1,
+    5.5,
+    4.9
+   ]
+  },
+  {
+   "i": 59,
+   "t0": 169.063,
+   "t1": 170.603,
+   "dur": 1.54,
+   "beats": 3.9,
+   "bars": 0.98,
+   "start_bar": 106.0,
+   "type": "A",
+   "method": "5",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "ink blot centre text",
+   "cam_thirds_px_s": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "i": 60,
+   "t0": 170.603,
+   "t1": 172.163,
+   "dur": 1.56,
+   "beats": 3.95,
+   "bars": 0.99,
+   "start_bar": 106.98,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "giant 存在 then ink blobs -> magenta field",
+   "cam_thirds_px_s": [
+    5.6,
+    11.6,
+    6.7
+   ]
+  },
+  {
+   "i": 61,
+   "t0": 172.163,
+   "t1": 172.863,
+   "dur": 0.7,
+   "beats": 1.77,
+   "bars": 0.44,
+   "start_bar": 107.96,
+   "type": "A",
+   "method": "2b",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "props + ink, white vertical text",
+   "cam_thirds_px_s": [
+    2.9,
+    2.7,
+    2.1
+   ]
+  },
+  {
+   "i": 62,
+   "t0": 172.863,
+   "t1": 173.733,
+   "dur": 0.87,
+   "beats": 2.2,
+   "bars": 0.55,
+   "start_bar": 108.41,
+   "type": "D",
+   "method": "small",
+   "trans_in": "black",
+   "section": "chorus3",
+   "note": "black + tiny text",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 63,
+   "t0": 173.733,
+   "t1": 176.503,
+   "dur": 2.77,
+   "beats": 7.02,
+   "bars": 1.75,
+   "start_bar": 108.96,
+   "type": "A",
+   "method": "4",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "giant 愛/哀 split",
+   "cam_thirds_px_s": [
+    7.9,
+    6.8,
+    3.5
+   ]
+  },
+  {
+   "i": 64,
+   "t0": 176.503,
+   "t1": 179.633,
+   "dur": 3.13,
+   "beats": 7.93,
+   "bars": 1.98,
+   "start_bar": 110.71,
+   "type": "A",
+   "method": "2",
+   "trans_in": "cut",
+   "section": "chorus3",
+   "note": "tighter character crop, vertical black bars, 'さけぶベノム' magenta",
+   "cam_thirds_px_s": [
+    41.6,
+    231.8,
+    69.4
+   ]
+  },
+  {
+   "i": 65,
+   "t0": 179.633,
+   "t1": 195.533,
+   "dur": 15.9,
+   "beats": 40.28,
+   "bars": 10.07,
+   "start_bar": 112.69,
+   "type": "A",
+   "method": "6",
+   "trans_in": "cut",
+   "section": "outro",
+   "note": "face close-up (only once), title logo then 'music' credit",
+   "cam_thirds_px_s": [
+    16.5,
+    6.1,
+    9.9
+   ]
+  },
+  {
+   "i": 66,
+   "t0": 195.533,
+   "t1": 196.103,
+   "dur": 0.57,
+   "beats": 1.44,
+   "bars": 0.36,
+   "start_bar": 122.76,
+   "type": "D",
+   "method": "-",
+   "trans_in": "ink_wipe_black",
+   "section": "end",
+   "note": "black ink blobs close the frame",
+   "cam_thirds_px_s": null
+  },
+  {
+   "i": 67,
+   "t0": 196.103,
+   "t1": 203.25,
+   "dur": 7.18,
+   "beats": 18.19,
+   "bars": 4.55,
+   "start_bar": 123.13,
+   "type": "D",
+   "method": "-",
+   "trans_in": "black",
+   "section": "end",
+   "note": "black to end",
+   "cam_thirds_px_s": null
+  }
+ ],
+ "glitch_events": [
+  [
+   2.666,
+   2
+  ],
+  [
+   2.933,
+   2
+  ],
+  [
+   3.233,
+   1
+  ],
+  [
+   3.5,
+   5
+  ],
+  [
+   4.733,
+   1
+  ],
+  [
+   4.8,
+   6
+  ],
+  [
+   5.133,
+   1
+  ],
+  [
+   6.166,
+   3
+  ],
+  [
+   6.366,
+   2
+  ],
+  [
+   6.6,
+   1
+  ],
+  [
+   6.866,
+   1
+  ],
+  [
+   7.133,
+   2
+  ],
+  [
+   7.233,
+   2
+  ],
+  [
+   7.4,
+   2
+  ],
+  [
+   9.7,
+   1
+  ],
+  [
+   10.1,
+   2
+  ],
+  [
+   11.066,
+   3
+  ],
+  [
+   11.233,
+   2
+  ],
+  [
+   11.633,
+   3
+  ],
+  [
+   12.066,
+   2
+  ],
+  [
+   12.5,
+   2
+  ],
+  [
+   12.833,
+   1
+  ],
+  [
+   13.3,
+   1
+  ],
+  [
+   13.5,
+   3
+  ],
+  [
+   13.633,
+   2
+  ],
+  [
+   16.266,
+   2
+  ],
+  [
+   16.733,
+   1
+  ],
+  [
+   21.066,
+   2
+  ],
+  [
+   22.033,
+   5
+  ],
+  [
+   24.666,
+   2
+  ],
+  [
+   25.733,
+   2
+  ],
+  [
+   26.2,
+   1
+  ],
+  [
+   27.2,
+   1
+  ],
+  [
+   27.633,
+   1
+  ],
+  [
+   27.866,
+   2
+  ],
+  [
+   28.0,
+   2
+  ],
+  [
+   28.266,
+   4
+  ],
+  [
+   28.566,
+   1
+  ],
+  [
+   28.833,
+   5
+  ],
+  [
+   29.133,
+   2
+  ],
+  [
+   29.4,
+   1
+  ],
+  [
+   29.666,
+   3
+  ],
+  [
+   30.066,
+   8
+  ],
+  [
+   30.466,
+   1
+  ],
+  [
+   30.566,
+   1
+  ],
+  [
+   30.666,
+   3
+  ],
+  [
+   31.5,
+   5
+  ],
+  [
+   31.7,
+   2
+  ],
+  [
+   31.933,
+   1
+  ],
+  [
+   32.033,
+   2
+  ],
+  [
+   32.2,
+   1
+  ],
+  [
+   32.466,
+   2
+  ],
+  [
+   32.566,
+   2
+  ],
+  [
+   32.7,
+   1
+  ],
+  [
+   34.133,
+   2
+  ],
+  [
+   34.766,
+   3
+  ],
+  [
+   35.933,
+   3
+  ],
+  [
+   37.966,
+   1
+  ],
+  [
+   38.1,
+   3
+  ],
+  [
+   40.433,
+   2
+  ],
+  [
+   41.133,
+   1
+  ],
+  [
+   41.4,
+   5
+  ],
+  [
+   43.633,
+   2
+  ],
+  [
+   44.033,
+   2
+  ],
+  [
+   45.166,
+   1
+  ],
+  [
+   104.366,
+   1
+  ],
+  [
+   162.766,
+   1
+  ],
+  [
+   163.366,
+   1
+  ],
+  [
+   178.166,
+   1
+  ]
+ ],
+ "measured": {
+  "type_share": {
+   "A": 0.592,
+   "B": 0.117,
+   "C": 0.14,
+   "D": 0.117,
+   "E": 0.034
+  },
+  "palette_share_all": {
+   "lav": 0.279,
+   "mag": 0.113,
+   "navy": 0.148,
+   "white": 0.191,
+   "black": 0.082,
+   "tint_or_edge": 0.188
+  },
+  "luma_std": 76.1,
+  "cuts_first20s": 4,
+  "cuts_per20s": [
+   4,
+   9,
+   12,
+   10,
+   7,
+   5,
+   7,
+   2,
+   9,
+   2
+  ],
+  "glitch": {
+   "count": 69,
+   "mean_frames": 2.1,
+   "per_min_C": 99.4,
+   "per_min_A": 10.5,
+   "note": "green/yellow strips, intro+verse1 mostly; bridge uses magenta slices instead"
+  },
+  "ink_wipe_count": 7,
+  "cut_lead_ms": 70
+ }
+}

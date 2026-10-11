@@ -1,9 +1,12 @@
-"""Beat grid, downbeats, sections, per-frame energy and onset curves -> data/analysis.json"""
+"""Beat grid, downbeats, sections, per-frame energy and onset curves.
+usage: python3 tools/analyze_audio.py [audio] [out.json] [k_sections]"""
 import json, sys
 import numpy as np, librosa
 
 FPS = 30
-y, sr = librosa.load("assets/audio/song.mp3", sr=22050, mono=True)
+SRC = sys.argv[1] if len(sys.argv) > 1 else "assets/audio/song.mp3"
+OUT = sys.argv[2] if len(sys.argv) > 2 else "data/analysis.json"
+y, sr = librosa.load(SRC, sr=22050, mono=True)
 dur = len(y) / sr
 hop = 256
 
@@ -43,7 +46,7 @@ mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop, n_mfcc=13)
 db_frames = librosa.time_to_frames(downbeats, sr=sr, hop_length=hop)
 feat = np.vstack([librosa.util.normalize(chroma), librosa.util.normalize(mfcc), rms[None] * 5])
 sync = librosa.util.sync(feat, db_frames, aggregate=np.median)
-k = int(sys.argv[1]) if len(sys.argv) > 1 else 12
+k = int(sys.argv[3]) if len(sys.argv) > 3 else 12
 bounds = librosa.segment.agglomerative(sync, k)
 bound_t = [float(downbeats[b - 1]) if b > 0 else 0.0 for b in bounds]
 
@@ -59,7 +62,7 @@ out = dict(fps=FPS, duration=dur, bpm=float(np.atleast_1d(tempo)[0]),
            onsets=[[round(float(a), 4), round(float(b), 3)] for a, b in zip(on_t, on_s)],
            energy=energy.round(3).tolist(), onset_curve=onset_curve.round(3).tolist(),
            vocal=vocal.round(3).tolist())
-json.dump(out, open("data/analysis.json", "w"))
+json.dump(out, open(OUT, "w"))
 print("bpm", out["bpm"], "beats", len(beats), "ibi std", out["ibi_std"], "downbeat phase", phase)
 print("first downbeats", downbeats[:6].round(3))
 print("bounds", [round(b, 2) for b in bound_t])
