@@ -31,6 +31,10 @@ def on_beats(t0, text):
         if not inside: k += 1
         out_.append(float(b[k]))
     return [round(x, 3) for x in out_]
+# bridge: the whole-mix pass ran ~0.6-0.7 s late; user heard line 22 at ~85.9 s and line 23 at ~88.9 s,
+# matching separated-vocal onsets at 85.86 s and 88.86 s -> shift both lines as a whole
+MANUAL_CHARS[22] = [round(t - 0.70, 3) for t in MANUAL_CHARS[22]]
+MANUAL_CHARS[23] = [round(t - 0.60, 3) for t in MANUAL_CHARS[23]]
 MANUAL_CHARS[19] = on_beats(64.93, "愛（愛）哀（哀）")
 MANUAL_CHARS[25] = on_beats(96.12, "愛（愛）哀（哀）愛（愛）哀（哀）")
 MANUAL_CHARS[29] = on_beats(109.15, "愛（愛）哀（哀）")
@@ -108,6 +112,7 @@ for k, o in enumerate(out):
     o["low"] = (o["cover"] < 0.75 and not o.get("paired", "").endswith(")") or o["id"] in (22, 23)) and not ("from" in o.get("paired", "") and not o.get("paired", "").endswith(f"from {o['id']})"))
 for o in out:
     if o["id"] in (19, 25, 29): o["low"] = False; o["fix"] = "on beats (user-confirmed pattern)"
+    if o["id"] in (22, 23): o["low"] = False; o["fix"] = "manual chars, start confirmed by ear"
 json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o["start"]:7.2f}-{o["end"]:7.2f} {o["pass"]:5s} cov {o["cover"]:.2f} {"LOW " if o["low"] else ""}{o.get("fix","")} {o.get("paired","")} {o.get("spread","")} {o["ja"]}')
