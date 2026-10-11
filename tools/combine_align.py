@@ -20,6 +20,20 @@ MANUAL_CHARS = {
     22: [86.56, 86.78, 87.00, 87.28, 87.40, 87.86, 87.94, 88.14, 88.32, 88.64, 89.06, 89.20, 89.28, 89.30, 89.34, 89.38, 89.42, 89.44],
     23: [89.46, 90.24, 90.62, 91.04, 91.22, 91.42, 91.60, 91.75, 91.90, 92.16, 92.32, 92.32, 92.40, 92.48, 92.56, 92.66, 92.66, 92.78, 92.90, 93.00],
 }
+# 愛/哀 call-and-response lines: one syllable per beat, main then chorus echo (confirmed by ear by the user for line 25:
+# "愛 once, chorus once, x4") and by separated-vocal onsets on every beat. Brackets share the time of the echo they wrap.
+BT = np.array(A["beats"])
+def on_beats(t0, text):
+    b = BT[np.argmin(np.abs(BT - t0)):]; k = -1; out_ = []; inside = False
+    for ch in text:
+        if ch == "（": inside = True; k += 1; out_.append(float(b[k])); continue
+        if ch == "）": inside = False; out_.append(float(b[k])); continue
+        if not inside: k += 1
+        out_.append(float(b[k]))
+    return [round(x, 3) for x in out_]
+MANUAL_CHARS[19] = on_beats(64.93, "愛（愛）哀（哀）")
+MANUAL_CHARS[25] = on_beats(96.12, "愛（愛）哀（哀）愛（愛）哀（哀）")
+MANUAL_CHARS[29] = on_beats(109.15, "愛（愛）哀（哀）")
 LOW = {}
 out = []
 for i in range(1, 34):
@@ -36,7 +50,7 @@ for i in range(1, 34):
 # last chorus repeats chorus 1 exactly 28 bars later (vocal onset cross-correlation: 44.218 s, r=0.81; 28 bars = 44.211 s).
 # Pairs (chorus1 line, last-chorus line, char offset in chorus1 line, rule): take the better-recognised line, or average both.
 SHIFT = 28 * 240 / 152
-PAIRS = [(16, 26, 3, "a"), (17, 27, 0, "a"), (18, 28, 0, "a"), (19, 29, 0, "b"), (20, 30, 0, "a")]
+PAIRS = [(16, 26, 3, "a"), (17, 27, 0, "a"), (18, 28, 0, "a"), (20, 30, 0, "a")]
 byid = {o["id"]: o for o in out}
 for a, b, off, rule in PAIRS:
     A_, B_ = byid[a], byid[b]
@@ -75,6 +89,13 @@ for o in out:
     o["chars"] = c
     if fixed: o["spread"] = fixed
 
+for k, o in enumerate(out[:-1]):
+    lim = out[k + 1]["chars"][0] - 0.05; c = o["chars"]
+    if max(c) > lim and "（" in o["ja"]:
+        p0 = o["ja"].index("（"); a0 = c[p0]; hi = max(c[p0:])
+        if a0 < lim:
+            o["chars"] = c[:p0] + [round(a0 + (x - a0) * (lim - a0) / max(1e-3, hi - a0), 3) for x in c[p0:]]
+
 # display windows: start = first char, end = next line start - 0.05 (bridge gaps < 0.8 s), else +0.4 s tail
 starts = [o["chars"][0] for o in out]
 vocal_end = {5: 21.4, 15: 52.7, 21: 67.9, 33: 116.2}          # separated-vocal activity ends before instrumental gaps
@@ -85,6 +106,8 @@ for k, o in enumerate(out):
     end = vocal_end.get(o["id"], last + 0.4)
     o["end"] = round(nxt - 0.05 if nxt - end < 0.8 else min(end + 0.4, nxt - 0.05), 2)
     o["low"] = (o["cover"] < 0.75 and not o.get("paired", "").endswith(")") or o["id"] in (22, 23)) and not ("from" in o.get("paired", "") and not o.get("paired", "").endswith(f"from {o['id']})"))
+for o in out:
+    if o["id"] in (19, 25, 29): o["low"] = False; o["fix"] = "on beats (user-confirmed pattern)"
 json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o["start"]:7.2f}-{o["end"]:7.2f} {o["pass"]:5s} cov {o["cover"]:.2f} {"LOW " if o["low"] else ""}{o.get("fix","")} {o.get("paired","")} {o.get("spread","")} {o["ja"]}')
