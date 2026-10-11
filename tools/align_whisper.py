@@ -1,9 +1,11 @@
 """Align the user's lyric lines to Whisper word timestamps (character-level sequence matching).
 Whisper text is only a timing source; displayed text always comes from data/lyrics.tsv."""
-import json, difflib, unicodedata
+import json, difflib, unicodedata, sys
 import numpy as np
 
-words = json.load(open("data/whisper_words.json", encoding="utf-8"))
+WORDS = sys.argv[1] if len(sys.argv) > 1 else "data/whisper_words.json"
+OUT = sys.argv[2] if len(sys.argv) > 2 else "data/lyrics_timed.json"
+words = json.load(open(WORDS, encoding="utf-8"))
 rows = [l.rstrip("\n").split("\t") for l in open("data/lyrics.tsv", encoding="utf-8") if l[0].isdigit()]
 sections = json.load(open("data/sections.json"))
 
@@ -101,6 +103,6 @@ for k, (r, o) in enumerate(zip(rows, out)):
 MANUAL = {}
 for o in out:
     for idx, t in MANUAL.get(o["id"], {}).items(): o["chars"][idx] = t
-json.dump(out, open("data/lyrics_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 for o in out:
     print(f'{o["id"]:2d} {o.get("section","?"):8s} {o["start"]:7.2f}-{o["end"]:7.2f} cov {o["cover"]:.2f} {o.get("flag","")} {o["ja"]}')
