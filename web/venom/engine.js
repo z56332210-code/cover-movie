@@ -145,7 +145,9 @@ function drawImg(c, name, cx, cy, s, rot = 0, alpha = 1) {
 }
 
 // ------------------------------------------------------------------ camera
+let MB = 0;   // motion-blur sub-frame offset (s): only continuous motion (camera, prop float) moves, the 15 fps holds do not
 function camera(s, t) {
+  t += MB;
   const g = Math.max(0.001, s.g1 - s.g0), tau = t - s.g0, u = clamp(tau / g);
   const dec = 1 - Math.exp(-tau / 0.55);                    // fast right after the cut, then settles (ref: ~180 -> 50 -> 15 px/s)
   switch (s.camera) {
@@ -202,7 +204,7 @@ const FG_PROPS = {
 // props float on their own (reference: each prop drifts a little, the silhouette stays still)
 let FLOAT_AMP = 1, PARX = 0, PARY = 0;     // PAR*: extra parallax offset for props (foreground layers move more than the ink/background)
 function floatOf(n, t) { const ph = hash(n.length * 97 + n.charCodeAt(4), 5) * 6.283, ph2 = hash(n.charCodeAt(2), 9) * 6.283;
-  const k = FLOAT_AMP; return [Math.sin(t * 0.55 + ph) * 16 * k + PARX, Math.cos(t * 0.47 + ph2) * 11 * k + PARY, Math.sin(t * 0.38 + ph2) * 0.03 * k]; }
+  t += MB; const k = FLOAT_AMP; return [Math.sin(t * 0.55 + ph) * 16 * k + PARX, Math.cos(t * 0.47 + ph2) * 11 * k + PARY, Math.sin(t * 0.38 + ph2) * 0.03 * k]; }
 function drawProps(c, list, filter, t = 0) {
   if (filter) c.filter = filter;
   list.forEach(([n, x, y, s, r]) => { const [dx, dy, dr] = floatOf(n, t); drawImg(c, n, x + dx, y + dy, s, r + dr); });
@@ -914,8 +916,18 @@ window.init = async function (width = 960, opts = {}) {
   await Promise.all(names.map(loadImg));
   return { fallbacks: fallbackChars(), shots: SHOTS.length };
 };
-window.needsBlur = function (t) { const s = shotAt(t); return !!OPTS.post && (s.camera !== "static"); };
-window.seek = function (t) { const s = render(t); return { shot: s.i, framing: s.framing, glitch: s._glitch }; };
+window.needsBlur = function (t) { return !!OPTS.post; };   // the props always float, so every frame gets the shutter
+// final: 180° shutter, 3 samples across the exposure, averaged (opts.blur = exposure in seconds)
+let ACC = null;
+window.seek = function (t, opts = {}) {
+  const e = opts.blur || 0;
+  if (!e) { MB = 0; const s = render(t); return { shot: s.i, framing: s.framing, glitch: s._glitch }; }
+  if (!ACC) ACC = document.createElement("canvas");
+  ACC.width = cv.width; ACC.height = cv.height; const a = ACC.getContext("2d"); let s;
+  [-0.5, 0, 0.5].forEach((d, i) => { MB = d * e; s = render(t); a.globalAlpha = 1 / (i + 1); a.drawImage(cv, 0, 0); });
+  MB = 0; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(ACC, 0, 0); ctx.restore();
+  return { shot: s.i, framing: s.framing, glitch: s._glitch };
+};
 window.glitchTimes = function (a, b) { const out = []; for (let f = Math.ceil(a * 30); f < b * 30; f++) { const t = f / 30, s = shotAt(t); if (glitchCount(t, s)) out.push(t); } return out; };
 function glitchCount(t, s) { const rate = (GLITCH_RATE[s.type] || 0) * (GLITCH_SECTION[s.section] ?? 1), f = Math.floor(t * 15 + 1e-6); for (let k = 0; k < 2; k++) { const f0 = f - k; if (hash(f0, 911) <= rate / 15 && k < (hash(f0, 912) < 0.12 ? 2 : 1)) return 1; } return 0; }
 // camera speed per shot thirds straight from the engine (px/s at 1080p, translation + zoom at the frame edge)
