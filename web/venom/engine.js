@@ -172,13 +172,14 @@ const CHAR = {
   body:  { img: "body", cx: 960, top: -40, h: 1720 },       // full body, head to knees in frame (interlude credits)
   tight: { img: "bust", cx: 980, top: -120, h: 1750 },     // tighter than the bust shot (last chorus)    // key visual silhouette
 };
-let EYES = [];   // screen-space eye boxes of the last drawn character (for the text check)
+let EYES = [], LAST_CHAR = null, CUR_SHOT = null;   // screen-space eye boxes of the last drawn character (for the text check)
 function drawChar(c, cam, place, variant = "") {
   const P = CHAR[place], im = IMG[P.img + variant]; if (!im) return;
   const s = P.h / im.height, w = im.width * s, x = P.cx - w / 2, y = P.top;
   c.drawImage(im, x, y, w, P.h);
   const m = D.meta.chars[P.img];
-  if (variant === "_sil") { EYES = []; return; }            // a silhouette has no visible eyes
+  if (variant === "_sil") { EYES = []; LAST_CHAR = null; return; }   // a silhouette has no visible eyes
+  LAST_CHAR = { x, y, s, eyes: m.eyes };
   EYES = m.eyes.map(([ex, ey, ew, eh]) => {
     const pad = 0.6;
     const [ax, ay] = camPoint(cam, x + (ex - ew * pad) * s, y + (ey - eh * pad) * s);
@@ -340,11 +341,25 @@ function layoutWord(c, wd, wi, id, seed, attempt) {
   return G.map((g) => ({ ...g, x: ox + g.x * fit, y: oy + g.y * fit, px: g.px * fit, w: g.w * fit }));
 }
 // the layout must keep every glyph (plus its drift/drop range) off the eyes; tries up to 14 variations
+// eye boxes over the whole time a word is on screen (the camera keeps moving): the layout must not change mid-word
+function eyesOver(a, b) {
+  if (!LAST_CHAR || !CUR_SHOT) return EYES;
+  const L_ = LAST_CHAR, out = []; b = Math.min(b, CUR_SHOT.g1);
+  for (let k = 0; k <= 6; k++) {
+    const cam = camera(CUR_SHOT, a + (b - a) * k / 6);
+    for (const [ex, ey, ew, eh] of L_.eyes) {
+      const [ax, ay] = camPoint(cam, L_.x + (ex - ew * 0.6) * L_.s, L_.y + (ey - eh * 0.6) * L_.s);
+      const [bx, by] = camPoint(cam, L_.x + (ex + ew * 1.6) * L_.s, L_.y + (ey + eh * 1.6) * L_.s);
+      out.push([ax, ay, bx - ax, by - ay]);
+    }
+  }
+  return out;
+}
 function wordLayout(c, wd, wi, id, seed) {
-  const pad = 40;
+  const pad = 40, EY = eyesOver(wd.t0, wd.until);
   for (let a = 0; a < 22; a++) {
     const G = layoutWord(c, wd, wi, id, seed, a);
-    const ok = G.every((g) => EYES.every((e) => !(g.x - pad < e[0] + e[2] && e[0] < g.x + g.w + pad && g.y - g.px * 1.15 - pad < e[1] + e[3] && e[1] < g.y + g.px * 0.15 + 40 + pad)));
+    const ok = G.every((g) => EY.every((e) => !(g.x - pad < e[0] + e[2] && e[0] < g.x + g.w + pad && g.y - g.px * 1.15 - pad < e[1] + e[3] && e[1] < g.y + g.px * 0.15 + 40 + pad)));
     if (ok) return G;
   }
   return layoutWord(c, wd, wi, id, seed, 21);
@@ -839,7 +854,7 @@ const WIPE_IN = 0.5;   // cross ink wipe into a different picture
 function render(tReal) {
   const t = Math.floor(tReal * 15 + 1e-6) / 15;
   TEXTBOX.length = 0; EYES = []; CUTS.length = 0; DRAWN.length = 0; GIANT.length = 0;
-  const s = shotAt(t), p = SHOTS[s.i - 1];
+  const s = shotAt(t), p = SHOTS[s.i - 1]; CUR_SHOT = s; LAST_CHAR = null;
   ctx.setTransform(SC, 0, 0, SC, 0, 0);
   ctx.fillStyle = PAL.black; ctx.fillRect(0, 0, W0, H0);
   const cam = pictureScene(s, t);
@@ -981,7 +996,7 @@ window.textCheck = function (t) {
 //  giant: frames where a highlight word's key glyphs (first min(n,3)) are not all fully inside the frame,
 //         or where the first glyph is cut while the bottom of another glyph is cut too
 window.audit = function () {
-  const app = {}, meth = {}, lastSeen = {}, giantBad = [];
+  const app = {}, meth = {}, lastSeen = {}, giantBad = [], jumps = [], prevG = {};
   for (let f = 0; f < D.duration * 15; f++) {
     const t = f / 15; render(t);
     for (const [id, m] of DRAWN) {
@@ -989,7 +1004,12 @@ window.audit = function () {
       if (lastSeen[id] === undefined || f - lastSeen[id] > 2) app[id] = (app[id] || 0) + 1;
       lastSeen[id] = f;
     }
-    const words = {};
+    const words = {}, curG = {};
+    for (const g of GIANT) {                                   // a giant glyph must never be re-placed while it is on screen
+      const key = g.word + "#" + g.k, q = prevG[key]; curG[key] = g.box;
+      if (q && (Math.abs(q[0] - g.box[0]) > 30 || Math.abs(q[1] - g.box[1]) > 150)) jumps.push([+t.toFixed(2), g.word]);
+    }
+    for (const k in prevG) delete prevG[k]; Object.assign(prevG, curG);
     for (const g of GIANT) (words[g.word] = words[g.word] || []).push(g);
     for (const [w, gs] of Object.entries(words)) {
       const inside = (b) => b[0] >= -2 && b[1] >= -2 && b[0] + b[2] <= W0 + 2 && b[1] + b[3] <= H0 + 2;
@@ -1001,7 +1021,7 @@ window.audit = function () {
     }
   }
   const lines = D.lyrics.map((l) => ({ id: l.id, appearances: app[l.id] || 0, methods: [...(meth[l.id] || [])] }));
-  return { lines, giantBad };
+  return { lines, giantBad, jumps };
 };
 window.inkCoverage = function (seed, us) {     // calibration: covered fraction of the frame for threshold values us
   const f = inkField(seed), { F } = f; return us.map((u) => { let n = 0; for (let i = 0; i < F.length; i++) if (u - F[i] > 0) n++; return n / F.length; });

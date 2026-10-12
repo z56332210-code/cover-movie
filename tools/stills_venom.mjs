@@ -66,6 +66,8 @@ if (flag("audit")) {
   const gw = {}; for (const [t, w] of r.giantBad) (gw[w] = gw[w] || []).push(t);
   for (const [w, ts] of Object.entries(gw)) console.log("GIANT", w, ts.length, "frames", ts[0], "-", ts[ts.length - 1]);
   console.log(`giant audit: ${r.giantBad.length} frames where key glyphs are cut`);
+  for (const [t, w] of r.jumps) console.log("JUMP", t, w);
+  console.log(`jump audit: ${r.jumps.length} giant glyphs re-placed while on screen`);
   fs.writeFileSync(path.join(out, "audit.json"), JSON.stringify(r, null, 1));
 }
 if (opt("inkcal")) console.log("inkcal", JSON.stringify(await page.evaluate((sd) => { const us = []; for (let u = 0; u <= 1.0001; u += 0.05) us.push(+u.toFixed(2)); return [us, window.inkCoverage(sd, us)]; }, +opt("inkcal"))));
