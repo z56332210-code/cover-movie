@@ -409,7 +409,7 @@ function textThin(c, l, t) {
 // bridge (user): black screen, the line alone in thin Mincho, two vertical columns set slightly off each other;
 // words arrive on their sung time
 const EMPH_COLS = { 23: [[["傷害な", 0, 0], ["ねぇ", 0, 1]], [["痛い痛いの", 1, 0], ["SICK SICK", 1, 1]]] };
-const EMPH_LAYOUT = [{ x: 1130, y: 120, px: 120, dx: [0, -24] }, { x: 870, y: 215, px: 120, dx: [0, 28] }], EMPH_BOTTOM = 960;
+const EMPH_LAYOUT = [{ x: 1130, y: 120, px: 120, dx: [0, -10] }, { x: 870, y: 215, px: 120, dx: [0, 12] }], EMPH_BOTTOM = 960;
 function textEmph(c, l, t) {
   const cols = EMPH_COLS[l.id] || [[[l.ja, 0, 0]]]; let pos = 0;
   c.fillStyle = PAL.white;
@@ -421,11 +421,32 @@ function textEmph(c, l, t) {
       const at = l.ja.indexOf(w, pos); pos = at + w.length;
       const x = L_.x + L_.dx[wi]; c.font = font(w, px);
       const a = clamp((t - l.chars[at] + 0.02) / 0.12);
-      c.globalAlpha = a; const h = vcol(c, w, x, y, px); c.globalAlpha = 1;
+      c.globalAlpha = a; const h = vcol(c, w, x, y, px, 1.04, true, 7300 + at); c.globalAlpha = 1;
       if (a > 0) noteBox(c, x - px * 0.6, y, px * 1.2, h);
       y += h + px * 0.45;
     });
   });
+}
+// 愛/哀 call-and-response (user): no brackets, one kanji per sung "ai" - the main voice 愛, the chorus answers 哀.
+// 愛 drops in big on its beat; on the next beat 哀 slips out from behind it (navy, overlapping, peeking past an edge);
+// the pair is hard-replaced by the next 愛 at a new place / angle
+function aiBeats(c, l, t, s) {
+  const bt = [...new Set(l.chars.map((x) => Math.round(x * 1000)))].sort((a, b) => a - b).map((x) => x / 1000);
+  let k = -1; bt.forEach((b, i) => { if (t >= b - 0.02) k = i; }); if (k < 0) return;
+  const set = k >> 1, R = rng(4100 + l.id * 37 + set * 11), side = set % 2 ? 1 : -1;
+  const px = 430 + R() * 90, cx = 960 + side * (560 + R() * 70), cy = 560 + (R() - 0.5) * 140, rot = (R() - 0.5) * 0.34;
+  const age = t - bt[2 * set], f = Math.round(age * 15);                                  // frames since 愛
+  const pop = f <= 0 ? 1.3 : f === 1 ? 1.07 : 1 + 0.035 * age, drop = f <= 0 ? -0.16 * px : f === 1 ? -0.04 * px : 0;
+  const wob = 0.03 * Math.sin(age * 5 + set);
+  c.save(); c.translate(cx, cy + drop + 14 * Math.sin(age * 2.3)); c.rotate(rot + wob); c.textAlign = "center"; c.textBaseline = "middle";
+  if (k >= 2 * set + 1) {                                                                     // chorus 哀 behind 愛
+    const a2 = t - bt[2 * set + 1], e = Math.min(1, (Math.round(a2 * 15) + 1) / 3), ang = Math.PI / 2 + side * 0.5 + (R() - 0.5) * 0.7;   // peeks out below / toward the centre, inside the frame
+    const ox = Math.cos(ang) * px * 0.36 * e, oy = Math.sin(ang) * px * 0.30 * e + px * 0.06 * e;
+    c.save(); c.translate(ox, oy); c.rotate((R() - 0.5) * 0.5 * e); const q = 0.95 + 0.07 * e; c.scale(q, q);
+    c.font = jpFont(px); c.lineJoin = "round"; c.lineWidth = px * 0.07; c.strokeStyle = PAL.white; c.strokeText("哀", 0, 0); c.fillStyle = PAL.navy; c.fillText("哀", 0, 0); noteBox(c, -px * 0.5, -px * 0.5, px, px); c.restore();
+  }
+  c.scale(pop, pop); c.font = jpFont(px); c.fillStyle = PAL.mag; shadowOn(c, px); c.fillText("愛", 0, 0); shadowOff(c);
+  noteBox(c, -px * 0.5, -px * 0.5, px, px); c.textAlign = "left"; c.restore();
 }
 // 6: magenta bold slanted
 function textMagenta(c, str, x, y, px = 150, rot = -0.2, color = PAL.mag) {
@@ -713,7 +734,8 @@ function lyricsLayer(c, s, t) {
       case "4": if (s.type === "A") giantA(c, id, t, 500 + s.gid);
         else if (s.type === "E") { c.filter = `blur(${5 * SC}px)`; giantA(c, id, t, 520 + s.gid); c.filter = "none"; } break;
       case "5": textVertical(c, l, t, sl[0], sl[1], 36); break;
-      case "6": if (/^叫べ/.test(l.ja)) textMagenta(c, l.ja, k ? 760 : 120, k ? 980 : 860, 170, -0.18);
+      case "6": if (/^愛（/.test(l.ja)) aiBeats(c, l, t, s);
+        else if (/^叫べ/.test(l.ja)) textMagenta(c, l.ja, k ? 760 : 120, k ? 980 : 860, 170, -0.18);
         else if ([...l.ja].length > 9) splitTwo(l.ja, 9).forEach(([p], r) => textMagenta(c, p, 100 + r * 260, 790 + r * 150, 120, -0.12));
         else textMagenta(c, l.ja, 140, 820, 150, -0.2); break;
       case "thin": textThin(c, l, t); break;
@@ -722,15 +744,25 @@ function lyricsLayer(c, s, t) {
     }
   }
 }
-// vertical column: CJK upright, Latin runs turned 90° (tategaki); returns the column height
-function vcol(c, str, x, y, px, step = 1.04, draw = true) {
+// vertical column: CJK upright, Latin runs turned 90° (tategaki); returns the column height.
+// twist = seed: every glyph gets its own small turn / sideways shift / size change
+function vcol(c, str, x, y, px, step = 1.04, draw = true, twist = 0) {
   c.textAlign = "center"; c.textBaseline = "middle"; let yy = y;
+  const R = twist ? rng(twist) : null, put = (ch, cx, cy, rot) => {
+    if (!draw) return; c.save(); c.translate(cx, cy); c.rotate(rot);
+    if (R) { const j = rot ? 0.4 : 1; c.translate((R() - 0.5) * px * 0.22 * j, 0); c.rotate((R() - 0.5) * 0.30 * j); const k = 0.9 + R() * 0.2; c.scale(k, k); }
+    c.fillText(ch, 0, 0); c.restore();
+  };
   for (const run of str.match(/[A-Za-z][A-Za-z ]*[A-Za-z]|[A-Za-z]|[^A-Za-z]/g) || []) {
     if (/[A-Za-z]/.test(run)) {
-      const w = c.measureText(run).width;
-      if (draw) { c.save(); c.translate(x, yy + w / 2 + px * 0.1); c.rotate(Math.PI / 2); c.fillText(run, 0, 0); c.restore(); } yy += w + px * 0.2;
+      if (R) for (const ch of run) { const w = c.measureText(ch).width; if (ch !== " ") put(ch, x, yy + w / 2 + px * 0.1, Math.PI / 2); yy += w * 1.06; }
+      else { const w = c.measureText(run).width; put(run, x, yy + w / 2 + px * 0.1, Math.PI / 2); yy += w; }
+      yy += px * 0.2;
     } else if (run === " ") yy += px * 0.5;
-    else { if (draw) { c.save(); const sm = /[ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ]/.test(run); c.translate(x + (sm ? px * 0.12 : 0), yy + px * (sm ? 0.38 : 0.5)); if (/[ー～（）「」]/.test(run)) c.rotate(Math.PI / 2); c.fillText(run, 0, 0); c.restore(); } yy += px * step; }
+    else {
+      const sm = /[ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ]/.test(run);
+      put(run, x + (sm ? px * 0.12 : 0), yy + px * (sm ? 0.38 : 0.5), /[ー～（）「」]/.test(run) ? Math.PI / 2 : 0); yy += px * step;
+    }
   }
   c.textAlign = "left"; return yy - y;
 }
