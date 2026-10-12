@@ -3,6 +3,10 @@
  "first_downbeat": 1.7647,
  "cut_lead_s": 0.06666666666666667,
  "duration": 125.922,
+ "film": [
+  85.76,
+  93.013
+ ],
  "shots": [
   {
    "i": 0,
@@ -22,7 +26,8 @@
    "note": "black (pickup bar, near silence)",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 1,
@@ -42,7 +47,8 @@
    "note": "magenta flash 0.4 s into the first downbeat",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 2,
@@ -62,7 +68,8 @@
    "note": "key visual silhouette + props, title logo, glitch strips",
    "ink_out": null,
    "camera": "static",
-   "pills": 3
+   "pills": 3,
+   "film": false
   },
   {
    "i": 3,
@@ -82,7 +89,8 @@
    "note": "black gap before the first line",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 4,
@@ -105,7 +113,8 @@
    "note": "props close-up, ink + halftone, fast pan decelerating",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 4
+   "pills": 4,
+   "film": false
   },
   {
    "i": 5,
@@ -128,7 +137,8 @@
    "note": "one long prop across the frame, band along the blade",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 4
+   "pills": 4,
+   "film": false
   },
   {
    "i": 6,
@@ -150,7 +160,8 @@
    "note": "character close-up, navy box",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 4
+   "pills": 4,
+   "film": false
   },
   {
    "i": 7,
@@ -170,7 +181,8 @@
    "note": "(instrumental) RGB-slice glitch then short black",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 8,
@@ -190,7 +202,8 @@
    "note": "(instrumental) key visual silhouette, frequent glitch strips",
    "ink_out": null,
    "camera": "static",
-   "pills": 4
+   "pills": 4,
+   "film": false
   },
   {
    "i": 9,
@@ -210,7 +223,8 @@
    "note": "black gap before line 6",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 10,
@@ -232,7 +246,8 @@
    "note": "mono manga props, band along the blade",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 11,
@@ -254,7 +269,8 @@
    "note": "same shot: giant black glyph rows",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 12,
@@ -276,7 +292,8 @@
    "note": "mono character, vertical text on black bars",
    "ink_out": null,
    "camera": "slow_push",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 13,
@@ -298,7 +315,8 @@
    "note": "same shot: giant black rows",
    "ink_out": null,
    "camera": "slow_push",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 14,
@@ -320,7 +338,8 @@
    "note": "same shot: vertical bars again (max 2 representations per scene)",
    "ink_out": null,
    "camera": "slow_push",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 15,
@@ -342,7 +361,8 @@
    "note": "lavender + magenta ink blot, small text in its centre",
    "ink_out": null,
    "camera": "static",
-   "pills": 5
+   "pills": 5,
+   "film": false
   },
   {
    "i": 16,
@@ -364,7 +384,8 @@
    "note": "silhouette bust in ink; ink spreads over it in the last 0.5 s",
    "ink_out": "magenta",
    "camera": "static",
-   "pills": 5
+   "pills": 5,
+   "film": false
   },
   {
    "i": 17,
@@ -386,7 +407,8 @@
    "note": "key visual, small white text",
    "ink_out": null,
    "camera": "static",
-   "pills": 5
+   "pills": 5,
+   "film": false
   },
   {
    "i": 18,
@@ -408,7 +430,8 @@
    "note": "same shot: big slanted line 14",
    "ink_out": null,
    "camera": "static",
-   "pills": 5
+   "pills": 5,
+   "film": false
   },
   {
    "i": 19,
@@ -430,7 +453,8 @@
    "note": "magenta solid, tiny 'さよなラ。'",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 20,
@@ -450,7 +474,8 @@
    "note": "(gap) navy solid",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 21,
@@ -470,7 +495,8 @@
    "note": "(gap) black, manga panel flickers in, magenta ink eats it",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   },
   {
    "i": 22,
@@ -492,7 +518,8 @@
    "note": "character + giant highlight words (あらま 求愛性 孤独 ドク 流るルル)",
    "ink_out": null,
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 23,
@@ -514,7 +541,8 @@
    "note": "ink blot centre text; ink spreads in the last 0.5 s",
    "ink_out": "magenta",
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 24,
@@ -536,7 +564,8 @@
    "note": "props in ink + giant 存在感 / 血 / ドクドク / 零るルル",
    "ink_out": null,
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 25,
@@ -558,7 +587,8 @@
    "note": "magenta slanted 愛/哀 with navy echo (giant would repeat line 18's method)",
    "ink_out": null,
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 26,
@@ -580,7 +610,8 @@
    "note": "same shot: vertical bars '叫べベベノム'",
    "ink_out": null,
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 27,
@@ -602,7 +633,8 @@
    "note": "close-up, navy 'メッ'",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 28,
@@ -611,18 +643,19 @@
    "dur": 17.467,
    "bars": 11.06,
    "start_bar": 42.16,
-   "type": "A",
-   "framing": "char_wide",
+   "type": "C",
+   "framing": "body_credits",
    "method": "credit",
    "trans_in": "cut",
    "section": "interlude",
    "lines": [],
    "ref_shot": 54,
    "ref_t0": 126.363,
-   "note": "(instrumental) character one-shot, credits one at a time",
+   "note": "(instrumental) full-body navy silhouette, credits in thin Mincho inside it (user)",
    "ink_out": null,
    "camera": "static",
-   "pills": 8
+   "pills": 8,
+   "film": false
   },
   {
    "i": 29,
@@ -632,8 +665,8 @@
    "bars": 1.9,
    "start_bar": 53.22,
    "type": "E",
-   "framing": "grey_blur",
-   "method": "4",
+   "framing": "backlit",
+   "method": "thin",
    "trans_in": "cut",
    "section": "bridge",
    "lines": [
@@ -641,10 +674,11 @@
    ],
    "ref_shot": 55,
    "ref_t0": 151.633,
-   "note": "grey character + motion blur, blurred giant magenta glyphs, slice glitch",
+   "note": "(user) monochrome, backlit character, weak handheld, thin Mincho one glyph at a time, film texture",
    "ink_out": null,
-   "camera": "drift",
-   "pills": 0
+   "camera": "handheld",
+   "pills": 0,
+   "film": true
   },
   {
    "i": 30,
@@ -653,20 +687,21 @@
    "dur": 4.267,
    "bars": 2.7,
    "start_bar": 55.12,
-   "type": "E",
-   "framing": "grey_blur",
-   "method": "6",
-   "trans_in": "text",
+   "type": "D",
+   "framing": "black_text",
+   "method": "emph",
+   "trans_in": "cut",
    "section": "bridge",
    "lines": [
     23
    ],
    "ref_shot": 55,
    "ref_t0": 151.633,
-   "note": "same shot: big slanted magenta line 23",
+   "note": "(user) black background, text only for emphasis, film texture until line 24",
    "ink_out": null,
-   "camera": "drift",
-   "pills": 0
+   "camera": "static",
+   "pills": 0,
+   "film": true
   },
   {
    "i": 31,
@@ -688,7 +723,8 @@
    "note": "giant 存在 / 抹消 / 毒ドク / 消えるルル, pills denser",
    "ink_out": null,
    "camera": "static",
-   "pills": 30
+   "pills": 30,
+   "film": true
   },
   {
    "i": 32,
@@ -710,7 +746,8 @@
    "note": "same shot: magenta slanted 愛/哀 x4",
    "ink_out": null,
    "camera": "static",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 33,
@@ -732,7 +769,8 @@
    "note": "white whip into a tighter crop + giant 求愛性 孤独 ドク 流るルル",
    "ink_out": null,
    "camera": "pan_mid",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 34,
@@ -754,7 +792,8 @@
    "note": "ink blot centre text; ink spreads in the last 0.5 s",
    "ink_out": "magenta",
    "camera": "static",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 35,
@@ -776,7 +815,8 @@
    "note": "props in ink + giant 存在感 / 血 / ドクドク / 零るルル",
    "ink_out": null,
    "camera": "static",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 36,
@@ -798,7 +838,8 @@
    "note": "magenta slanted 愛/哀 with navy echo",
    "ink_out": null,
    "camera": "static",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 37,
@@ -820,7 +861,8 @@
    "note": "close crop, vertical bars '叫べベベノム'",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 38,
@@ -842,7 +884,8 @@
    "note": "same shot: magenta slanted",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 39,
@@ -864,7 +907,8 @@
    "note": "same shot: vertical bars",
    "ink_out": null,
    "camera": "fast_decel",
-   "pills": 30
+   "pills": 30,
+   "film": false
   },
   {
    "i": 40,
@@ -886,14 +930,15 @@
    "note": "face close-up (the only one): navy 'メッ'",
    "ink_out": null,
    "camera": "slow_push",
-   "pills": 20
+   "pills": 20,
+   "film": false
   },
   {
    "i": 41,
    "t0": 116.133,
-   "t1": 119.267,
-   "dur": 3.133,
-   "bars": 1.98,
+   "t1": 123.6,
+   "dur": 7.467,
+   "bars": 4.73,
    "start_bar": 72.48,
    "type": "A",
    "framing": "face_close",
@@ -904,32 +949,13 @@
    "ref_shot": 65,
    "ref_t0": 179.633,
    "note": "(instrumental) same shot: title logo",
-   "ink_out": null,
+   "ink_out": "black",
    "camera": "slow_push",
-   "pills": 20
+   "pills": 20,
+   "film": false
   },
   {
    "i": 42,
-   "t0": 119.267,
-   "t1": 123.6,
-   "dur": 4.333,
-   "bars": 2.74,
-   "start_bar": 74.46,
-   "type": "A",
-   "framing": "face_close",
-   "method": "credit",
-   "trans_in": "text",
-   "section": "outro",
-   "lines": [],
-   "ref_shot": 65,
-   "ref_t0": 179.633,
-   "note": "(instrumental) same shot: music credit; black ink spreads in the last 0.5 s",
-   "ink_out": "black",
-   "camera": "slow_push",
-   "pills": 20
-  },
-  {
-   "i": 43,
    "t0": 123.6,
    "t1": 125.922,
    "dur": 2.322,
@@ -946,7 +972,8 @@
    "note": "black to end",
    "ink_out": null,
    "camera": "static",
-   "pills": 0
+   "pills": 0,
+   "film": false
   }
  ]
 }

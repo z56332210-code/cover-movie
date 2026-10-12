@@ -2,10 +2,26 @@
  "title": "ベノム",
  "subtitle": "covered by 暁山瑞希",
  "items": [
-  {"label": "vocal", "name": "暁山瑞希", "where": "interlude"},
-  {"label": "Illustration", "name": "meel", "where": "interlude"},
-  {"label": "Movie", "name": "meel", "where": "interlude"},
-  {"label": "music", "name": "かいりきベア", "where": "outro"}
+  {
+   "label": "vocal",
+   "name": "暁山瑞希",
+   "where": "interlude"
+  },
+  {
+   "label": "Illustration",
+   "name": "meel",
+   "where": "interlude"
+  },
+  {
+   "label": "Movie",
+   "name": "meel",
+   "where": "interlude"
+  },
+  {
+   "label": "music",
+   "name": "かいりきベア",
+   "where": "interlude"
+  }
  ],
- "note": "no mix credit given; reference order vocal / (mix) / Illustration / Movie, music in the outro"
+ "note": "all four credits (vocal / Illustration / Movie / music = original song) in thin Mincho inside the full-body navy silhouette during the interlude (user request); outro keeps the title only"
 }

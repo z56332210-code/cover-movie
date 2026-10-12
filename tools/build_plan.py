@@ -53,9 +53,9 @@ S = [
  (ln(19),           "A", "char_wide",   "6",      "cut",           "chorus1", [19],        33, "magenta slanted 愛/哀 with navy echo (giant would repeat line 18's method)"),
  (ln(20),           "A", "char_wide",   "2",      "text",          "chorus1", [20],        33, "same shot: vertical bars '叫べベベノム'"),
  (ln(21),           "A", "char_close",  "4",      "cut",           "chorus1", [21],        34, "close-up, navy 'メッ'"),
- (L[21]["end"] + 0.02, "A", "char_wide", "credit", "cut",           "interlude", [],        54, "(instrumental) character one-shot, credits one at a time"),
- (ln(22),           "E", "grey_blur",   "4",      "cut",           "bridge",  [22],        55, "grey character + motion blur, blurred giant magenta glyphs, slice glitch"),
- (ln(23),           "E", "grey_blur",   "6",      "text",          "bridge",  [23],        55, "same shot: big slanted magenta line 23"),
+ (L[21]["end"] + 0.02, "C", "body_credits", "credit", "cut",          "interlude", [],        54, "(instrumental) full-body navy silhouette, credits in thin Mincho inside it (user)"),
+ (ln(22),           "E", "backlit",     "thin",   "cut",           "bridge",  [22],        55, "(user) monochrome, backlit character, weak handheld, thin Mincho one glyph at a time, film texture"),
+ (ln(23),           "D", "black_text",  "emph",   "cut",           "bridge",  [23],        55, "(user) black background, text only for emphasis, film texture until line 24"),
  (ln(24),           "A", "char_wide",   "4",      "cut",           "chorus_last", [24],    56, "giant 存在 / 抹消 / 毒ドク / 消えるルル, pills denser"),
  (ln(25),           "A", "char_wide",   "6",      "text",          "chorus_last", [25],    56, "same shot: magenta slanted 愛/哀 x4"),
  (ln(26),           "A", "char_tight",  "4",      "grey_blur",     "chorus_last", [26],    58, "white whip into a tighter crop + giant 求愛性 孤独 ドク 流るルル"),
@@ -67,7 +67,6 @@ S = [
  (ln(32),           "A", "char_close",  "2",      "text",          "chorus_last", [32],    64, "same shot: vertical bars"),
  (ln(33),           "A", "face_close",  "4",      "cut",           "outro",   [33],        65, "face close-up (the only one): navy 'メッ'"),
  (bar(72) + BAR / 2,"A", "face_close",  "title",  "text",          "outro",   [],          65, "(instrumental) same shot: title logo"),
- (bar(74) + BAR / 2,"A", "face_close",  "credit", "text",          "outro",   [],          65, "(instrumental) same shot: music credit; black ink spreads in the last 0.5 s"),
  (123.60,           "D", "black",       "-",      "ink_wipe_black","end",     [],          66, "black to end"),
 ]
 
@@ -89,15 +88,18 @@ for k, sh in enumerate(shots):
         sh["ink_out"] = "black" if nx["trans_in"] == "ink_wipe_black" else "magenta"
         # the ink belongs to the picture group that ends here (text events of the same picture carry it too)
 # camera from the reference measurements: verse/B close-ups fast after the cut then decelerate, chorus/silhouette/credits near-static
-CAM = {"prop_close": "fast_decel", "prop_band": "fast_decel", "char_close": "fast_decel", "prop_manga": "fast_decel",
+CAM = {"backlit": "handheld", "prop_close": "fast_decel", "prop_band": "fast_decel", "char_close": "fast_decel", "prop_manga": "fast_decel",
        "char_manga": "slow_push", "grey_blur": "drift", "face_close": "slow_push", "char_tight": "pan_mid"}
 for s in shots: s["camera"] = CAM.get(s["framing"], "static")
 
 # pills per frame (rises toward the end; to be checked against the reference count once the counter exists)
 PILLS = {"intro": 3, "verse1": 4, "pre": 5, "chorus1": 8, "interlude": 8, "bridge": 0, "chorus_last": 30, "outro": 20, "end": 0}
 for s in shots: s["pills"] = 0 if s["type"] in ("D", "B", "E") else PILLS[s["section"]]
+# film texture (user): from the bridge's first line up to line 24 (存在抹消)
+FILM = (L[22]["start"] - 0.1, L[24]["start"] - LEAD)
+for s in shots: s["film"] = bool(s["t0"] < FILM[1] and s["t1"] > FILM[0])
 
-json.dump(dict(bar_s=BAR, first_downbeat=DB0, cut_lead_s=LEAD, duration=END, shots=shots), open("data/plan.json", "w"), ensure_ascii=False, indent=1)
+json.dump(dict(bar_s=BAR, first_downbeat=DB0, cut_lead_s=LEAD, duration=END, film=[round(FILM[0], 3), round(FILM[1], 3)], shots=shots), open("data/plan.json", "w"), ensure_ascii=False, indent=1)
 
 # --- checks
 real = [s for s in shots if s["trans_in"] != "text" and not (s["trans_in"] == "ink_wipe" and s["i"] > 0 and shots[s["i"] - 1]["framing"] == s["framing"])]   # text events / overlays are not cuts

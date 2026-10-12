@@ -25,6 +25,8 @@ def instance(path, **axes):
 jobs = [
     (lambda: instance("NotoSerifJP.ttf", wght=900), "serif-jp-900.woff2", ja),
     (lambda: instance("NotoSerifJP.ttf", wght=700), "serif-jp-700.woff2", ja),
+    (lambda: instance("NotoSerifJP.ttf", wght=200), "serif-jp-200.woff2", ja),     # thin Mincho (interlude credits, bridge)
+    (lambda: instance("NotoSerifJP.ttf", wght=300), "serif-jp-300.woff2", ja),
     (lambda: instance("PlayfairDisplay-Italic.ttf", wght=900), "en-playfair.woff2", en),
     (lambda: instance("BodoniModa-Italic.ttf", wght=900, opsz=96), "en-bodoni.woff2", en),
     (lambda: instance("NotoSerifDisplay-Italic.ttf", wght=900, wdth=100), "en-notodisplay.woff2", en),

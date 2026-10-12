@@ -4,7 +4,7 @@
 const D = window.DATA;
 const W0 = 1920, H0 = 1080;
 const PAL = { lav: "#F1B5FB", mag: "#EB008D", navy: "#15183C", white: "#FFFFFF", black: "#000000" };
-const FONT = { jp: "VJP", jp7: "VJP7", ko: "VKO", en: "VEN" };
+const FONT = { jp: "VJP", jp7: "VJP7", jp2: "VJP2", jp3: "VJP3", ko: "VKO", en: "VEN" };
 let cv, ctx, SC = 1, OPTS = {}, IMG = {};
 let EN_FONT = "en-playfair";
 
@@ -40,7 +40,7 @@ function loadImg(name) {
   return new Promise((ok, err) => { const im = new Image(); im.onload = () => ok((IMG[name] = im)); im.onerror = () => err(new Error("img " + name)); im.src = "img/" + name + ".png"; });
 }
 async function loadFonts() {
-  const faces = [[FONT.jp, "serif-jp-900", "900"], [FONT.jp7, "serif-jp-700", "700"], [FONT.ko, "pretendard-300", "300"], [FONT.en, EN_FONT, "900"]];
+  const faces = [[FONT.jp, "serif-jp-900", "900"], [FONT.jp7, "serif-jp-700", "700"], [FONT.jp2, "serif-jp-200", "200"], [FONT.jp3, "serif-jp-300", "300"], [FONT.ko, "pretendard-300", "300"], [FONT.en, EN_FONT, "900"]];
   const out = [];
   for (const [fam, file, w] of faces) {
     const f = new FontFace(fam, `url(fonts/${file}.woff2)`, { weight: w, style: "normal" });
@@ -153,11 +153,12 @@ function camera(s, t) {
       return { z: 1.07 - 0.05 * dec2, x: dir * (170 * (1 - dec2) - 37 * tau), y: -30 * (1 - dec2) + 6 * tau }; }
     case "slow_push": return { z: 1.0 + 0.06 * u, x: lerp(40, -40, u), y: lerp(-25, 10, u) };   // ref outro: ~10 px/s drift
     case "drift": return { z: 1.04, x: lerp(-45, 45, u), y: 0 };
+    case "handheld": return { z: 1.03 + 0.01 * u, x: 6 * Math.sin(t * 1.7) + 4 * Math.sin(t * 2.9 + 1), y: 5 * Math.sin(t * 1.3 + 2) + 3 * Math.sin(t * 3.7), rot: 0.003 * Math.sin(t * 1.1) };   // weak hand-held (user)
     case "pan_mid": return { z: 1.06, x: lerp(-120, 120, Math.sin(u * Math.PI / 2)), y: 0 };
     default: return { z: 1.0 + 0.02 * u, x: 0, y: 0 };
   }
 }
-function applyCam(c, cam) { c.translate(W0 / 2 + cam.x, H0 / 2 + cam.y); c.scale(cam.z, cam.z); c.translate(-W0 / 2, -H0 / 2); }
+function applyCam(c, cam) { c.translate(W0 / 2 + cam.x, H0 / 2 + cam.y); if (cam.rot) c.rotate(cam.rot); c.scale(cam.z, cam.z); c.translate(-W0 / 2, -H0 / 2); }
 function camPoint(cam, x, y) { return [(x - W0 / 2) * cam.z + W0 / 2 + cam.x, (y - H0 / 2) * cam.z + H0 / 2 + cam.y]; }
 
 // ------------------------------------------------------------------ character placement (default = bust shot like the cover)
@@ -166,6 +167,7 @@ const CHAR = {
   close: { img: "bust", cx: 1010, top: -260, h: 2350 },    // upper face to hands
   face:  { img: "bust", cx: 900, top: -560, h: 3200 },     // eyes fill the frame (outro, once)
   key:   { img: "bust_m", cx: 960, top: 220, h: 1120 },
+  body:  { img: "body", cx: 960, top: -40, h: 1720 },       // full body, head to knees in frame (interlude credits)
   tight: { img: "bust", cx: 980, top: -120, h: 1750 },     // tighter than the bust shot (last chorus)    // key visual silhouette
 };
 let EYES = [];   // screen-space eye boxes of the last drawn character (for the text check)
@@ -209,7 +211,7 @@ function drawProps(c, list, filter, t = 0) {
 function drawProp(c, n, x, y, s, r, t) { const [dx, dy, dr] = floatOf(n, t); drawImg(c, n, x + dx, y + dy, s, r + dr); }
 
 // ------------------------------------------------------------------ text
-const jpFont = (px, w = 900) => `${w} ${px}px ${w === 900 ? FONT.jp : FONT.jp7}`;
+const jpFont = (px, w = 900) => `${w} ${px}px ${w === 900 ? FONT.jp : w === 700 ? FONT.jp7 : w === 300 ? FONT.jp3 : FONT.jp2}`;
 const isLatin = (s) => /^[\x20-\x7e]+$/.test(s);
 function shadowOn(c, px) { c.shadowColor = PAL.navy; c.shadowOffsetX = px * 0.025 * SC; c.shadowOffsetY = px * 0.02 * SC; c.shadowBlur = 0; }
 function shadowOff(c) { c.shadowColor = "transparent"; c.shadowOffsetX = c.shadowOffsetY = 0; }
@@ -393,6 +395,32 @@ function giantRowsB(c, id, t, seed) {
     }));
   });
 }
+// bridge (user): thin Mincho, one glyph at a time on its sung time with a slow 0.35 s fade, monochrome
+const THIN_ROWS = { 22: ["もう悪性届く", "毒回るルル", "（哀でもっと）"] };
+function textThin(c, l, t) {
+  const px = 56, sp = px * 0.28; c.font = jpFont(px, 200); c.fillStyle = "#16161a"; c.textBaseline = "alphabetic";
+  const rows = THIN_ROWS[l.id] ? THIN_ROWS[l.id].reduce((a, w) => (a.push([w, a.length ? a[a.length - 1][1] + [...a[a.length - 1][0]].length : 0]), a), []) : splitTwo(l.ja);
+  rows.forEach(([p, off], r) => {                               // upper left, in the bright part of the backlight, clear of the head
+    let x = 110 + r * 60; const y = 150 + r * px * 1.7;
+    [...p].forEach((ch, k) => { const a = clamp((t - l.chars[off + k] + 0.02) / 0.35); if (a > 0) { c.globalAlpha = a; c.fillText(ch, x, y); } x += c.measureText(ch).width + sp; });
+    c.globalAlpha = 1; noteBox(c, 110 + r * 60, y - px, x - 110 - r * 60, px * 1.2);
+  });
+}
+// bridge (user): black screen, the line alone and large in thin Mincho; words arrive on their sung time
+const EMPH_WORDS = { 23: [["傷害な", 0], ["ねぇ", 0], ["痛い痛いの", 1], ["SICK SICK", 2]] };
+function textEmph(c, l, t) {
+  const words = EMPH_WORDS[l.id] || [[l.ja, 0]], rows = [[], [], []]; let pos = 0;
+  for (const [w, r] of words) { const at = l.ja.indexOf(w, pos); pos = at + w.length; rows[r].push({ w, t0: l.chars[at] }); }
+  const sizes = [150, 150, 230], ys = [330, 560, 900];
+  rows.forEach((row, r) => {
+    if (!row.length) return;
+    const px = sizes[r]; c.font = jpFont(px, 200); c.fillStyle = PAL.white; c.textBaseline = "alphabetic";
+    const gap = px * 0.5, widths = row.map((o) => c.measureText(o.w).width), total = widths.reduce((a, b) => a + b, 0) + gap * (row.length - 1);
+    let x = (W0 - total) / 2 + (r === 1 ? 120 : r === 0 ? -80 : 0);
+    row.forEach((o, i) => { const a = clamp((t - o.t0 + 0.02) / 0.12); if (a > 0) { c.globalAlpha = a; c.fillText(o.w, x, ys[r]); } x += widths[i] + gap; });
+    c.globalAlpha = 1; noteBox(c, (W0 - total) / 2, ys[r] - px, total, px * 1.2);
+  });
+}
 // 6: magenta bold slanted
 function textMagenta(c, str, x, y, px = 150, rot = -0.2, color = PAL.mag) {
   slanted(c, x, y, rot, () => { c.font = isLatin(str) ? `900 italic ${px}px ${FONT.en}` : jpFont(px); c.fillStyle = color; c.textBaseline = "alphabetic"; if (color === PAL.mag) shadowOn(c, px); c.fillText(str, 0, 0); shadowOff(c); noteBox(c, 0, -px * 0.88, c.measureText(str).width, px); });
@@ -551,6 +579,29 @@ const SCENE = {
     for (let k = -6; k <= 6; k++) { c.globalAlpha = 0.07; c.drawImage(im, P.cx - w / 2 + k * 70 + lerp(-300, 300, u), P.top, w, P.h); }
     c.globalAlpha = 1;
   },
+  // C (interlude, user): full-body navy silhouette, the credits are written inside it in thin Mincho (creditLayer)
+  body_credits(c, s, t, cam) {
+    bgA(c, s, t, 1212, 960, 600, 300);
+    drawProps(c, BG_PROPS.key, null, t);
+    pills(c, s.pills, 121, t - s.g0, { x: 0, y: 300, w: W0, h: 780 });
+    drawChar(c, cam, "body", "_sil");
+    drawProps(c, FG_PROPS.key, null, t);
+  },
+  // E (bridge, user): monochrome, backlit character - white halo + rim light behind a darkened figure; no magenta
+  backlit(c, s, t, cam) {
+    const g = c.createRadialGradient(960, 300, 40, 960, 420, 1250);
+    g.addColorStop(0, "#ffffff"); g.addColorStop(0.28, "#e6e6e8"); g.addColorStop(0.65, "#8e8e92"); g.addColorStop(1, "#3c3c40");
+    c.fillStyle = g; c.fillRect(-200, -200, W0 + 400, H0 + 400);
+    const P = CHAR.bust, sil = IMG.bust_m_sil, sc = P.h / sil.height, w = sil.width * sc, x = P.cx - w / 2;
+    c.save(); c.filter = `brightness(0) invert(1) blur(${22 * SC}px)`; c.globalAlpha = 0.95;
+    c.drawImage(sil, x - w * 0.02, P.top - 20, w * 1.04, P.h * 1.04); c.restore();                       // halo
+    c.save(); c.filter = "brightness(0) invert(1)"; c.globalAlpha = 0.9; c.drawImage(sil, x - 7, P.top - 9, w, P.h); c.restore();   // rim
+    c.filter = "brightness(0.42) contrast(1.35)"; drawChar(c, cam, "bust", "_grey"); c.filter = "none";
+    const k = c.createLinearGradient(0, 0, 0, H0); k.addColorStop(0, "rgba(255,255,255,0.10)"); k.addColorStop(1, "rgba(0,0,0,0.25)");
+    c.fillStyle = k; c.fillRect(-200, -200, W0 + 400, H0 + 400);
+  },
+  // D (bridge, user): black, text only
+  black_text(c) { c.fillStyle = "#050505"; c.fillRect(-200, -200, W0 + 400, H0 + 400); },
   // D: black with a framed mono manga panel flickering in, magenta ink eats it
   black_inset(c, s, t, cam) {
     c.fillStyle = PAL.black; c.fillRect(-200, -200, W0 + 400, H0 + 400);
@@ -659,11 +710,35 @@ function lyricsLayer(c, s, t) {
       case "6": if (/^叫べ/.test(l.ja)) textMagenta(c, l.ja, k ? 760 : 120, k ? 980 : 860, 170, -0.18);
         else if ([...l.ja].length > 9) splitTwo(l.ja, 9).forEach(([p], r) => textMagenta(c, p, 100 + r * 260, 790 + r * 150, 120, -0.12));
         else textMagenta(c, l.ja, 140, 820, 150, -0.2); break;
+      case "thin": textThin(c, l, t); break;
+      case "emph": textEmph(c, l, t); break;
       default: textSmall(c, l, t, 700, 520, 34, s.type === "E" ? PAL.navy : PAL.white);
     }
   }
 }
+let CREDIT_CV = null;
+function creditInside(c, s, t) {
+  const items = D.credits.items, n = items.length, seg = (s.t1 - s.t0) / n, k = Math.min(n - 1, Math.floor((t - s.t0) / seg)), it = items[k];
+  const u = (t - s.t0 - k * seg) / seg, a = clamp(u / 0.14) * clamp((1 - u) / 0.12);
+  if (!CREDIT_CV) { CREDIT_CV = document.createElement("canvas"); }
+  CREDIT_CV.width = cv.width; CREDIT_CV.height = cv.height;
+  const o = CREDIT_CV.getContext("2d"); o.setTransform(SC, 0, 0, SC, 0, 0);
+  o.fillStyle = PAL.white; o.textAlign = "center"; o.textBaseline = "alphabetic"; o.globalAlpha = a;
+  const CX = 922;                                                 // torso centre of the full-body silhouette
+  o.font = jpFont(38, 300); o.fillText(it.label.split("").join(String.fromCharCode(8202)), CX, 560);
+  let npx = isLatin(it.name) ? 96 : 84; o.font = jpFont(npx, 200);
+  npx = Math.min(npx, npx * 240 / o.measureText(it.name).width); o.font = jpFont(npx, 200);   // fits inside the torso of the silhouette
+  o.fillText(it.name, CX, 580 + npx);
+  o.fillRect(CX - 90, 584, 180, 1.5);
+  // keep only what falls inside the silhouette
+  o.globalAlpha = 1; o.globalCompositeOperation = "destination-in";
+  const cam = camera(s, t), P = CHAR.body, im = IMG.body_sil, sc = P.h / im.height, w = im.width * sc;
+  o.save(); applyCam(o, cam); o.drawImage(im, P.cx - w / 2, P.top, w, P.h); o.restore(); o.globalCompositeOperation = "source-over";
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(CREDIT_CV, 0, 0); c.restore();
+  noteBox(c, 760, 420, 400, 190);
+}
 function creditLayer(c, s, t) {
+  if (s.framing === "body_credits") return creditInside(c, s, t);
   const items = D.credits.items.filter((i) => i.where === (s.section === "outro" ? "outro" : "interlude"));
   if (!items.length) return;
   const k = Math.min(items.length - 1, Math.floor(((t - s.t0) / (s.t1 - s.t0)) * items.length)), it = items[k];
@@ -725,6 +800,7 @@ function render(tReal) {
   ctx.setTransform(SC, 0, 0, SC, 0, 0);
   s._glitch = glitch(ctx, t, s);
   if (s.framing === "grey_blur") bridgeSlices(ctx, t);
+  if (D.plan.film && t >= D.plan.film[0] && t < D.plan.film[1]) film(ctx, t);
   subtitle(ctx, tReal);
   return s;
 }
@@ -733,6 +809,36 @@ function whip(c, u) {
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
   for (let k = 1; k <= 5; k++) { c.globalAlpha = 0.18 * (1 - u); c.drawImage(cv, k * 46 * SC * (1 - u), 0); c.drawImage(cv, -k * 46 * SC * (1 - u), 0); }
   c.globalAlpha = 0.85 * (1 - u); c.fillStyle = PAL.white; c.fillRect(0, 0, cv.width, cv.height); c.restore();
+}
+// film texture (user, 1:25-1:32): gate weave, flicker, grain, vertical scratches, dust, vignette - all from hash(frame)
+let GRAIN = null;
+function film(c, t) {
+  const f = Math.floor(t * 15 + 1e-6), W = cv.width, H = cv.height;
+  if (!GRAIN) {
+    GRAIN = document.createElement("canvas"); GRAIN.width = 512; GRAIN.height = 512;
+    const g = GRAIN.getContext("2d"), id = g.createImageData(512, 512);
+    for (let i = 0; i < 512 * 512; i++) { const v = Math.floor(hash(i, 77) * 255); id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; }
+    g.putImageData(id, 0, 0);
+  }
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+  const dx = Math.round((hash(f, 601) - 0.5) * 3 * SC), dy = Math.round((hash(f, 602) - 0.5) * 4 * SC);   // gate weave
+  if (dx || dy) c.drawImage(cv, dx, dy);
+  const fl = (hash(f, 603) - 0.5) * 0.10;                                                                      // flicker
+  c.fillStyle = fl > 0 ? `rgba(255,255,255,${fl})` : `rgba(0,0,0,${-fl})`; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = "overlay"; c.globalAlpha = 0.32;                                               // grain
+  const ox = Math.floor(hash(f, 604) * 512), oy = Math.floor(hash(f, 605) * 512), gs = Math.max(1, SC * 1.6);
+  for (let y = -oy * gs; y < H; y += 512 * gs) for (let x = -ox * gs; x < W; x += 512 * gs) c.drawImage(GRAIN, x, y, 512 * gs, 512 * gs);
+  c.globalCompositeOperation = "source-over"; c.globalAlpha = 1;
+  const R = rng(f * 13 + 9);
+  for (let k = 0, n = Math.floor(R() * 3); k < n; k++) {                                                      // scratches
+    const x = R() * W; c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)"; c.fillRect(x, 0, Math.max(1, SC * (1 + R() * 1.5)), H);
+  }
+  for (let k = 0, n = 2 + Math.floor(R() * 6); k < n; k++) {                                                  // dust
+    c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)"; c.beginPath(); c.arc(R() * W, R() * H, SC * (1 + R() * 3), 0, 6.283); c.fill();
+  }
+  const v = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);                           // vignette
+  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.5)"); c.fillStyle = v; c.fillRect(0, 0, W, H);
+  c.restore();
 }
 // bridge: magenta horizontal slice glitch (reference E section)
 function bridgeSlices(c, t) {
