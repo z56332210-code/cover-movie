@@ -1,0 +1,79 @@
+{
+ "_doc": "Word blocks for method 4 (giant glyphs). Each word is shown alone; its glyphs pop in on their sung time and the block is replaced by the next word. Keys = lyric line id; words must concatenate to a substring sequence of the line (brackets/punctuation skipped).",
+ "7": [
+  "校内",
+  "猛毒だ",
+  "屈めよ",
+  "屈め"
+ ],
+ "9": [
+  "成敗",
+  "DIE",
+  "by",
+  "生産性",
+  "ない"
+ ],
+ "16": [
+  "求愛性",
+  "孤独",
+  "ドク",
+  "流るルル"
+ ],
+ "17": [
+  "頂戴な"
+ ],
+ "18": [
+  "存在感"
+ ],
+ "19": [
+  "愛",
+  "愛",
+  "哀",
+  "哀"
+ ],
+ "21": [
+  "メッ"
+ ],
+ "22": [
+  "もう",
+  "悪性",
+  "届く",
+  "毒",
+  "回るルル"
+ ],
+ "24": [
+  "存在",
+  "抹消"
+ ],
+ "26": [
+  "求愛性",
+  "孤独",
+  "ドク",
+  "流るルル"
+ ],
+ "27": [
+  "頂戴な"
+ ],
+ "28": [
+  "存在感"
+ ],
+ "29": [
+  "愛",
+  "愛",
+  "哀",
+  "哀"
+ ],
+ "33": [
+  "メッ"
+ ],
+ "25": [
+  "愛",
+  "愛",
+  "哀",
+  "哀",
+  "愛",
+  "愛",
+  "哀",
+  "哀"
+ ]
+}
