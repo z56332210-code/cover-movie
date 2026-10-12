@@ -3,7 +3,8 @@
   "interlude": "credits x4 (3 bars each) over A character one-shot; music credit in outro",
   "B_scene": "verse1 second half (lines 6-10) as B mono manga: box text -> giant black glyphs",
   "palette_check": "allow mixes between the 4 colours + greys; flag anything else (glitch strips exempt)",
-  "reuse": "key visual reused (intro, verse1 instrumental, pre); chorus layout reused (chorus1, last chorus)"
+  "reuse": "key visual reused (intro, verse1 instrumental, pre); chorus layout reused (chorus1, last chorus)",
+  "character_framing": "default camera = bust shot like the song cover (head to chest). Full-body character.png is only a source so crops never end awkwardly (e.g. pans/zoom-outs past the waist); bust.png (4096x4096) is the high-res source for close-ups and the outro face shot. Original line/colour untouched; silhouette/mono/grey are derived layers."
  },
  "sections": [
   {
