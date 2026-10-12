@@ -536,7 +536,9 @@
    "method": "-",
    "trans_in": "black",
    "section": "pre",
-   "lines": [],
+   "lines": [
+    15
+   ],
    "ref_shot": 25,
    "ref_t0": 59.303,
    "note": "black, framed manga panel flickers in, magenta ink blobs eat it",

@@ -46,7 +46,7 @@ S = [
  (ln(14, 7),        "C", "keyvisual",   "6",      "text",          "pre",     [14],        22, "same shot: big slanted 'ベノベノム' (text event)"),
  (ln(15),           "D", "magenta",     "small",  "flash_magenta", "pre",     [15],        23, "magenta solid, tiny 'さよなラ。'"),
  (ln(15) + 1.10,    "D", "navy",        "-",      "cut",           "pre",     [15],        24, "navy solid"),
- (ln(15) + 1.50,    "D", "black_inset", "-",      "black",         "pre",     [],          25, "black, framed manga panel flickers in, magenta ink blobs eat it"),
+ (ln(15) + 1.50,    "D", "black_inset", "-",      "black",         "pre",     [15],          25, "black, framed manga panel flickers in, magenta ink blobs eat it"),
  (ln(16),           "D", "magenta",     "1b",     "flash_magenta", "pre",     [16],        26, "magenta field, white italic 'あらま' (pickup)"),
  (ln(16, 3),        "A", "char_wide",   "4",      "cut",           "chorus1", [16, 17],    27, "character wide + giant glyphs magenta/navy, pop-in per syllable"),
  (ln(17, 4),        "A", "ink_centre",  "5",      "cut",           "chorus1", [17],        28, "ink blot centre: 'ねぇ痛い痛いのとんでけ'"),

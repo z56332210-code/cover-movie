@@ -8,7 +8,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WEB = path.join(ROOT, "web/venom");
-const argv = process.argv.slice(2), opt = (n, d) => { const i = argv.indexOf("--" + n); return i >= 0 ? argv[i + 1] : d; };
+const argv = process.argv.slice(2), opt = (n, d) => { const i = argv.indexOf("--" + n); return i >= 0 ? argv[i + 1] : d; }, flag = (n) => argv.includes("--" + n);
+// threshold from the reference: its weakest lyric (small white text on lavender, 0:18.6) measures 24.5 luma above its
+// surroundings (local-median method); ours is checked as text-layer minus no-text render, the same quantity
+const CONTRAST_MIN = 25;
 const width = +opt("w", 1920), times = opt("times", "5").split(",").map(Number), out = path.resolve(ROOT, opt("out", "out/stills")), en = opt("en", "en-playfair");
 fs.mkdirSync(out, { recursive: true });
 const types = { ".html": "text/html", ".js": "text/javascript", ".png": "image/png", ".woff2": "font/woff2", ".json": "application/json" };
@@ -42,6 +45,18 @@ if (opt("cutcheck")) {
   const by = {}; for (const [t, i, fr, n] of bad) { const k = `shot ${i} ${fr} ${n}`; (by[k] = by[k] || []).push(t); }
   for (const [k, ts] of Object.entries(by)) console.log("CUT VISIBLE", k, ts.length, "frames", ts[0], "-", ts[ts.length - 1]);
   console.log(`cut check ${a}-${b}: ${bad.length} frames with a visible canvas cut`);
+}
+if (flag("textcheck")) {
+  const L = await page.evaluate(() => window.DATA.lyrics); const rows = []; let bad = 0;
+  for (const l of L) for (const f of [0.35, 0.7, 0.95]) {
+    const t = l.start + (l.end - l.start) * f, r = await page.evaluate((t) => window.textCheck(t), t);
+    const problem = r.eyeHits > 0 ? "EYES" : r.textPx < 40 ? "NO TEXT" : r.contrast < CONTRAST_MIN ? "LOW CONTRAST" : "";
+    if (problem) bad++;
+    rows.push(`${l.id}\t${t.toFixed(2)}\tshot ${r.shot}\ttextPx ${r.textPx}\tcontrast ${r.contrast.toFixed(0)}\t${problem}`);
+  }
+  fs.writeFileSync(path.join(out, "textcheck.tsv"), rows.join("\n") + "\n");
+  console.log(rows.filter((r) => /EYES|NO TEXT|LOW/.test(r)).join("\n"));
+  console.log(`text check: ${L.length} lines x 3 = ${rows.length} probes, ${bad} problems (contrast threshold ${CONTRAST_MIN})`);
 }
 for (const t of times) {
   const t0 = Date.now();
