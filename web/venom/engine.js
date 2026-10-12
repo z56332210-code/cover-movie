@@ -406,19 +406,25 @@ function textThin(c, l, t) {
     c.globalAlpha = 1; noteBox(c, 110 + r * 60, y - px, x - 110 - r * 60, px * 1.2);
   });
 }
-// bridge (user): black screen, the line alone and large in thin Mincho; words arrive on their sung time
-const EMPH_WORDS = { 23: [["傷害な", 0], ["ねぇ", 0], ["痛い痛いの", 1], ["SICK SICK", 2]] };
+// bridge (user): black screen, the line alone in thin Mincho, two vertical columns set slightly off each other;
+// words arrive on their sung time
+const EMPH_COLS = { 23: [[["傷害な", 0, 0], ["ねぇ", 0, 1]], [["痛い痛いの", 1, 0], ["SICK SICK", 1, 1]]] };
+const EMPH_LAYOUT = [{ x: 1130, y: 120, px: 120, dx: [0, -24] }, { x: 870, y: 215, px: 120, dx: [0, 28] }], EMPH_BOTTOM = 960;
 function textEmph(c, l, t) {
-  const words = EMPH_WORDS[l.id] || [[l.ja, 0]], rows = [[], [], []]; let pos = 0;
-  for (const [w, r] of words) { const at = l.ja.indexOf(w, pos); pos = at + w.length; rows[r].push({ w, t0: l.chars[at] }); }
-  const sizes = [150, 150, 230], ys = [330, 560, 900];
-  rows.forEach((row, r) => {
-    if (!row.length) return;
-    const px = sizes[r]; c.font = jpFont(px, 200); c.fillStyle = PAL.white; c.textBaseline = "alphabetic";
-    const gap = px * 0.5, widths = row.map((o) => c.measureText(o.w).width), total = widths.reduce((a, b) => a + b, 0) + gap * (row.length - 1);
-    let x = (W0 - total) / 2 + (r === 1 ? 120 : r === 0 ? -80 : 0);
-    row.forEach((o, i) => { const a = clamp((t - o.t0 + 0.02) / 0.12); if (a > 0) { c.globalAlpha = a; c.fillText(o.w, x, ys[r]); } x += widths[i] + gap; });
-    c.globalAlpha = 1; noteBox(c, (W0 - total) / 2, ys[r] - px, total, px * 1.2);
+  const cols = EMPH_COLS[l.id] || [[[l.ja, 0, 0]]]; let pos = 0;
+  c.fillStyle = PAL.white;
+  cols.forEach((words, ci) => {
+    const L_ = EMPH_LAYOUT[ci], font = (w, q) => (/[A-Za-z]/.test(w) ? `200 ${q * 0.86}px ${FONT.jp2}` : jpFont(q, 200));
+    const tall = (q) => words.reduce((a, [w]) => (c.font = font(w, q), a + vcol(c, w, 0, 0, q, 1.04, false) + q * 0.45), -q * 0.45);
+    const px = Math.min(L_.px, L_.px * (EMPH_BOTTOM - L_.y) / tall(L_.px)); let y = L_.y;   // fit the column above the subtitle
+    words.forEach(([w, , wi]) => {
+      const at = l.ja.indexOf(w, pos); pos = at + w.length;
+      const x = L_.x + L_.dx[wi]; c.font = font(w, px);
+      const a = clamp((t - l.chars[at] + 0.02) / 0.12);
+      c.globalAlpha = a; const h = vcol(c, w, x, y, px); c.globalAlpha = 1;
+      if (a > 0) noteBox(c, x - px * 0.6, y, px * 1.2, h);
+      y += h + px * 0.45;
+    });
   });
 }
 // 6: magenta bold slanted
@@ -716,26 +722,32 @@ function lyricsLayer(c, s, t) {
     }
   }
 }
-let CREDIT_CV = null;
+// vertical column: CJK upright, Latin runs turned 90° (tategaki); returns the column height
+function vcol(c, str, x, y, px, step = 1.04, draw = true) {
+  c.textAlign = "center"; c.textBaseline = "middle"; let yy = y;
+  for (const run of str.match(/[A-Za-z][A-Za-z ]*[A-Za-z]|[A-Za-z]|[^A-Za-z]/g) || []) {
+    if (/[A-Za-z]/.test(run)) {
+      const w = c.measureText(run).width;
+      if (draw) { c.save(); c.translate(x, yy + w / 2 + px * 0.1); c.rotate(Math.PI / 2); c.fillText(run, 0, 0); c.restore(); } yy += w + px * 0.2;
+    } else if (run === " ") yy += px * 0.5;
+    else { if (draw) { c.save(); const sm = /[ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ]/.test(run); c.translate(x + (sm ? px * 0.12 : 0), yy + px * (sm ? 0.38 : 0.5)); if (/[ー～（）「」]/.test(run)) c.rotate(Math.PI / 2); c.fillText(run, 0, 0); c.restore(); } yy += px * step; }
+  }
+  c.textAlign = "left"; return yy - y;
+}
+// interlude credits (user): vertical, small thin Mincho, wholly inside the torso of the silhouette (no clipping), hard on/off
+const CREDIT_AREA = { x: 845, y: 480, w: 185, h: 350 };          // torso interior of the full-body silhouette (static camera)
 function creditInside(c, s, t) {
   const items = D.credits.items, n = items.length, seg = (s.t1 - s.t0) / n, k = Math.min(n - 1, Math.floor((t - s.t0) / seg)), it = items[k];
-  const u = (t - s.t0 - k * seg) / seg, a = clamp(u / 0.14) * clamp((1 - u) / 0.12);
-  if (!CREDIT_CV) { CREDIT_CV = document.createElement("canvas"); }
-  CREDIT_CV.width = cv.width; CREDIT_CV.height = cv.height;
-  const o = CREDIT_CV.getContext("2d"); o.setTransform(SC, 0, 0, SC, 0, 0);
-  o.fillStyle = PAL.white; o.textAlign = "center"; o.textBaseline = "alphabetic"; o.globalAlpha = a;
-  const CX = 922;                                                 // torso centre of the full-body silhouette
-  o.font = jpFont(38, 300); o.fillText(it.label.split("").join(String.fromCharCode(8202)), CX, 560);
-  let npx = isLatin(it.name) ? 96 : 84; o.font = jpFont(npx, 200);
-  npx = Math.min(npx, npx * 240 / o.measureText(it.name).width); o.font = jpFont(npx, 200);   // fits inside the torso of the silhouette
-  o.fillText(it.name, CX, 580 + npx);
-  o.fillRect(CX - 90, 584, 180, 1.5);
-  // keep only what falls inside the silhouette
-  o.globalAlpha = 1; o.globalCompositeOperation = "destination-in";
-  const cam = camera(s, t), P = CHAR.body, im = IMG.body_sil, sc = P.h / im.height, w = im.width * sc;
-  o.save(); applyCam(o, cam); o.drawImage(im, P.cx - w / 2, P.top, w, P.h); o.restore(); o.globalCompositeOperation = "source-over";
-  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(CREDIT_CV, 0, 0); c.restore();
-  noteBox(c, 760, 420, 400, 190);
+  const u = (t - s.t0 - k * seg) / seg; if (u < 0.08 || u > 0.94) return;
+  const A = CREDIT_AREA, lx = A.x + A.w - 22, nx = lx - 62, y0 = A.y + 6;
+  c.fillStyle = PAL.white;
+  c.font = jpFont(24, 300); const lh = vcol(c, it.label, lx, y0, 24); noteBox(c, lx - 14, y0, 28, lh);
+  c.fillRect(lx - 0.75, y0 + lh + 14, 1.5, 70);
+  if (u < 0.12) return;                                           // name follows the label two frames later
+  let npx = 50; c.font = jpFont(npx, 200);
+  const hgt = (q) => (/^[A-Za-z ]+$/.test(it.name) ? c.measureText(it.name).width + q * 0.2 : [...it.name].length * q * 1.04);
+  npx = Math.min(npx, npx * (A.h - 40) / hgt(npx)); c.font = jpFont(npx, 200);
+  const nh = vcol(c, it.name, nx, y0 + 34, npx); noteBox(c, nx - npx * 0.6, y0 + 34, npx * 1.2, nh);
 }
 function creditLayer(c, s, t) {
   if (s.framing === "body_credits") return creditInside(c, s, t);
@@ -821,23 +833,23 @@ function film(c, t) {
     g.putImageData(id, 0, 0);
   }
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-  const dx = Math.round((hash(f, 601) - 0.5) * 3 * SC), dy = Math.round((hash(f, 602) - 0.5) * 4 * SC);   // gate weave
+  const dx = Math.round((hash(f, 601) - 0.5) * 1.5 * SC), dy = Math.round((hash(f, 602) - 0.5) * 2 * SC);   // gate weave
   if (dx || dy) c.drawImage(cv, dx, dy);
-  const fl = (hash(f, 603) - 0.5) * 0.10;                                                                      // flicker
+  const fl = (hash(f, 603) - 0.5) * 0.04;                                                                      // flicker
   c.fillStyle = fl > 0 ? `rgba(255,255,255,${fl})` : `rgba(0,0,0,${-fl})`; c.fillRect(0, 0, W, H);
-  c.globalCompositeOperation = "overlay"; c.globalAlpha = 0.32;                                               // grain
+  c.globalCompositeOperation = "overlay"; c.globalAlpha = 0.12;                                               // grain
   const ox = Math.floor(hash(f, 604) * 512), oy = Math.floor(hash(f, 605) * 512), gs = Math.max(1, SC * 1.6);
   for (let y = -oy * gs; y < H; y += 512 * gs) for (let x = -ox * gs; x < W; x += 512 * gs) c.drawImage(GRAIN, x, y, 512 * gs, 512 * gs);
   c.globalCompositeOperation = "source-over"; c.globalAlpha = 1;
   const R = rng(f * 13 + 9);
-  for (let k = 0, n = Math.floor(R() * 3); k < n; k++) {                                                      // scratches
-    const x = R() * W; c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)"; c.fillRect(x, 0, Math.max(1, SC * (1 + R() * 1.5)), H);
+  for (let k = 0, n = R() < 0.4 ? 1 : 0; k < n; k++) {                                                      // scratches
+    const x = R() * W; c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.18)"; c.fillRect(x, 0, Math.max(1, SC * (1 + R() * 1.5)), H);
   }
-  for (let k = 0, n = 2 + Math.floor(R() * 6); k < n; k++) {                                                  // dust
-    c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)"; c.beginPath(); c.arc(R() * W, R() * H, SC * (1 + R() * 3), 0, 6.283); c.fill();
+  for (let k = 0, n = Math.floor(R() * 3); k < n; k++) {                                                  // dust
+    c.fillStyle = R() < 0.5 ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)"; c.beginPath(); c.arc(R() * W, R() * H, SC * (0.8 + R() * 1.5), 0, 6.283); c.fill();
   }
   const v = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);                           // vignette
-  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.5)"); c.fillStyle = v; c.fillRect(0, 0, W, H);
+  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.3)"); c.fillStyle = v; c.fillRect(0, 0, W, H);
   c.restore();
 }
 // bridge: magenta horizontal slice glitch (reference E section)
