@@ -86,7 +86,9 @@ function chunks(only) {
   list[0].f0 = 0;
   return only ? list.filter((c) => only.includes(c.sec)) : list;
 }
-const settingsKey = JSON.stringify({ width, fps, jpegQ, crf, x264preset });
+// the page's code + data are part of the key: a chunk rendered with an older engine is never reused
+const pageHash = (await import("node:crypto")).createHash("sha1").update(["engine.js", "data.js", "index.html"].map((f) => fs.readFileSync(path.join(WEB, f))).join("")).digest("hex").slice(0, 12);
+const settingsKey = JSON.stringify({ width, fps, jpegQ, crf, x264preset, pageHash });
 function manifest() { try { return JSON.parse(fs.readFileSync(path.join(outDir, "manifest.json"), "utf8")); } catch { return {}; } }
 function markDone(c) {
   const m = manifest(); m[c.name] = { f0: c.f0, f1: c.f1, settings: settingsKey, at: new Date().toISOString() };
