@@ -25,7 +25,16 @@ for f in sorted(os.listdir("assets/props")):
     ys, xs = np.where(im[..., 3] > 8)
     x0, x1, y0, y1 = max(0, xs.min() - 4), min(im.shape[1], xs.max() + 5), max(0, ys.min() - 4), min(im.shape[0], ys.max() + 5)
     name = f[:-4]; save(im[y0:y1, x0:x1], name)
-    meta["props"][name] = dict(x=int(x0), y=int(y0), w=int(x1 - x0), h=int(y1 - y0), layer=name[:3])
+    # edges where the illustrator's canvas cut the drawing: these straight cuts must never be on screen
+    cuts = []
+    H, W = im.shape[:2]
+    for row, yy in (("top", 0), ("bottom", H - 1)):
+        xs_ = np.where(im[yy, :, 3] > 8)[0]
+        if len(xs_) > 20: cuts.append([int(xs_.min() - x0), int(yy - y0), int(xs_.max() - x0), int(yy - y0)])
+    for col, xx in (("left", 0), ("right", W - 1)):
+        ys_ = np.where(im[:, xx, 3] > 8)[0]
+        if len(ys_) > 20: cuts.append([int(xx - x0), int(ys_.min() - y0), int(xx - x0), int(ys_.max() - y0)])
+    meta["props"][name] = dict(x=int(x0), y=int(y0), w=int(x1 - x0), h=int(y1 - y0), layer=name[:3], cuts=cuts)
 
 def derive(src, name, scale=1.0):
     im = Image.open(src).convert("RGBA")

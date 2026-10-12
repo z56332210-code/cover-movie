@@ -37,6 +37,12 @@ if (opt("eyecheck")) {
   }
   console.log(`eye check: ${n} probes, ${bad} with glyphs on the eyes`);
 }
+if (opt("cutcheck")) {
+  const [a, b] = opt("cutcheck").split("-").map(Number), bad = await page.evaluate(([a, b]) => window.cutCheck(a, b), [a, b]);
+  const by = {}; for (const [t, i, fr, n] of bad) { const k = `shot ${i} ${fr} ${n}`; (by[k] = by[k] || []).push(t); }
+  for (const [k, ts] of Object.entries(by)) console.log("CUT VISIBLE", k, ts.length, "frames", ts[0], "-", ts[ts.length - 1]);
+  console.log(`cut check ${a}-${b}: ${bad.length} frames with a visible canvas cut`);
+}
 for (const t of times) {
   const t0 = Date.now();
   const pr = await page.evaluate((t) => window.probe(t), t);

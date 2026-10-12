@@ -131,10 +131,17 @@ function pills(c, n, seed, t, area = { x: 0, y: 0, w: W0, h: H0 }) {
     pill(c, x + dx * t, y + dy * t, len, len * 0.42, rot + dr * t, flip);
   }
 }
+const CUTS = [];   // screen-space segments of props' canvas-cut edges drawn this frame (must stay off screen)
 function drawImg(c, name, cx, cy, s, rot = 0, alpha = 1) {
   const im = IMG[name]; if (!im) return;
   c.save(); c.globalAlpha = alpha; c.translate(cx, cy); if (rot) c.rotate(rot);
-  c.drawImage(im, (-im.width * s) / 2, (-im.height * s) / 2, im.width * s, im.height * s); c.restore();
+  c.drawImage(im, (-im.width * s) / 2, (-im.height * s) / 2, im.width * s, im.height * s);
+  const pm = D.meta.props[name];
+  if (pm && pm.cuts && pm.cuts.length) {
+    const m = c.getTransform(), P = (x, y) => { const u = (x - im.width / 2) * s, v = (y - im.height / 2) * s; return [(m.a * u + m.c * v + m.e) / SC, (m.b * u + m.d * v + m.f) / SC]; };
+    pm.cuts.forEach(([x0, y0, x1, y1]) => CUTS.push([...P(x0, y0), ...P(x1, y1), name]));
+  }
+  c.restore();
 }
 
 // ------------------------------------------------------------------ camera
@@ -178,9 +185,11 @@ function drawChar(c, cam, place, variant = "") {
 // ------------------------------------------------------------------ prop layouts (positions in world px; scale relative to the 4K source)
 // radial burst around the character with lavender breathing room (reference key visual); props may run off the frame
 const BG_PROPS = {
-  wide: [["bg1_ribbon", 430, 330, 0.40, -0.50], ["bg3_scissors", 1010, 760, 0.46, -0.55], ["bg2_traffic_light", 1560, 330, 0.40, 0.42]],
-  key:  [["bg1_ribbon", 360, 300, 0.40, -0.55], ["bg3_scissors", 980, 840, 0.46, -0.50], ["bg2_traffic_light", 1620, 300, 0.40, 0.45]],
-  manga:[["bg3_scissors", 1500, 640, 0.48, 0.65]],
+  // traffic light (pole) and scissors (both ends) were cut by the illustrator's canvas: placed so the cuts stay off screen
+  // (tools/stills_venom.mjs --cutcheck verifies every frame)
+  wide: [["bg1_ribbon", 430, 330, 0.40, -0.50], ["bg3_scissors", 1010, 760, 0.86, 0.15], ["bg2_traffic_light", 1560, 480, 0.80, -0.18]],
+  key:  [["bg1_ribbon", 360, 300, 0.40, -0.55], ["bg3_scissors", 830, 890, 0.86, -0.50], ["bg2_traffic_light", 1620, 450, 0.80, -0.25]],
+  manga:[["bg3_scissors", 1500, 640, 0.68, 0.65]],
 };
 const FG_PROPS = {
   wide: [["fg3_brush_long", 190, 150, 0.46, -0.9], ["fg2_lipstick_long", 1800, 600, 0.50, 0.9], ["fg5_foundation", 1640, 960, 0.52, -0.2],
@@ -409,7 +418,7 @@ const SCENE = {
   // A: one long prop across the frame, the lyric band runs along it (ref: guitar neck)
   prop_band(c, s, t, cam) {
     bgA(c, s, t, 404, 760, 560, 470);
-    drawProp(c, "bg3_scissors", 900, 520, 0.74, -0.62, t);
+    drawProp(c, "bg3_scissors", 950, 550, 1.0, -1.15, t);
     pills(c, s.pills, 41, t - s.g0, { x: 0, y: 650, w: 900, h: 430 });
     drawProp(c, "fg3_brush_long", 1660, 780, 0.85, 0.75, t);
   },
@@ -437,7 +446,7 @@ const SLOT = {
   "1b": [[110, 560], [1130, 650]],
   "2b": [[1760, 140], [260, 170]],
   "2":  [[1740, 120], [240, 150]],
-  "3":  [[150, 600, 0.10], [430, 720, 0.10]],
+  "3":  [[330, 700, -0.52], [560, 760, -0.52]],      // along the scissor blade (prop_band)
   "1":  [[1240, 610], [150, 200]],
   "5":  [[1000, 260], [1000, 260]],
 };
@@ -487,7 +496,7 @@ function titleLayer(c) {
 // ------------------------------------------------------------------ frame
 function render(tReal) {
   const t = Math.floor(tReal * 15 + 1e-6) / 15;
-  TEXTBOX.length = 0; EYES = [];
+  TEXTBOX.length = 0; EYES = []; CUTS.length = 0;
   const s = shotAt(t), cam = camera(s, t);
   ctx.setTransform(SC, 0, 0, SC, 0, 0);
   ctx.fillStyle = PAL.black; ctx.fillRect(0, 0, W0, H0);
@@ -539,5 +548,17 @@ window.camSpeeds = function (a, b) {
     out.push({ t0: sh.t0, framing: sh.framing, camera: sh.camera, thirds: [m(v.slice(0, k)), m(v.slice(k, 2 * k)), m(v.slice(2 * k))] });
   }
   return out;
+};
+// any canvas-cut prop edge inside the frame? (sampled along each segment, 6 px margin)
+window.cutCheck = function (a, b) {
+  const bad = [];
+  for (let f = Math.ceil(a * 15); f < b * 15; f++) {
+    const t = f / 15; render(t);
+    for (const [x0, y0, x1, y1, n] of CUTS) for (let k = 0; k <= 20; k++) {
+      const x = x0 + (x1 - x0) * k / 20, y = y0 + (y1 - y0) * k / 20;
+      if (x > -6 && x < W0 + 6 && y > -6 && y < H0 + 6) { bad.push([+t.toFixed(2), shotAt(t).i, shotAt(t).framing, n]); break; }
+    }
+  }
+  return bad;
 };
 window.probe = function (t) { render(t); return { text: TEXTBOX.slice(), eyes: EYES.slice() }; };
