@@ -208,43 +208,72 @@ const visibleLine = (id, t) => { const l = LYR[id]; return l && t >= l.start - 0
 const TEXTBOX = [];   // screen-space boxes of drawn lyric text (for the eye-overlap check)
 function noteBox(c, x, y, w, h) { const m = c.getTransform(); const pts = [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].map(([a, b]) => [m.a * a + m.c * b + m.e, m.b * a + m.d * b + m.f]); const xs = pts.map((p) => p[0] / SC), ys = pts.map((p) => p[1] / SC); TEXTBOX.push([Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)]); }
 
-// method 1: navy box + white text
-function textBox(c, str, x, y, px = 30) {
-  c.font = jpFont(px, 700); const lines = splitTwo(str), lw = Math.max(...lines.map((l) => c.measureText(l).width));
-  const pad = px * 0.55, lh = px * 1.45, w = lw + pad * 2, h = lines.length * lh + pad * 1.2;
+// ---- small lyric text (methods 1, 1b, 2, 2b, 3, 5). Reference: ~40 px at 1080p, wide tracking (~0.38 em),
+// characters appear as they are sung (short fade), and the lines of a shot stay on screen so two blocks fill the frame.
+const TRACK = 0.38;
+function spacedW(c, str, sp) { let w = 0; for (const ch of str) w += c.measureText(ch).width + sp; return Math.max(0, w - sp); }
+function fillSpaced(c, str, x, y, sp) { for (const ch of str) { c.fillText(ch, x, y); x += c.measureText(ch).width + sp; } }
+const charAlpha = (l, k, t) => (l ? clamp((t - l.chars[Math.min(k, l.chars.length - 1)] + 0.06) / 0.12) : 1);
+function fillReveal(c, l, off, str, x, y, sp, t) {
+  [...str].forEach((ch, k) => { const a = charAlpha(l, off + k, t); if (a > 0) { c.globalAlpha = a; c.fillText(ch, x, y); } x += c.measureText(ch).width + sp; });
+  c.globalAlpha = 1;
+}
+// split a line in two at a natural break; returns [[text, charOffset], ...]
+function splitTwo(str, max = 11) {
+  const ch = [...str]; if (ch.length <= max) return [[str, 0]];
+  const mb = D.typo.breaks && D.typo.breaks[str];                       // manual break (data/typo.json)
+  if (mb !== undefined) { const k = [...str.slice(0, mb)].length; return [[ch.slice(0, k).join("").replace(/ $/, ""), 0], [ch.slice(k).join(""), k]]; }
+  let best = Math.ceil(ch.length / 2), bd = 99;
+  const kanjiNext = (nx) => /[一-龯ァ-ヶA-Za-z「（]/.test(nx || "");
+  const bonus = (x, nx) => (/[？。 ]/.test(x) ? 8 : /[」）]/.test(x) ? 6 : /[だよ]/.test(x) && !/[ーぁぃぅぇぉゃゅょっ]/.test(nx || "") ? 4
+    : /[はでものなにをがて]/.test(x) && kanjiNext(nx) ? 3 : 0);
+  ch.forEach((x, i) => { if (i < 2 || i > ch.length - 3) return; const d = Math.abs(i + 1 - ch.length / 2) - bonus(x, ch[i + 1]); if (d < bd) { bd = d; best = i + 1; } });
+  return [[ch.slice(0, best).join(""), 0], [ch.slice(best).join("").replace(/^ /, ""), best + (ch[best] === " " ? 1 : 0)]];
+}
+function softShadow(c, on) { if (on) { c.shadowColor = "rgba(21,24,60,0.75)"; c.shadowBlur = 5 * SC; c.shadowOffsetX = 1.5 * SC; c.shadowOffsetY = 1.5 * SC; } else shadowOff(c); }
+// 1: navy box, sized with the tracking so no glyph sticks out
+function textBox(c, l, t, x, y, px = 36) {
+  c.font = jpFont(px, 700); const sp = px * TRACK * 0.6, parts = splitTwo(l.ja);
+  const lw = Math.max(...parts.map(([p]) => spacedW(c, p, sp)));
+  const padX = px * 0.7, lh = px * 1.5, w = lw + padX * 2, h = parts.length * lh + px * 0.5;
   c.fillStyle = PAL.navy; c.fillRect(x, y, w, h); noteBox(c, x, y, w, h);
   c.fillStyle = PAL.white; c.textBaseline = "middle";
-  lines.forEach((l, i) => fillSpaced(c, l, x + pad, y + pad * 0.6 + lh * (i + 0.5), px * 0.12));
+  parts.forEach(([p, off], i) => fillReveal(c, l, off, p, x + padX, y + px * 0.25 + lh * (i + 0.5), sp, t));
 }
-function fillSpaced(c, s, x, y, sp) { for (const ch of s) { c.fillText(ch, x, y); x += c.measureText(ch).width + sp; } }
-function splitTwo(s) {
-  s = s.replace(/[（）]/g, (m) => m);
-  if (s.length <= 12) return [s];
-  const brk = s.search(/[」だなはでもの]/g); const cut = brk > 4 && brk < s.length - 3 ? brk + 1 : Math.ceil(s.length / 2);
-  return [s.slice(0, cut), s.slice(cut)];
-}
-// 1b: small white horizontal; 2b: small white vertical; 2: vertical on navy/black bar
-function softShadow(c, on) { if (on) { c.shadowColor = "rgba(21,24,60,0.75)"; c.shadowBlur = 5 * SC; c.shadowOffsetX = 1.5 * SC; c.shadowOffsetY = 1.5 * SC; } else shadowOff(c); }
-function textSmall(c, str, x, y, px = 30, color = PAL.white) {
+// 1b: white horizontal, two lines
+function textSmall(c, l, t, x, y, px = 40, color = PAL.white) {
   c.font = jpFont(px, 700); c.fillStyle = color; c.textBaseline = "middle"; softShadow(c, color === PAL.white);
-  splitTwo(str).forEach((l, i) => { fillSpaced(c, l, x, y + i * px * 1.6, px * 0.18); noteBox(c, x, y - px / 2 + i * px * 1.6, c.measureText(l).width * 1.2, px); });
+  const sp = px * TRACK;
+  splitTwo(l.ja).forEach(([p, off], i) => { fillReveal(c, l, off, p, x, y + i * px * 1.55, sp, t); noteBox(c, x, y - px / 2 + i * px * 1.55, spacedW(c, p, sp), px); });
   softShadow(c, false);
 }
-function textVertical(c, str, x, y, px = 30, bar = null, color = PAL.white) {
-  c.font = jpFont(px, 700); const step = px * 1.12, chars = [...str.replace(/\s/g, "")];
-  if (bar) { c.fillStyle = bar; c.fillRect(x - px * 0.75, y - px * 0.9, px * 1.5, step * chars.length + px * 0.8); }
-  noteBox(c, x - px * 0.75, y - px * 0.9, px * 1.5, step * chars.length + px * 0.8);
-  c.fillStyle = color; c.textAlign = "center"; c.textBaseline = "middle"; softShadow(c, !bar && color === PAL.white);
-  chars.forEach((ch, i) => { const rot = /[ーー～（）「」]/.test(ch); c.save(); c.translate(x, y + i * step); if (rot) c.rotate(Math.PI / 2); c.fillText(ch, 0, 0); c.restore(); });
-  c.textAlign = "left"; softShadow(c, false);
+// 2 / 2b / 5: vertical, long lines in two columns (right column first)
+function textVertical(c, l, t, x, y, px = 38, bar = null, color = PAL.white) {
+  c.font = jpFont(px, 700); const step = px * (1 + TRACK * 0.7);
+  const parts = splitTwo(l.ja, 10);
+  parts.forEach(([p, off], col) => {
+    const cx = x - col * px * 1.9, chars = [...p], hgt = step * chars.filter((q) => q !== " ").length + px * 0.6;
+    if (bar) { c.fillStyle = bar; c.fillRect(cx - px * 0.8, y - px * 0.85, px * 1.6, hgt); }
+    noteBox(c, cx - px * 0.8, y - px * 0.85, px * 1.6, hgt);
+    c.fillStyle = color; c.textAlign = "center"; c.textBaseline = "middle"; softShadow(c, !bar && color === PAL.white);
+    let row = 0;
+    chars.forEach((ch, i) => {
+      if (ch === " ") return; const r = row++;
+      const a = charAlpha(l, off + i, t); if (a <= 0) return;
+      c.save(); c.globalAlpha = a; c.translate(cx, y + r * step); if (/[ー～（）「」]/.test(ch)) c.rotate(Math.PI / 2); c.fillText(ch, 0, 0); c.restore();
+    });
+    c.textAlign = "left"; softShadow(c, false);
+  });
 }
-// 3: diagonal band along a prop; words revealed as sung
-function textBand(c, id, t, x, y, rot, px = 30) {
-  const l = LYR[id]; c.save(); c.translate(x, y); c.rotate(rot); c.font = jpFont(px, 700);
-  const n = [...l.ja].filter((ch, i) => l.chars[i] <= t + 0.05).length, shown = [...l.ja].slice(0, Math.max(1, n)).join("");
-  const w = c.measureText(l.ja).width + l.ja.length * px * 0.2 + px * 1.4;
-  c.fillStyle = PAL.navy; c.fillRect(-px * 0.7, -px * 0.85, w, px * 1.7); noteBox(c, -px * 0.7, -px * 0.85, w, px * 1.7);
-  c.fillStyle = PAL.white; c.textBaseline = "middle"; fillSpaced(c, shown, 0, 0, px * 0.2); c.restore();
+// 3: navy band along a prop, the whole band is laid first, glyphs appear as sung; the two halves of the line get a wide gap
+function textBand(c, l, t, x, y, rot, px = 38) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.font = jpFont(px, 700);
+  const sp = px * TRACK * 0.7, gap = px * 1.4, parts = splitTwo(l.ja, 8);
+  const ws = parts.map(([p]) => spacedW(c, p, sp)), w = ws.reduce((a, b) => a + b, 0) + gap * (parts.length - 1) + px * 1.4;
+  c.fillStyle = PAL.navy; c.fillRect(-px * 0.7, -px * 0.8, w, px * 1.6); noteBox(c, -px * 0.7, -px * 0.8, w, px * 1.6);
+  c.fillStyle = PAL.white; c.textBaseline = "middle"; let xx = 0;
+  parts.forEach(([p, off], i) => { fillReveal(c, l, off, p, xx, 0, sp, t); xx += ws[i] + gap; });
+  c.restore();
 }
 // 4: giant cut glyphs. A: split magenta/navy; B: black rows behind the character
 function wordsOf(id) {
@@ -403,25 +432,36 @@ const SCENE = {
 
 // ------------------------------------------------------------------ lyric layer per shot (screen space, after the camera)
 const TEXT_METHODS = new Set(["1", "1b", "2", "2b", "3", "5", "6"]);
+// two slots per method: the 1st line of a shot takes slot 0, the next slot 1; the last two sung lines of the shot stay up
+const SLOT = {
+  "1b": [[110, 560], [1130, 650]],
+  "2b": [[1760, 140], [260, 170]],
+  "2":  [[1740, 120], [240, 150]],
+  "3":  [[150, 600, 0.10], [430, 720, 0.10]],
+  "1":  [[1240, 610], [150, 200]],
+  "5":  [[1000, 260], [1000, 260]],
+};
 function lyricsLayer(c, s, t) {
-  let method = s.method;
-  if (s.type === "D" && method === "-") {
-    const n = SHOTS[s.i + 1], p = SHOTS[s.i - 1];
-    method = n && TEXT_METHODS.has(n.method) ? n.method : p && TEXT_METHODS.has(p.method) ? p.method : "small";
+  let method = s.method, own = s;
+  if (s.type === "D" && method === "-") {          // gap: keep the look and slot of the shot the line belongs to
+    const n = SHOTS[s.i + 1], p = SHOTS[s.i - 1], id = s.lines[s.lines.length - 1];
+    own = id && p && p.lines.includes(id) && TEXT_METHODS.has(p.method) ? p : n && TEXT_METHODS.has(n.method) ? n : p && TEXT_METHODS.has(p.method) ? p : null;
+    method = own ? own.method : "small"; own = own || s;
   }
-  for (const id of s.lines) {
-    if (!visibleLine(id, t)) continue;
-    const l = LYR[id];
+  const keep = s.type !== "D" && TEXT_METHODS.has(method) && method !== "6";
+  const shown = s.lines.filter((id) => LYR[id] && t >= LYR[id].start - 0.02 && (keep ? t < s.t1 : t < LYR[id].end)).slice(-2);
+  for (const id of shown) {
+    const l = LYR[id], k = Math.max(0, own.lines.indexOf(id)) % 2, sl = (SLOT[method] || [[0, 0], [0, 0]])[k];
     switch (method) {
-      case "1": textBox(c, l.ja, s.framing === "char_close" ? 1240 : 1320, s.framing === "char_close" ? 620 : 300); break;
-      case "1b": textSmall(c, l.ja, 120, 640); break;
-      case "2": textVertical(c, l.ja, 1700, 140, 34, PAL.navy); break;
-      case "2b": textVertical(c, l.ja, 1700, 160, 30); break;
-      case "3": textBand(c, id, t, 260, 640, 0.10); break;
+      case "1": textBox(c, l, t, sl[0], s.framing === "char_close" && k === 0 ? 610 : sl[1]); break;
+      case "1b": textSmall(c, l, t, sl[0], sl[1]); break;
+      case "2": textVertical(c, l, t, sl[0], sl[1], 40, PAL.navy); break;
+      case "2b": textVertical(c, l, t, sl[0], sl[1], 38); break;
+      case "3": textBand(c, l, t, sl[0], sl[1], sl[2]); break;
       case "4": if (s.type === "A") giantA(c, id, t, 500 + s.gid); break;
-      case "5": textVertical(c, l.ja, 960, 300, 30); break;
+      case "5": textVertical(c, l, t, sl[0], sl[1], 36); break;
       case "6": textMagenta(c, l.ja, 140, 820, 150, -0.2); break;
-      default: textSmall(c, l.ja, 760, 540, 26);
+      default: textSmall(c, l, t, 700, 520, 34);
     }
   }
 }
