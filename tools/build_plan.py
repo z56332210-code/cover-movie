@@ -26,7 +26,8 @@ S = [
  (bar(0),           "C", "keyvisual",   "title",  "cut",           "intro",   [],          2,  "key visual silhouette + props, title logo, glitch strips"),
  (bar(4) - BAR / 4, "D", "black",       "-",      "black",         "intro",   [1],         3,  "black gap 1 beat; pickup あー sung here (lyric stays visible)"),
  (bar(4),           "A", "prop_close",  "1b",     "cut",           "verse1",  [1, 2],      4,  "props close-up (plush/syringe/pill), ink + halftone, fast pan decelerating"),
- (ln(3),            "A", "prop_band",   "3",      "cut",           "verse1",  [3, 4],      5,  "guitar/harp, diagonal band along the neck, words revealed in chunks"),
+ (ln(3),            "A", "prop_band",   "3",      "flash_magenta",           "verse1",  [3, 4],      5,  "guitar/harp, diagonal band along the neck, words revealed in chunks"),
+ (ln(5) - 0.47,     "D", "black",       "-",      "black",         "verse1",  [4],         6,  "black gap"),
  (ln(5),            "A", "char_close",  "1",      "cut",           "verse1",  [5],         7,  "character close-up, navy box, fast zoom-out then settle"),
  (bar(12) + 1.10,   "D", "black",       "-",      "glitch",        "verse1",  [5],         8,  "RGB-slice glitch then short black into the silhouette"),
  (bar(13),          "C", "keyvisual",   "-",      "cut",           "verse1",  [],          9,  "instrumental: key visual silhouette, frequent glitch strips"),
@@ -81,6 +82,8 @@ S = [
 ]
 
 ref = json.load(open("scene_plan.json"))["shots"]
+# the picture animates on 15 fps steps (like the reference), so every cut sits on the 15 fps grid
+S = [(np.floor(e[0] * 15 + 1e-6) / 15,) + tuple(e[1:]) for e in S]
 shots = []
 for i, (t0, ty, fr, m, tr, sec, lines, ri, note) in enumerate(S):
     t1 = S[i + 1][0] if i + 1 < len(S) else END

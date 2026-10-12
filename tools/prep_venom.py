@@ -36,7 +36,10 @@ def derive(src, name, scale=1.0):
     a = a[y0:y1, x0:x1]
     rgb, al = a[..., :3], a[..., 3:]
     save(a, name)
-    sil = np.concatenate([np.broadcast_to(NAVY, rgb.shape), al], -1); save(sil, name + "_sil")
+    # silhouette: navy at the top fading to near-black at the bottom (reference silhouette ~#080C26)
+    ramp = np.linspace(0, 1, rgb.shape[0], dtype=np.float32)[:, None, None]
+    sil_rgb = np.array([16, 19, 50], np.float32) * (1 - ramp) + np.array([9, 12, 38], np.float32) * ramp
+    sil = np.concatenate([np.broadcast_to(sil_rgb, rgb.shape), al], -1); save(sil, name + "_sil")
     lum = (rgb @ np.array([0.299, 0.587, 0.114], np.float32)) / 255
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
     magenta = (r > 150) & (b > 120) & (g < 110)

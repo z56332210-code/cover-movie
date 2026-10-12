@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Deterministic frame renderer for web/index.html.
 //
-//   node tools/render.mjs                          # final: 1920x1080 30fps, all sections -> out/final/slowdowner.mp4
+//   node tools/render.mjs --final                  # final: 1920x1080 30fps, all sections -> out/final/venom.mp4
 //   node tools/render.mjs --preview                # 960x540 15fps preview of everything
 //   node tools/render.mjs --preview --sections chorus1,C   # re-render only changed sections, then re-concat
 //   node tools/render.mjs --preview --range 64.2-69.2      # short clip with its audio
@@ -19,10 +19,10 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const WEB = path.join(ROOT, "web");
+const WEB = path.join(ROOT, "web/venom");
 const AUDIO = path.join(ROOT, "assets/audio/song.mp3");
-const DATA = JSON.parse(fs.readFileSync(path.join(ROOT, "data/sections.json"), "utf8"));
-const DURATION = 143.333875;
+const DATA = JSON.parse(fs.readFileSync(path.join(ROOT, "data/sections.json"), "utf8")).map((s) => ({ name: s.name, start: s.t0 }));
+const DURATION = JSON.parse(fs.readFileSync(path.join(ROOT, "data/analysis.json"), "utf8")).duration;
 
 // ---------------------------------------------------------------- args
 const argv = process.argv.slice(2);
@@ -30,7 +30,7 @@ const flag = (n) => argv.includes("--" + n);
 const opt = (n, d) => { const i = argv.indexOf("--" + n); return i >= 0 ? argv[i + 1] : d; };
 const preview = !flag("final");            // preview is the default; --final = 1920x1080 30fps, all post effects
 const width = +opt("w", preview ? 960 : 1920);
-const fps = +opt("fps", preview ? 15 : 30);
+const fps = +opt("fps", 30);
 const outDir = path.resolve(ROOT, opt("out", preview ? "out/preview" : "out/final"));
 const workers = +opt("workers", Math.max(1, os.cpus().length - 1));
 const jpegQ = +opt("q", preview ? 0.85 : 0.95);
@@ -136,7 +136,7 @@ async function concatAndMux() {
   const listFile = path.join(outDir, "concat.txt");
   for (const c of all) if (!fs.existsSync(path.join(outDir, "chunks", c.name + ".mp4"))) { log(`missing chunk ${c.name}, not muxing yet`); return; }
   fs.writeFileSync(listFile, all.map((c) => `file 'chunks/${c.name}.mp4'`).join("\n") + "\n");
-  const video = path.join(outDir, "video_only.mp4"), final = path.join(outDir, preview ? "preview.mp4" : "slowdowner.mp4");
+  const video = path.join(outDir, "video_only.mp4"), final = path.join(outDir, preview ? "preview.mp4" : "venom.mp4");
   await ffmpeg(["-f", "concat", "-safe", "0", "-i", listFile, "-c", "copy", video]).done;
   await ffmpeg(["-i", video, "-i", AUDIO, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-ar", "48000",
     "-movflags", "+faststart", final]).done;

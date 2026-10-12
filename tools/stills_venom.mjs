@@ -26,6 +26,17 @@ await page.goto(`http://127.0.0.1:${srv.address().port}/index.html`);
 const info = await page.evaluate(([w, en]) => window.init(w, { enFont: en }), [width, en]);
 if (info.fallbacks.length) console.error("FONT FALLBACK:", info.fallbacks.join(""));
 if (opt("glitch")) { const [a, b] = opt("glitch").split("-").map(Number); console.log("glitch frames:", JSON.stringify(await page.evaluate(([a, b]) => window.glitchTimes(a, b), [a, b]))); }
+if (opt("camspeed")) { const [a, b] = opt("camspeed").split("-").map(Number); for (const r of await page.evaluate(([a, b]) => window.camSpeeds(a, b), [a, b])) console.log("cam", JSON.stringify(r)); }
+if (opt("eyecheck")) {
+  const L = JSON.parse(fs.readFileSync(path.join(ROOT, "data/lyrics_timed.json"), "utf8")); const [a, b] = opt("eyecheck").split("-").map(Number); let bad = 0, n = 0;
+  for (const l of L.filter((l) => l.start >= a && l.start < b)) for (const f of [0.35, 0.7, 0.95]) {
+    const t = l.start + (l.end - l.start) * f, pr = await page.evaluate((t) => window.probe(t), t); n++;
+    const hit = (p, q) => p[0] < q[0] + q[2] && q[0] < p[0] + p[2] && p[1] < q[1] + q[3] && q[1] < p[1] + p[3];
+    const h = pr.text.filter((tb) => pr.eyes.some((e) => hit(tb, e))).length; if (h) { bad++; console.log("EYE HIT line", l.id, t.toFixed(2)); }
+    if (!pr.text.length) console.log("NO TEXT line", l.id, "at", t.toFixed(2));
+  }
+  console.log(`eye check: ${n} probes, ${bad} with glyphs on the eyes`);
+}
 for (const t of times) {
   const t0 = Date.now();
   const pr = await page.evaluate((t) => window.probe(t), t);

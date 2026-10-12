@@ -84,7 +84,7 @@ function inkCluster(c, cx, cy, r, seed, color = PAL.mag, alpha = 1) {
   c.restore();
 }
 // watercolour splashes (tints of magenta over lavender) + specks
-function splatter(c, cx, cy, r, seed, n = 18, alpha = 0.45) {
+function splatter(c, cx, cy, r, seed, n = 18, alpha = 0.45, specks = 1) {
   const R = rng(seed); c.save(); c.fillStyle = PAL.mag;
   for (let i = 0; i < n; i++) {
     const a = R() * 6.283, d = Math.sqrt(R()) * r, rr = 10 + R() * r * 0.16;
@@ -92,7 +92,7 @@ function splatter(c, cx, cy, r, seed, n = 18, alpha = 0.45) {
     c.fill(blobPath(cx + Math.cos(a) * d, cy + Math.sin(a) * d, rr, seed * 7 + i, 10, 0.18));
   }
   c.globalAlpha = 0.9;
-  for (let i = 0; i < n * 3; i++) {
+  for (let i = 0; i < n * 3 * specks; i++) {
     const a = R() * 6.283, d = r * (0.3 + R() * 0.9), rr = 1.5 + R() * 5;
     c.beginPath(); c.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, rr, 0, 6.283); c.fill();
   }
@@ -142,7 +142,8 @@ function camera(s, t) {
   const g = Math.max(0.001, s.g1 - s.g0), tau = t - s.g0, u = clamp(tau / g);
   const dec = 1 - Math.exp(-tau / 0.55);                    // fast right after the cut, then settles (ref: ~180 -> 50 -> 15 px/s)
   switch (s.camera) {
-    case "fast_decel": { const R = rng(s.gid * 13 + 5), dir = R() < 0.5 ? -1 : 1; return { z: lerp(1.10, 1.0, dec) + 0.01 * u, x: dir * lerp(110, 0, dec), y: lerp(-30, 0, dec) }; }
+    case "fast_decel": { const R = rng(s.gid * 13 + 5), dir = R() < 0.5 ? -1 : 1, dec2 = 1 - Math.exp(-tau / 0.38);
+      return { z: 1.07 - 0.05 * dec2, x: dir * (170 * (1 - dec2) - 37 * tau), y: -30 * (1 - dec2) + 6 * tau }; }
     case "slow_push": return { z: 1.0 + 0.05 * u, x: 0, y: 0 };
     case "drift": return { z: 1.04, x: lerp(-45, 45, u), y: 0 };
     case "pan_mid": return { z: 1.06, x: lerp(-120, 120, Math.sin(u * Math.PI / 2)), y: 0 };
@@ -157,7 +158,7 @@ const CHAR = {
   bust:  { img: "bust_m", cx: 960, top: 30, h: 1260 },     // head to chest (waist falls below the frame)
   close: { img: "bust", cx: 1010, top: -260, h: 2350 },    // upper face to hands
   face:  { img: "bust", cx: 900, top: -560, h: 3200 },     // eyes fill the frame (outro, once)
-  key:   { img: "bust_m", cx: 960, top: 70, h: 1450 },    // key visual silhouette
+  key:   { img: "bust_m", cx: 960, top: 220, h: 1120 },    // key visual silhouette
 };
 let EYES = [];   // screen-space eye boxes of the last drawn character (for the text check)
 function drawChar(c, cam, place, variant = "") {
@@ -178,20 +179,24 @@ function drawChar(c, cam, place, variant = "") {
 // radial burst around the character with lavender breathing room (reference key visual); props may run off the frame
 const BG_PROPS = {
   wide: [["bg1_ribbon", 430, 330, 0.40, -0.50], ["bg3_scissors", 1010, 760, 0.46, -0.55], ["bg2_traffic_light", 1560, 330, 0.40, 0.42]],
-  key:  [["bg1_ribbon", 380, 300, 0.44, -0.55], ["bg3_scissors", 980, 820, 0.52, -0.50], ["bg2_traffic_light", 1600, 300, 0.44, 0.45]],
+  key:  [["bg1_ribbon", 360, 300, 0.40, -0.55], ["bg3_scissors", 980, 840, 0.46, -0.50], ["bg2_traffic_light", 1620, 300, 0.40, 0.45]],
   manga:[["bg3_scissors", 1500, 640, 0.48, 0.65]],
 };
 const FG_PROPS = {
   wide: [["fg3_brush_long", 190, 150, 0.46, -0.9], ["fg2_lipstick_long", 1800, 600, 0.50, 0.9], ["fg5_foundation", 1640, 960, 0.52, -0.2],
          ["fg1_lipstick_short", 300, 960, 0.60, 0.7], ["fg4_brush_short", 90, 640, 0.50, 0.3]],
-  key:  [["fg3_brush_long", 150, 130, 0.52, -0.9], ["fg2_lipstick_long", 1830, 640, 0.56, 0.9], ["fg5_foundation", 1680, 980, 0.58, -0.2],
-         ["fg1_lipstick_short", 280, 990, 0.66, 0.7], ["fg4_brush_short", 70, 620, 0.55, 0.3]],
+  key:  [["fg3_brush_long", 150, 130, 0.42, -0.9], ["fg2_lipstick_long", 1850, 640, 0.44, 0.9]],
 };
-function drawProps(c, list, filter) {
+// props float on their own (reference: each prop drifts a little, the silhouette stays still)
+let FLOAT_AMP = 1, PARX = 0, PARY = 0;     // PAR*: extra parallax offset for props (foreground layers move more than the ink/background)
+function floatOf(n, t) { const ph = hash(n.length * 97 + n.charCodeAt(4), 5) * 6.283, ph2 = hash(n.charCodeAt(2), 9) * 6.283;
+  const k = FLOAT_AMP; return [Math.sin(t * 0.55 + ph) * 16 * k + PARX, Math.cos(t * 0.47 + ph2) * 11 * k + PARY, Math.sin(t * 0.38 + ph2) * 0.03 * k]; }
+function drawProps(c, list, filter, t = 0) {
   if (filter) c.filter = filter;
-  list.forEach(([n, x, y, s, r]) => drawImg(c, n, x, y, s, r));
+  list.forEach(([n, x, y, s, r]) => { const [dx, dy, dr] = floatOf(n, t); drawImg(c, n, x + dx, y + dy, s, r + dr); });
   if (filter) c.filter = "none";
 }
+function drawProp(c, n, x, y, s, r, t) { const [dx, dy, dr] = floatOf(n, t); drawImg(c, n, x + dx, y + dy, s, r + dr); }
 
 // ------------------------------------------------------------------ text
 const jpFont = (px, w = 900) => `${w} ${px}px ${w === 900 ? FONT.jp : FONT.jp7}`;
@@ -219,17 +224,19 @@ function splitTwo(s) {
   return [s.slice(0, cut), s.slice(cut)];
 }
 // 1b: small white horizontal; 2b: small white vertical; 2: vertical on navy/black bar
+function softShadow(c, on) { if (on) { c.shadowColor = "rgba(21,24,60,0.75)"; c.shadowBlur = 5 * SC; c.shadowOffsetX = 1.5 * SC; c.shadowOffsetY = 1.5 * SC; } else shadowOff(c); }
 function textSmall(c, str, x, y, px = 30, color = PAL.white) {
-  c.font = jpFont(px, 700); c.fillStyle = color; c.textBaseline = "middle";
+  c.font = jpFont(px, 700); c.fillStyle = color; c.textBaseline = "middle"; softShadow(c, color === PAL.white);
   splitTwo(str).forEach((l, i) => { fillSpaced(c, l, x, y + i * px * 1.6, px * 0.18); noteBox(c, x, y - px / 2 + i * px * 1.6, c.measureText(l).width * 1.2, px); });
+  softShadow(c, false);
 }
 function textVertical(c, str, x, y, px = 30, bar = null, color = PAL.white) {
   c.font = jpFont(px, 700); const step = px * 1.12, chars = [...str.replace(/\s/g, "")];
   if (bar) { c.fillStyle = bar; c.fillRect(x - px * 0.75, y - px * 0.9, px * 1.5, step * chars.length + px * 0.8); }
   noteBox(c, x - px * 0.75, y - px * 0.9, px * 1.5, step * chars.length + px * 0.8);
-  c.fillStyle = color; c.textAlign = "center"; c.textBaseline = "middle";
+  c.fillStyle = color; c.textAlign = "center"; c.textBaseline = "middle"; softShadow(c, !bar && color === PAL.white);
   chars.forEach((ch, i) => { const rot = /[ーー～（）「」]/.test(ch); c.save(); c.translate(x, y + i * step); if (rot) c.rotate(Math.PI / 2); c.fillText(ch, 0, 0); c.restore(); });
-  c.textAlign = "left";
+  c.textAlign = "left"; softShadow(c, false);
 }
 // 3: diagonal band along a prop; words revealed as sung
 function textBand(c, id, t, x, y, rot, px = 30) {
@@ -313,17 +320,23 @@ function subtitle(c, t) {
 }
 
 // ------------------------------------------------------------------ glitch strips (1-3 frames, small off-palette colour bars)
-const GLITCH_RATE = { C: 1.65, A: 0.17, B: 0.04, D: 0, E: 0 };      // events per second, from the reference measurement
+const GLITCH_RATE = { C: 4.8, A: 3.0, B: 0.05, D: 0, E: 0 };    // tuned so tools/metrics.py counts what it counts on the reference      // events per second, from the reference measurement
 const GLITCH_COLS = ["#7CFF5A", "#E9FF4A", "#46E8FF", "#FF5AC8", "#FFFFFF", "#15183C"];
 function glitch(c, t, s) {
-  const rate = GLITCH_RATE[s.type] || 0, f = Math.floor(t * 30); let drawn = 0;
-  for (let k = 0; k < 4; k++) {
-    const f0 = f - k; if (hash(f0, 911) > rate / 30) continue;
-    const len = 1 + Math.floor(hash(f0, 912) * 3); if (k >= len) continue;
+  let rate = GLITCH_RATE[s.type] || 0; const f = Math.floor(t * 15 + 1e-6); let drawn = 0;
+  if (s.trans_in === "glitch" && t - s.t0 < 0.15) rate = 15 * 4;          // transition burst
+  for (let k = 0; k < 2; k++) {
+    const f0 = f - k; if (hash(f0, 911) > rate / 15 && !(rate > 15 && k === 0)) continue;
+    const len = hash(f0, 912) < 0.12 ? 2 : 1; if (k >= len) continue;
     const R = rng(f0 * 7 + 3), nb = 1 + Math.floor(R() * 3);
     for (let b = 0; b < nb; b++) {
-      let x = R() * W0 * 0.9, y = R() * H0, w = 60 + R() * 220, h = 4 + R() * 12;
-      for (let x1 = x; x1 < x + w;) { const sw = 6 + R() * 40; c.fillStyle = GLITCH_COLS[Math.floor(R() * GLITCH_COLS.length)]; c.fillRect(x1, y, sw, h); x1 += sw; }
+      const x = R() * W0 * 0.85, y = R() * H0, w = 90 + R() * 300, h = 6 + R() * 18, dx = (R() < 0.5 ? -1 : 1) * (20 + R() * 120);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      c.drawImage(cv, x * SC, y * SC, w * SC, h * SC, (x + dx) * SC, y * SC, w * SC, h * SC);      // displaced slice
+      const mode = R();
+      if (mode < 0.55) { c.globalAlpha = 0.75; c.fillStyle = "#A0F08C"; c.fillRect((x + dx + w * R() * 0.5) * SC, y * SC, w * (0.3 + R() * 0.5) * SC, h * SC); }
+      else { c.globalCompositeOperation = "saturation"; c.fillStyle = "#808080"; c.fillRect((x + dx) * SC, y * SC, w * SC, h * SC); }
+      c.restore();
       drawn++;
     }
   }
@@ -335,44 +348,76 @@ function bgA(c, s, t, seed, inkX = 960, inkY = 620, inkR = 380) {
   c.fillStyle = PAL.lav; c.fillRect(-200, -200, W0 + 400, H0 + 400);
   splatter(c, inkX - 380, inkY + 160, 420, seed + 1, 16, 0.40);
   splatter(c, inkX + 420, inkY - 260, 360, seed + 2, 12, 0.35);
-  halftone(c, inkX + 120, inkY - 80, inkR * 1.8, 17, PAL.mag);
+  splatter(c, inkX - 120, inkY - 300, 600, seed + 4, 30, 0.48, 0.1);
+  splatter(c, inkX + 200, inkY + 300, 520, seed + 5, 24, 0.48, 0.1);
+  halftone(c, inkX + 120, inkY - 80, inkR * 1.0, 17, PAL.mag);
   inkCluster(c, inkX, inkY, inkR, seed + 3);
 }
 const SCENE = {
   keyvisual(c, s, t, cam) {
-    bgA(c, s, t, 101, 960, 600, 360);
-    drawProps(c, BG_PROPS.key);
+    bgA(c, s, t, 101, 960, 640, 90);
+    halftone(c, 1350, 380, 190, 17, PAL.mag);
+    drawProps(c, BG_PROPS.key, null, t);
     pills(c, s.pills, 77, t - s.g0, { x: 0, y: 380, w: W0, h: 700 });
     drawChar(c, cam, "key", "_sil");
-    drawProps(c, FG_PROPS.key);
+    drawProps(c, FG_PROPS.key, null, t);
   },
   char_wide(c, s, t, cam) {
     bgA(c, s, t, 202, 980, 560, 400);
-    drawProps(c, BG_PROPS.wide);
+    drawProps(c, BG_PROPS.wide, null, t);
     pills(c, s.pills, 55 + s.gid, t - s.g0);
     drawChar(c, cam, "bust");
-    drawProps(c, FG_PROPS.wide);
+    drawProps(c, FG_PROPS.wide, null, t);
   },
+  // A: props close-up (ref: plush/syringe close-up) - our traffic light + lipstick, ink diagonal, halftone, pills
+  prop_close(c, s, t, cam) {
+    bgA(c, s, t, 303, 1250, 620, 400);
+    drawProp(c, "bg2_traffic_light", 420, 330, 0.95, -0.35, t);
+    pills(c, s.pills, 31, t - s.g0, { x: 200, y: 600, w: 1400, h: 450 });
+    drawProp(c, "fg2_lipstick_long", 1440, 860, 1.05, 0.55, t);
+    drawProp(c, "fg4_brush_short", 1700, 260, 1.3, -0.4, t);
+  },
+  // A: one long prop across the frame, the lyric band runs along it (ref: guitar neck)
+  prop_band(c, s, t, cam) {
+    bgA(c, s, t, 404, 760, 560, 470);
+    drawProp(c, "bg3_scissors", 900, 520, 0.74, -0.62, t);
+    pills(c, s.pills, 41, t - s.g0, { x: 0, y: 650, w: 900, h: 430 });
+    drawProp(c, "fg3_brush_long", 1660, 780, 0.85, 0.75, t);
+  },
+  // A: character close-up, navy box text beside the face
+  char_close(c, s, t, cam) {
+    bgA(c, s, t, 505, 1300, 560, 420);
+    drawChar(c, cam, "close");
+  },
+  black(c) { c.fillStyle = PAL.black; c.fillRect(-200, -200, W0 + 400, H0 + 400); },
+  magenta(c) { c.fillStyle = PAL.mag; c.fillRect(-200, -200, W0 + 400, H0 + 400); },
+  navy(c) { c.fillStyle = PAL.navy; c.fillRect(-200, -200, W0 + 400, H0 + 400); },
   char_manga(c, s, t, cam) {
     c.fillStyle = PAL.white; c.fillRect(-200, -200, W0 + 400, H0 + 400);
     halftone(c, 960, 540, 1500, 15, "#000", (x, y) => 0.55 * clamp(1 - Math.abs((x - y * 0.6) - 500) / 700) + 0.35 * clamp((x - 1300) / 600));
-    drawProps(c, BG_PROPS.manga, "grayscale(1) contrast(1.8)");
+    drawProps(c, BG_PROPS.manga, "grayscale(1) contrast(1.8)", t);
     giantRowsB(c, s.lines.find((id) => D.typo[String(id)]) || s.lines[0], t, 300 + s.gid);
     drawChar(c, cam, "bust", "_mono");
   },
 };
 
 // ------------------------------------------------------------------ lyric layer per shot (screen space, after the camera)
+const TEXT_METHODS = new Set(["1", "1b", "2", "2b", "3", "5", "6"]);
 function lyricsLayer(c, s, t) {
+  let method = s.method;
+  if (s.type === "D" && method === "-") {
+    const n = SHOTS[s.i + 1], p = SHOTS[s.i - 1];
+    method = n && TEXT_METHODS.has(n.method) ? n.method : p && TEXT_METHODS.has(p.method) ? p.method : "small";
+  }
   for (const id of s.lines) {
     if (!visibleLine(id, t)) continue;
     const l = LYR[id];
-    switch (s.method) {
-      case "1": textBox(c, l.ja, 1320, 300); break;
+    switch (method) {
+      case "1": textBox(c, l.ja, s.framing === "char_close" ? 1240 : 1320, s.framing === "char_close" ? 620 : 300); break;
       case "1b": textSmall(c, l.ja, 120, 640); break;
       case "2": textVertical(c, l.ja, 1700, 140, 34, PAL.navy); break;
       case "2b": textVertical(c, l.ja, 1700, 160, 30); break;
-      case "3": textBand(c, id, t, 300, 760, -0.42); break;
+      case "3": textBand(c, id, t, 260, 640, 0.10); break;
       case "4": if (s.type === "A") giantA(c, id, t, 500 + s.gid); break;
       case "5": textVertical(c, l.ja, 960, 300, 30); break;
       case "6": textMagenta(c, l.ja, 140, 820, 150, -0.2); break;
@@ -400,18 +445,29 @@ function titleLayer(c) {
 }
 
 // ------------------------------------------------------------------ frame
-function render(t) {
+function render(tReal) {
+  const t = Math.floor(tReal * 15 + 1e-6) / 15;
   TEXTBOX.length = 0; EYES = [];
   const s = shotAt(t), cam = camera(s, t);
   ctx.setTransform(SC, 0, 0, SC, 0, 0);
   ctx.fillStyle = PAL.black; ctx.fillRect(0, 0, W0, H0);
   const scene = SCENE[s.framing];
+  FLOAT_AMP = s.framing === "keyvisual" ? 0.7 : 1.4;
+  const moving = s.camera === "fast_decel";
+  PARX = moving ? (cam.x - (camera(s, s.g1 - 0.01).x)) * 0.35 : 0; PARY = moving ? cam.y * 0.35 : 0;
   if (scene) { ctx.save(); applyCam(ctx, cam); scene(ctx, s, t, cam); ctx.restore(); }
   if (s.method === "title") titleLayer(ctx);
   else if (s.method === "credit") creditLayer(ctx, s, t);
-  else if (!(s.method === "4" && s.type === "B")) lyricsLayer(ctx, s, t);
+  else if (!(s.method === "4" && s.type === "B")) {
+    ctx.save(); if (moving && s.method !== "4") ctx.translate(cam.x * 0.3, cam.y * 0.3);   // small lyric text slides with the picture
+    lyricsLayer(ctx, s, t); ctx.restore();
+  }
+  if (s.type !== "D" && (s.trans_in === "flash_magenta" || s.trans_in === "flash_navy") && t - s.t0 < 0.1) {
+    ctx.fillStyle = s.trans_in === "flash_magenta" ? PAL.mag : PAL.navy; ctx.fillRect(0, 0, W0, H0);
+    if (!(s.method === "4" && s.type === "B")) lyricsLayer(ctx, s, t);
+  }
   s._glitch = glitch(ctx, t, s);
-  subtitle(ctx, t);
+  subtitle(ctx, tReal);
   return s;
 }
 
@@ -425,7 +481,23 @@ window.init = async function (width = 960, opts = {}) {
   await Promise.all(names.map(loadImg));
   return { fallbacks: fallbackChars(), shots: SHOTS.length };
 };
+window.needsBlur = function (t) { const s = shotAt(t); return !!OPTS.post && (s.camera !== "static"); };
 window.seek = function (t) { const s = render(t); return { shot: s.i, framing: s.framing, glitch: s._glitch }; };
 window.glitchTimes = function (a, b) { const out = []; for (let f = Math.ceil(a * 30); f < b * 30; f++) { const t = f / 30, s = shotAt(t); if (glitchCount(t, s)) out.push(t); } return out; };
-function glitchCount(t, s) { const rate = GLITCH_RATE[s.type] || 0, f = Math.floor(t * 30); for (let k = 0; k < 4; k++) { const f0 = f - k; if (hash(f0, 911) <= rate / 30 && k < 1 + Math.floor(hash(f0, 912) * 3)) return 1; } return 0; }
+function glitchCount(t, s) { const rate = GLITCH_RATE[s.type] || 0, f = Math.floor(t * 15 + 1e-6); for (let k = 0; k < 2; k++) { const f0 = f - k; if (hash(f0, 911) <= rate / 15 && k < (hash(f0, 912) < 0.12 ? 2 : 1)) return 1; } return 0; }
+// camera speed per shot thirds straight from the engine (px/s at 1080p, translation + zoom at the frame edge)
+window.camSpeeds = function (a, b) {
+  const out = [];
+  for (const sh of SHOTS) {
+    if (sh.t1 <= a || sh.t0 >= b || sh.type === "D" || sh.trans_in === "text") continue;
+    const g1 = sh.g1, n = Math.max(3, Math.round((g1 - sh.t0) * 15)), v = [];
+    for (let i = 0; i < n; i++) {
+      const t0 = sh.t0 + i / 15, c0 = camera(sh, t0), c1 = camera(sh, t0 + 1 / 15);
+      v.push(Math.hypot(c1.x - c0.x, c1.y - c0.y) * 15 + Math.abs(c1.z - c0.z) * 15 * 960);
+    }
+    const k = Math.floor(n / 3), m = (x) => +(x.reduce((p, q) => p + q, 0) / x.length).toFixed(1);
+    out.push({ t0: sh.t0, framing: sh.framing, camera: sh.camera, thirds: [m(v.slice(0, k)), m(v.slice(k, 2 * k)), m(v.slice(2 * k))] });
+  }
+  return out;
+};
 window.probe = function (t) { render(t); return { text: TEXTBOX.slice(), eyes: EYES.slice() }; };
