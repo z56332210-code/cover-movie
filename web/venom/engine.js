@@ -223,9 +223,12 @@ function noteBox(c, x, y, w, h) { const m = c.getTransform(); const pts = [[x, y
 const TRACK = 0.38;
 function spacedW(c, str, sp) { let w = 0; for (const ch of str) w += c.measureText(ch).width + sp; return Math.max(0, w - sp); }
 function fillSpaced(c, str, x, y, sp) { for (const ch of str) { c.fillText(ch, x, y); x += c.measureText(ch).width + sp; } }
-const charAlpha = (l, k, t) => (l ? clamp((t - l.chars[Math.min(k, l.chars.length - 1)] + 0.06) / 0.12) : 1);
+// a lyric line appears complete within 0.15 s of its sung start (no typewriter); it leaves when the line ends
+const lineAlpha = (l, t) => (l ? clamp((t - l.start + 0.02) / 0.15) : 1);
+const charAlpha = (l, k, t) => lineAlpha(l, t);
 function fillReveal(c, l, off, str, x, y, sp, t) {
-  [...str].forEach((ch, k) => { const a = charAlpha(l, off + k, t); if (a > 0) { c.globalAlpha = a; c.fillText(ch, x, y); } x += c.measureText(ch).width + sp; });
+  c.globalAlpha = lineAlpha(l, t);
+  for (const ch of str) { c.fillText(ch, x, y); x += c.measureText(ch).width + sp; }
   c.globalAlpha = 1;
 }
 // split a line in two at a natural break; returns [[text, charOffset], ...]
@@ -246,7 +249,7 @@ function textBox(c, l, t, x, y, px = 36) {
   c.font = jpFont(px, 700); const sp = px * TRACK * 0.6, parts = splitTwo(l.ja);
   const lw = Math.max(...parts.map(([p]) => spacedW(c, p, sp)));
   const padX = px * 0.7, lh = px * 1.5, w = lw + padX * 2, h = parts.length * lh + px * 0.5;
-  c.fillStyle = PAL.navy; c.fillRect(x, y, w, h); noteBox(c, x, y, w, h);
+  c.globalAlpha = lineAlpha(l, t); c.fillStyle = PAL.navy; c.fillRect(x, y, w, h); c.globalAlpha = 1; noteBox(c, x, y, w, h);
   c.fillStyle = PAL.white; c.textBaseline = "middle";
   parts.forEach(([p, off], i) => fillReveal(c, l, off, p, x + padX, y + px * 0.25 + lh * (i + 0.5), sp, t));
 }
@@ -263,7 +266,7 @@ function textVertical(c, l, t, x, y, px = 38, bar = null, color = PAL.white) {
   const parts = splitTwo(l.ja, 10);
   parts.forEach(([p, off], col) => {
     const cx = x - col * px * 1.9, chars = [...p], hgt = step * chars.filter((q) => q !== " ").length + px * 0.6;
-    if (bar) { c.fillStyle = bar; c.fillRect(cx - px * 0.8, y - px * 0.85, px * 1.6, hgt); }
+    if (bar) { c.globalAlpha = lineAlpha(l, t); c.fillStyle = bar; c.fillRect(cx - px * 0.8, y - px * 0.85, px * 1.6, hgt); c.globalAlpha = 1; }
     noteBox(c, cx - px * 0.8, y - px * 0.85, px * 1.6, hgt);
     c.fillStyle = color; c.textAlign = "center"; c.textBaseline = "middle"; softShadow(c, !bar && color === PAL.white);
     let row = 0;
@@ -280,7 +283,7 @@ function textBand(c, l, t, x, y, rot, px = 38) {
   c.save(); c.translate(x, y); c.rotate(rot); c.font = jpFont(px, 700);
   const sp = px * TRACK * 0.7, gap = px * 1.4, parts = splitTwo(l.ja, 8);
   const ws = parts.map(([p]) => spacedW(c, p, sp)), w = ws.reduce((a, b) => a + b, 0) + gap * (parts.length - 1) + px * 1.4;
-  c.fillStyle = PAL.navy; c.fillRect(-px * 0.7, -px * 0.8, w, px * 1.6); noteBox(c, -px * 0.7, -px * 0.8, w, px * 1.6);
+  c.globalAlpha = lineAlpha(l, t); c.fillStyle = PAL.navy; c.fillRect(-px * 0.7, -px * 0.8, w, px * 1.6); c.globalAlpha = 1; noteBox(c, -px * 0.7, -px * 0.8, w, px * 1.6);
   c.fillStyle = PAL.white; c.textBaseline = "middle"; let xx = 0;
   parts.forEach(([p, off], i) => { fillReveal(c, l, off, p, xx, 0, sp, t); xx += ws[i] + gap; });
   c.restore();
@@ -297,22 +300,72 @@ function wordsOf(id) {
   out.forEach((o, i) => (o.until = i + 1 < out.length ? out[i + 1].t[0] : l.end));
   return out;
 }
-const SLOTS = {
-  1: [[300, 330]], 2: [[150, 300], [1430, 620]], 3: [[120, 230], [760, 520], [1400, 780]],
-  4: [[120, 230], [1380, 230], [120, 780], [1380, 780]], 5: [[60, 200], [700, 140], [1380, 260], [220, 800], [1240, 820]],
-};
-function giantA(c, id, t, seed) {
-  for (const wd of wordsOf(id)) {
-    if (t < wd.t[0] - 0.02 || t >= wd.until) continue;
-    const chars = [...wd.w], n = Math.min(chars.length, 5), slots = SLOTS[n] || SLOTS[5], R = rng(seed + wd.t[0] * 100);
-    chars.forEach((ch, k) => {
-      if (t < wd.t[k] - 0.02) return;
-      const [sx, sy] = slots[Math.min(k, slots.length - 1)], px = (n <= 2 ? 470 : 400) * (0.92 + R() * 0.16);
-      const x = sx + (R() - 0.5) * 80, y = sy + (R() - 0.5) * 60 + px * 0.85, rot = (R() - 0.5) * 0.12;
-      const col = wd.echo || /メッ/.test(wd.w) ? PAL.navy : PAL.mag;
-      cutGlyph(c, ch, x, y, px, rot, col, col, R());
-    });
+// ---- highlight words (method 4). Measured on the reference (存在感 67.9 s, 求愛性 61.5 s, 孤独 62.6 s):
+// glyphs of a word pop 4 frames apart, sizes differ (1.00 / ~0.68 / ~0.8), baselines step down by ~180 px, upright with the
+// italic slant, no overshoot, the word is replaced hard by the next one; one variant drops in ~150 px over 2 frames then drifts.
+// Here: first glyph on the 16th-note grid nearest the sung time, every word complete within 0.2 s, pink glyph over a
+// slightly offset navy copy, slow drift so no highlight is static, the first 2-3 glyphs always fully inside the frame.
+const STAG = 4 / 30;
+const GRID16 = (() => { const b = D.beats, g = []; for (let i = 0; i + 1 < b.length; i++) for (let q = 0; q < 4; q++) g.push(b[i] + (b[i + 1] - b[i]) * q / 4); return g; })();
+function snap16(t) { let lo = 0, hi = GRID16.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (GRID16[m] < t) lo = m; else hi = m; } return Math.abs(GRID16[lo] - t) < Math.abs(GRID16[hi] - t) ? GRID16[lo] : GRID16[hi]; }
+function highlightWords(id) {
+  const ws = wordsOf(id), l = LYR[id];
+  const out = ws.map((wd) => { const n = [...wd.w].length, st = n > 1 ? Math.min(STAG, 0.2 / (n - 1)) : 0, t0 = snap16(wd.t[0]);
+    return { ...wd, n, t0, gt: [...wd.w].map((_, k) => t0 + k * st) }; });
+  out.forEach((o, i) => (o.until = i + 1 < out.length ? out[i + 1].t0 : l.end));
+  return out;
+}
+const GIANT = [];   // screen boxes of highlight glyphs this frame: {word, k, n, box}
+const SIZE_PAT = [1.0, 0.68, 0.82, 0.74, 0.9, 0.7];
+function layoutWord(c, wd, wi, id, seed, attempt) {
+  const R = rng(seed + wi * 31 + id * 7 + attempt * 1013), chars = [...wd.w], n = chars.length;
+  const base = (n <= 2 ? 620 : n === 3 ? 580 : 470) * (attempt > 15 ? 0.45 : attempt > 10 ? 0.6 : attempt > 6 ? 0.8 : 1), dir = (wi + attempt) % 2 ? -1 : 1;
+  const G = []; let x = 0, b0 = 0;
+  chars.forEach((ch, k) => {
+    const px = base * SIZE_PAT[k % SIZE_PAT.length] * (0.94 + R() * 0.12);
+    c.font = isLatin(ch) ? `900 italic ${px}px ${FONT.en}` : jpFont(px);
+    const w = c.measureText(ch).width;
+    G.push({ ch, px, w, x, y: b0, rot: (R() - 0.5) * 0.1 });
+    x += w * 0.92; b0 += dir * px * 0.30;
+  });
+  const key = Math.min(n, 3), left = Math.min(...G.slice(0, key).map((g) => g.x)), right = Math.max(...G.slice(0, key).map((g) => g.x + g.w));
+  const top = Math.min(...G.slice(0, key).map((g) => g.y - g.px * 0.9)), bot = Math.max(...G.slice(0, key).map((g) => g.y + g.px * 0.12));
+  const fit = Math.min(1, (W0 - 80) / (right - left), (H0 - 60) / (bot - top));
+  const ox = 40 + R() * Math.max(0, W0 - 80 - (right - left) * fit) - left * fit;
+  const oy = 30 - top * fit + R() * Math.max(0, H0 - 60 - (bot - top) * fit);
+  return G.map((g) => ({ ...g, x: ox + g.x * fit, y: oy + g.y * fit, px: g.px * fit, w: g.w * fit }));
+}
+// the layout must keep every glyph (plus its drift/drop range) off the eyes; tries up to 14 variations
+function wordLayout(c, wd, wi, id, seed) {
+  const pad = 40;
+  for (let a = 0; a < 22; a++) {
+    const G = layoutWord(c, wd, wi, id, seed, a);
+    const ok = G.every((g) => EYES.every((e) => !(g.x - pad < e[0] + e[2] && e[0] < g.x + g.w + pad && g.y - g.px * 1.15 - pad < e[1] + e[3] && e[1] < g.y + g.px * 0.15 + 40 + pad)));
+    if (ok) return G;
   }
+  return layoutWord(c, wd, wi, id, seed, 21);
+}
+function giantA(c, id, t, seed) {
+  highlightWords(id).forEach((wd, wi) => {
+    if (t < wd.t0 - 0.001 || t >= wd.until) return;
+    const G = wordLayout(c, wd, wi, id, seed), n = G.length;
+    const life = t - wd.t0, drift = 26 * Math.min(life, 1.2) + 6 * Math.sin(life * 3 + wi);         // never static
+    G.forEach((g, k) => {
+      if (t < wd.gt[k] - 0.001) return;
+      const since = t - wd.gt[k], drop = wi % 2 ? 0 : Math.max(0, 1 - since / 0.134) * -0.25 * g.px;   // drop-in variant
+      const gx = g.x, gy = g.y + drop + drift * (k % 2 ? 1 : -0.6);
+      highlightGlyph(c, g.ch, gx, gy, g.px, g.rot, wd.echo || /メッ/.test(wd.w));
+      GIANT.push({ word: wd.w, k, n, box: [gx, gy - g.px * 0.88, g.w, g.px * 1.0] });
+    });
+  });
+}
+function highlightGlyph(c, ch, x, y, px, rot, navyMain) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.transform(1, 0, -0.12, 1, 0, 0);
+  c.font = isLatin(ch) ? `900 italic ${px}px ${FONT.en}` : jpFont(px); c.textBaseline = "alphabetic";
+  noteBox(c, 0, -px * 0.88, c.measureText(ch).width, px);
+  c.fillStyle = navyMain ? PAL.mag : PAL.navy; c.fillText(ch, px * 0.05, px * 0.035);       // offset copy behind (ref 愛)
+  c.fillStyle = navyMain ? PAL.navy : PAL.mag; c.fillText(ch, 0, 0);
+  c.restore();
 }
 function cutGlyph(c, ch, x, y, px, rot, c1, c2, r) {
   c.save(); c.translate(x, y); c.rotate(rot); c.transform(1, 0, -0.12, 1, 0, 0);
@@ -328,13 +381,14 @@ function cutGlyph(c, ch, x, y, px, rot, c1, c2, r) {
 }
 // B: two rows of giant black glyphs (first half of the line on top, second half at the bottom), cut by the frame edges
 function giantRowsB(c, id, t, seed) {
-  const words = wordsOf(id), half = Math.ceil(words.length / 2), R = rng(seed);
+  if (LYR[id] && t >= LYR[id].start - 0.02 && t < LYR[id].end) DRAWN.push([id, "4"]);
+  const words = wordsOf(id), half = Math.ceil(words.length / 2), R = rng(seed), NG = words.reduce((a, w) => a + [...w.w].length, 0); let gi = 0;
   [words.slice(0, half), words.slice(half)].forEach((row, r) => {
     const px = 360 + R() * 50; let x = r === 0 ? -60 - R() * 80 : 200 + R() * 160; const y = r === 0 ? px * 0.80 : 1080 - px * 0.05;
     c.fillStyle = PAL.black;
     row.forEach((wd) => [...wd.w].forEach((ch, k) => {
       const lat = isLatin(ch); c.font = lat ? `900 italic ${px * 1.05}px ${FONT.en}` : jpFont(px);
-      if (t >= wd.t[k] - 0.02) c.fillText(ch, x, y);
+      if (t >= LYR[id].start + 0.2 * clamp(gi++ / Math.max(1, NG - 1)) - 0.001 && t < LYR[id].end) c.fillText(ch, x, y);
       x += c.measureText(ch).width * (lat ? 1.0 : 0.96);
     }));
   });
@@ -515,25 +569,63 @@ function mangaBg(c) {
   c.fillStyle = PAL.white; c.fillRect(-200, -200, W0 + 400, H0 + 400);
   halftone(c, 960, 540, 1500, 15, "#000", (x, y) => 0.55 * clamp(1 - Math.abs((x - y * 0.6) - 500) / 700) + 0.35 * clamp((x - 1300) / 600));
 }
-// ink wipe: scalloped blots appear one by one on 15 fps steps and grow until they cover the frame
-function inkWipePath(u, seed) {
-  const R = rng(seed), p = new Path2D(), n = 9;
-  const spots = [[480, 380], [1300, 640], [900, 260], [260, 860], [1620, 300], [1100, 960], [620, 720], [1740, 900], [180, 220]];
-  for (let k = 0; k < n; k++) {
-    const t0 = k / n * 0.75, g = clamp((u - t0) / 0.25); if (g <= 0) continue;
-    const [x, y] = spots[(k + Math.floor(R() * 3)) % n], r = (300 + R() * 160) * (0.55 + 0.45 * easeOut3(g)) * (u > 0.92 ? 1.6 : 1);
-    p.addPath(blobPath(x + (R() - 0.5) * 120, y + (R() - 0.5) * 120, r, seed * 13 + k, 20, 0.10));
-  }
-  return p;
+// ink spread: a static noise field per seed (distance from 2-3 starting points on the frame edge + fBm noise for torn edges);
+// the threshold is animated, so the ink eats outward along the noise. The rim dissolves into halftone dots and spray.
+const INKF = {};
+function vnoise2(x, y, sd) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const h = (a, b) => hash(a * 73856093 ^ b * 19349663, sd);
+  return lerp(lerp(h(xi, yi), h(xi + 1, yi), u), lerp(h(xi, yi + 1), h(xi + 1, yi + 1), u), v);
 }
+function inkField(seed) {
+  const w = cv.width, h = cv.height, key = seed + ":" + w;
+  if (INKF[key]) return INKF[key];
+  const R = rng(seed), n = 2 + (R() < 0.5 ? 1 : 0), pts = [];
+  for (let i = 0; i < n; i++) {                                   // starting points on the frame edge
+    const side = Math.floor(R() * 4) , q = 0.15 + R() * 0.7;
+    pts.push(side === 0 ? [q * W0, -60] : side === 1 ? [W0 + 60, q * H0] : side === 2 ? [q * W0, H0 + 60] : [-60, q * H0]);
+  }
+  const F = new Float32Array(w * h); let mx = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const X = (x / w) * W0, Y = (y / h) * H0; let d = 1e9;
+    for (const [px, py] of pts) d = Math.min(d, Math.hypot(X - px, Y - py));
+    const nz = vnoise2(X / 260, Y / 260, seed) * 0.5 + vnoise2(X / 110, Y / 110, seed + 1) * 0.3 + vnoise2(X / 40, Y / 40, seed + 2) * 0.2;
+    const v = d / 1400 + (nz - 0.5) * 0.55; F[y * w + x] = v; if (v > mx) mx = v;
+  }
+  for (let i = 0; i < F.length; i++) F[i] /= mx;
+  const Q = new Float32Array(4096); for (let i = 0; i < Q.length; i++) Q[i] = F[Math.floor(hash(i, seed + 5) * F.length)]; Q.sort();   // quantiles
+  const img = document.createElement("canvas"); img.width = w; img.height = h;
+  return (INKF[key] = { w, h, F, Q, img, ictx: img.getContext("2d") });
+}
+// u: 0..1 threshold (0 = nothing, 1 = all). band: halftone rim width; spray: speckles beyond the rim
+function drawInk(c, u, seed, color) {
+  const f = inkField(seed), { w, h, F } = f, id = f.ictx.createImageData(w, h), px = new Uint32Array(id.data.buffer);
+  const hex = parseInt(color.slice(1), 16), col = (255 << 24) | ((hex & 255) << 16) | (hex & 0xff00) | (hex >> 16);
+  const band = 0.05, spray = 0.07, cell = Math.max(6, Math.round(w / 90));
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x, v = u - F[i];
+    if (v >= band) { px[i] = col; continue; }
+    if (v > 0) {                                                   // halftone rim: dots shrink toward the edge
+      const cx = (x % cell) - cell / 2 + 0.5, cy = (y % cell) - cell / 2 + 0.5, r = (cell * 0.62) * Math.sqrt(v / band);
+      if (cx * cx + cy * cy < r * r) px[i] = col; continue;
+    }
+    if (v > -spray && hash(i, seed) < 0.10 * (1 + v / spray)) px[i] = col;   // spray particles
+  }
+  f.ictx.putImageData(id, 0, 0);
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.imageSmoothingEnabled = true; c.drawImage(f.img, 0, 0, cv.width, cv.height); c.restore();
+}
+// ink progress curve, tuned to the reference area curve (fast start, ~0.6 of the frame at 60%, full at the cut)
+// coverage follows the reference wipe (resampled to 0.5 s): area 0.8(1-(1-p)^2.6) including ~7 % picture magenta,
+// i.e. ink coverage C(p) = (A(p) - 0.07) / 0.93; the threshold is the C-quantile of this seed's noise field
+const inkTarget = (p) => clamp((0.8 * (1 - Math.pow(1 - clamp(p), 2.6)) - 0.07) / 0.93);
 function inkWipe(c, u, seed, color) {
-  const q = Math.floor(clamp(u) * 15 * 0.9) / (15 * 0.9);
-  c.save(); c.setTransform(SC, 0, 0, SC, 0, 0); c.fillStyle = color;
-  if (q >= 0.999) c.fillRect(0, 0, W0, H0); else c.fill(inkWipePath(q, seed));
-  c.restore();
+  const f = inkField(seed), C = inkTarget(Math.round(clamp(u) * 7.5) / 7.5);
+  if (C <= 0) return;
+  drawInk(c, f.Q[Math.min(f.Q.length - 1, Math.floor(C * f.Q.length))], seed, color);
 }
 
 // ------------------------------------------------------------------ lyric layer per shot (screen space, after the camera)
+const DRAWN = [];   // [line id, method] drawn this frame (audit: each line once, in one representation)
 const TEXT_METHODS = new Set(["1", "1b", "2", "2b", "3", "5", "6"]);
 // two slots per method: the 1st line of a shot takes slot 0, the next slot 1; the last two sung lines of the shot stay up
 const SLOT = {
@@ -551,9 +643,9 @@ function lyricsLayer(c, s, t) {
     own = id && p && p.lines.includes(id) && TEXT_METHODS.has(p.method) ? p : n && TEXT_METHODS.has(n.method) ? n : p && TEXT_METHODS.has(p.method) ? p : null;
     method = own ? own.method : "small"; own = own || s;
   }
-  const keep = s.type !== "D" && TEXT_METHODS.has(method) && method !== "6";
-  const shown = s.lines.filter((id) => LYR[id] && t >= LYR[id].start - 0.02 && (keep ? t < s.t1 : t < LYR[id].end)).slice(-2);
+  const shown = s.lines.filter((id) => LYR[id] && t >= LYR[id].start - 0.02 && t < LYR[id].end);
   for (const id of shown) {
+    DRAWN.push([id, method]);
     const l = LYR[id], k = Math.max(0, own.lines.indexOf(id)) % 2, sl = (SLOT[method] || [[0, 0], [0, 0]])[k];
     switch (method) {
       case "1": textBox(c, l, t, sl[0], s.framing === "char_close" && k === 0 ? 610 : sl[1]); break;
@@ -616,20 +708,14 @@ function pictureText(s, t, cam) {
 const WIPE_IN = 0.5;   // cross ink wipe into a different picture
 function render(tReal) {
   const t = Math.floor(tReal * 15 + 1e-6) / 15;
-  TEXTBOX.length = 0; EYES = []; CUTS.length = 0;
+  TEXTBOX.length = 0; EYES = []; CUTS.length = 0; DRAWN.length = 0; GIANT.length = 0;
   const s = shotAt(t), p = SHOTS[s.i - 1];
   ctx.setTransform(SC, 0, 0, SC, 0, 0);
   ctx.fillStyle = PAL.black; ctx.fillRect(0, 0, W0, H0);
-  let cam;
-  if (s.trans_in === "ink_wipe" && p && p.framing === s.framing) {            // blots spread over the same picture
-    cam = pictureScene(s, t); inkWipe(ctx, (t - s.t0) / (s.t1 - s.t0), 31 * s.i, PAL.mag);
-  } else if (s.trans_in === "ink_wipe" && p && t - s.t0 < WIPE_IN) {            // the next picture arrives inside the blots
-    pictureScene(p, t); EYES = [];
-    ctx.save(); ctx.setTransform(SC, 0, 0, SC, 0, 0); ctx.clip(inkWipePath(Math.floor(((t - s.t0) / WIPE_IN) * 15 * WIPE_IN) / (15 * WIPE_IN), 37 * s.i));
-    cam = pictureScene(s, t); ctx.restore();
-  } else if (s.framing === "black_ink" && p) {                                    // ending: black blots close the last picture
-    cam = pictureScene(p, t); inkWipe(ctx, (t - s.t0) / (s.t1 - s.t0), 4343, PAL.black);
-  } else cam = pictureScene(s, t);
+  const cam = pictureScene(s, t);
+  const last = SHOTS.filter((x) => x.gid === s.gid).pop();                     // ink spreads over the last 0.5 s of the picture
+  if (last.ink_out && t >= s.g1 - 0.5) inkWipe(ctx, (t - (s.g1 - 0.5)) / 0.5, 31 * s.gid + 7, last.ink_out === "black" ? PAL.black : PAL.mag);
+  if (s.trans_in === "grey_blur" && t - s.t0 < 0.34) whip(ctx, (t - s.t0) / 0.34);
   pictureText(s, t, cam || { x: 0, y: 0, z: 1 });
   if (s.type !== "D" && (s.trans_in === "flash_magenta" || s.trans_in === "flash_navy") && t - s.t0 < 0.1) {
     ctx.setTransform(SC, 0, 0, SC, 0, 0);
@@ -641,6 +727,12 @@ function render(tReal) {
   if (s.framing === "grey_blur") bridgeSlices(ctx, t);
   subtitle(ctx, tReal);
   return s;
+}
+// white motion-blur whip at the start of a shot (replaces the separate E whip shot, which cut a line in half)
+function whip(c, u) {
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+  for (let k = 1; k <= 5; k++) { c.globalAlpha = 0.18 * (1 - u); c.drawImage(cv, k * 46 * SC * (1 - u), 0); c.drawImage(cv, -k * 46 * SC * (1 - u), 0); }
+  c.globalAlpha = 0.85 * (1 - u); c.fillStyle = PAL.white; c.fillRect(0, 0, cv.width, cv.height); c.restore();
 }
 // bridge: magenta horizontal slice glitch (reference E section)
 function bridgeSlices(c, t) {
@@ -705,7 +797,42 @@ window.textCheck = function (t) {
     const la = 0.299 * a[i] + 0.587 * a[i + 1] + 0.114 * a[i + 2], lb = 0.299 * b[i] + 0.587 * b[i + 1] + 0.114 * b[i + 2], d = Math.abs(la - lb);
     if (d > 12) { n++; sum += d; }
   }
-  const hit = (p, q) => p[0] < q[0] + q[2] && q[0] < p[0] + p[2] && p[1] < q[1] + q[3] && q[1] < p[1] + p[3];
-  return { textPx: n, contrast: n ? sum / n : 0, eyeHits: TEXTBOX.filter((tb) => EYES.some((e) => hit(tb, e))).length, shot: shotAt(t).i };
+  // eye overlap = glyph pixels (pixels the text layer changed) inside the eye boxes
+  let eyePx = 0;
+  for (const [ex, ey, ew, eh] of EYES) {
+    const x0 = Math.max(0, Math.floor(ex * SC)), x1 = Math.min(cv.width, Math.ceil((ex + ew) * SC)), y0 = Math.max(0, Math.floor(ey * SC)), y1 = Math.min(cv.height, Math.ceil((ey + eh) * SC));
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const i = (y * cv.width + x) * 4; if (Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]) > 40) eyePx++; }
+  }
+  return { textPx: n, contrast: n ? sum / n : 0, eyeHits: eyePx > 20 ? eyePx : 0, shot: shotAt(t).i };
+};
+// audits over the whole song at 15 fps:
+//  lines: per line, number of separate appearances and of representations (both must be 1)
+//  giant: frames where a highlight word's key glyphs (first min(n,3)) are not all fully inside the frame,
+//         or where the first glyph is cut while the bottom of another glyph is cut too
+window.audit = function () {
+  const app = {}, meth = {}, lastSeen = {}, giantBad = [];
+  for (let f = 0; f < D.duration * 15; f++) {
+    const t = f / 15; render(t);
+    for (const [id, m] of DRAWN) {
+      (meth[id] = meth[id] || new Set()).add(m);
+      if (lastSeen[id] === undefined || f - lastSeen[id] > 2) app[id] = (app[id] || 0) + 1;
+      lastSeen[id] = f;
+    }
+    const words = {};
+    for (const g of GIANT) (words[g.word] = words[g.word] || []).push(g);
+    for (const [w, gs] of Object.entries(words)) {
+      const inside = (b) => b[0] >= -2 && b[1] >= -2 && b[0] + b[2] <= W0 + 2 && b[1] + b[3] <= H0 + 2;
+      const n = gs[0].n, key = gs.filter((g) => g.k < Math.min(n, 3));
+      const shownAll = gs.length >= Math.min(n, 3);
+      const firstCut = key.length && !inside(key.find((g) => g.k === 0)?.box || [0, 0, 0, 0]);
+      const bottomCut = gs.some((g) => g.box[1] + g.box[3] > H0 + 2);
+      if ((shownAll && !key.every((g) => inside(g.box))) || (firstCut && bottomCut)) giantBad.push([+t.toFixed(2), w]);
+    }
+  }
+  const lines = D.lyrics.map((l) => ({ id: l.id, appearances: app[l.id] || 0, methods: [...(meth[l.id] || [])] }));
+  return { lines, giantBad };
+};
+window.inkCoverage = function (seed, us) {     // calibration: covered fraction of the frame for threshold values us
+  const f = inkField(seed), { F } = f; return us.map((u) => { let n = 0; for (let i = 0; i < F.length; i++) if (u - F[i] > 0) n++; return n / F.length; });
 };
 window.probe = function (t) { render(t); return { text: TEXTBOX.slice(), eyes: EYES.slice() }; };
