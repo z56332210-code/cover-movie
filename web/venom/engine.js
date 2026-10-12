@@ -387,13 +387,13 @@ function giantRowsB(c, id, t, seed) {
   const words = wordsOf(id), half = Math.ceil(words.length / 2), R = rng(seed), NG = words.reduce((a, w) => a + [...w.w].length, 0); let gi = 0;
   [words.slice(0, half), words.slice(half)].forEach((row, r) => {
     const px = 360 + R() * 50; let x = r === 0 ? -60 - R() * 80 : 200 + R() * 160; const y = r === 0 ? px * 0.80 : 1080 - px * 0.05;
-    c.fillStyle = PAL.black;
+    c.fillStyle = PAL.white; c.globalCompositeOperation = "difference";      // black on paper, inverted where it crosses a prop (user)
     row.forEach((wd) => [...wd.w].forEach((ch, k) => {
       const lat = isLatin(ch); c.font = lat ? `900 italic ${px * 1.05}px ${FONT.en}` : jpFont(px);
       if (t >= LYR[id].start + 0.2 * clamp(gi++ / Math.max(1, NG - 1)) - 0.001 && t < LYR[id].end) c.fillText(ch, x, y);
       x += c.measureText(ch).width * (lat ? 1.0 : 0.96);
     }));
-  });
+  });  c.globalCompositeOperation = "source-over";
 }
 // bridge (user): thin Mincho, one glyph at a time on its sung time with a slow 0.35 s fade, monochrome
 const THIN_ROWS = { 22: ["もう悪性届く", "毒回るルル", "（哀でもっと）"] };
@@ -432,15 +432,16 @@ function textEmph(c, l, t) {
 // the pair is hard-replaced by the next 愛 at a new place / angle
 function aiBeats(c, l, t, s) {
   const bt = [...new Set(l.chars.map((x) => Math.round(x * 1000)))].sort((a, b) => a - b).map((x) => x / 1000);
-  let k = -1; bt.forEach((b, i) => { if (t >= b - 0.02) k = i; }); if (k < 0) return;
+  let k = -1; bt.forEach((b, i) => { if (t >= b - 0.07) k = i; }); if (k < 0) return;          // one frame ahead of the beat, like the cuts
   const set = k >> 1, R = rng(4100 + l.id * 37 + set * 11), side = set % 2 ? 1 : -1;
   const px = 430 + R() * 90, cx = 960 + side * (560 + R() * 70), cy = 560 + (R() - 0.5) * 140, rot = (R() - 0.5) * 0.34;
-  const age = t - bt[2 * set], f = Math.round(age * 15);                                  // frames since 愛
+  const age = t - bt[2 * set] + 0.067, f = Math.round(age * 15);                                  // frames since 愛
   const pop = f <= 0 ? 1.3 : f === 1 ? 1.07 : 1 + 0.035 * age, drop = f <= 0 ? -0.16 * px : f === 1 ? -0.04 * px : 0;
   const wob = 0.03 * Math.sin(age * 5 + set);
   c.save(); c.translate(cx, cy + drop + 14 * Math.sin(age * 2.3)); c.rotate(rot + wob); c.textAlign = "center"; c.textBaseline = "middle";
   if (k >= 2 * set + 1) {                                                                     // chorus 哀 behind 愛
-    const a2 = t - bt[2 * set + 1], e = Math.min(1, (Math.round(a2 * 15) + 1) / 3), ang = Math.PI / 2 + side * 0.5 + (R() - 0.5) * 0.7;   // peeks out below / toward the centre, inside the frame
+    const a2 = t - bt[2 * set + 1] + 0.067, f2 = Math.round(a2 * 15), e = f2 <= 0 ? 1.15 : 1,   // out at once, small overshoot
+      ang = Math.PI / 2 + side * 0.5 + (R() - 0.5) * 0.7;   // peeks out below / toward the centre, inside the frame
     const ox = Math.cos(ang) * px * 0.36 * e, oy = Math.sin(ang) * px * 0.30 * e + px * 0.06 * e;
     c.save(); c.translate(ox, oy); c.rotate((R() - 0.5) * 0.5 * e); const q = 0.95 + 0.07 * e; c.scale(q, q);
     c.font = jpFont(px); c.lineJoin = "round"; c.lineWidth = px * 0.07; c.strokeStyle = PAL.white; c.strokeText("哀", 0, 0); c.fillStyle = PAL.navy; c.fillText("哀", 0, 0); noteBox(c, -px * 0.5, -px * 0.5, px, px); c.restore();
@@ -587,6 +588,14 @@ const SCENE = {
     drawChar(c, cam, "tight");
   },
   // A: face close-up, used once (outro)
+  // A (outro, user): no character - the background and the props drift on their own
+  props_float(c, s, t, cam) {
+    bgA(c, s, t, 1212, 1180, 330, 230);
+    halftone(c, 700, 520, 260, 17, PAL.mag);
+    drawProps(c, BG_PROPS.key, null, t);
+    pills(c, s.pills, 97, t - s.g0);
+    drawProps(c, FG_PROPS.wide, null, t);
+  },
   face_close(c, s, t, cam) {
     bgA(c, s, t, 1111, 1300, 480, 420);
     pills(c, Math.round(s.pills * 0.6), 91, t - s.g0);
@@ -795,11 +804,11 @@ function creditLayer(c, s, t) {
 }
 function titleLayer(c, s) {
   const outro = s && s.section === "outro";
-  slanted(c, outro ? 560 : 960, outro ? 900 : 600, -0.10, () => {
+  slanted(c, outro ? 560 : 960, outro ? 800 : 600, -0.10, () => {
     c.font = jpFont(230); c.textAlign = "center"; c.fillStyle = outro ? PAL.mag : PAL.white; if (outro) shadowOn(c, 230);
     c.fillText(D.credits.title, 0, 0); shadowOff(c); noteBox(c, -330, -200, 660, 230);
     c.font = `900 italic 140px ${FONT.en}`; c.fillStyle = PAL.mag; shadowOn(c, 140); c.fillText("Venom", 120, 110); shadowOff(c);
-    c.font = jpFont(30, 700); c.fillStyle = outro ? PAL.navy : PAL.white; c.fillText(D.credits.subtitle, 150, 175); c.textAlign = "left";
+    c.font = jpFont(30, 700); c.fillStyle = PAL.white; if (outro) { c.lineWidth = 6; c.lineJoin = "round"; c.strokeStyle = PAL.navy; c.strokeText(D.credits.subtitle, 150, 175); } c.fillText(D.credits.subtitle, 150, 175); c.textAlign = "left";
   });
 }
 
@@ -807,7 +816,7 @@ function titleLayer(c, s) {
 function pictureScene(s, t) {
   const cam = camera(s, t), scene = SCENE[s.framing];
   // props float less where the reference camera is still (chorus, credits), more where it travels (verse)
-  FLOAT_AMP = s.framing === "keyvisual" ? 0.7 : s.camera === "fast_decel" ? 1.4 : 0.5;
+  FLOAT_AMP = s.framing === "props_float" ? 2.2 : s.framing === "keyvisual" ? 0.7 : s.camera === "fast_decel" ? 1.4 : 0.5;
   const moving = s.camera === "fast_decel";
   PARX = moving ? (cam.x - (camera(s, s.g1 - 0.01).x)) * 0.35 : 0; PARY = moving ? cam.y * 0.35 : 0;
   ctx.setTransform(SC, 0, 0, SC, 0, 0);

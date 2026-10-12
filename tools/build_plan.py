@@ -51,7 +51,7 @@ S = [
  (ln(17),           "A", "ink_centre",  "5",      "cut",           "chorus1", [17],        28, "ink blot centre text; ink spreads in the last 0.5 s"),
  (ln(18),           "A", "prop_ink",    "4",      "ink_wipe",      "chorus1", [18],        29, "props in ink + giant 存在感 / 血 / ドクドク / 零るルル"),
  (ln(19),           "A", "char_wide",   "6",      "cut",           "chorus1", [19],        33, "magenta slanted 愛/哀 with navy echo (giant would repeat line 18's method)"),
- (ln(20),           "A", "char_wide",   "2",      "text",          "chorus1", [20],        33, "same shot: vertical bars '叫べベベノム'"),
+ (L[20]["start"],   "A", "char_wide",   "2",      "text",          "chorus1", [20],        33, "same shot: vertical bars '叫べベベノム'"),
  (ln(21),           "A", "char_close",  "4",      "cut",           "chorus1", [21],        34, "close-up, navy 'メッ'"),
  (L[21]["end"] + 0.02, "C", "body_credits", "credit", "cut",          "interlude", [],        54, "(instrumental) full-body navy silhouette, credits in thin Mincho inside it (user)"),
  (ln(22),           "E", "backlit",     "thin",   "cut",           "bridge",  [22],        55, "(user) monochrome, backlit character, weak handheld, thin Mincho one glyph at a time, film texture"),
@@ -66,7 +66,7 @@ S = [
  (ln(31),           "A", "char_close",  "6",      "text",          "chorus_last", [31],    64, "same shot: magenta slanted"),
  (ln(32),           "A", "char_close",  "2",      "text",          "chorus_last", [32],    64, "same shot: vertical bars"),
  (ln(33),           "A", "face_close",  "4",      "cut",           "outro",   [33],        65, "face close-up (the only one): navy 'メッ'"),
- (bar(72) + BAR / 2,"A", "face_close",  "title",  "text",          "outro",   [],          65, "(instrumental) same shot: title logo"),
+ (L[33]["end"] + 0.02,"A", "props_float", "title", "cut",           "outro",   [],          65, "(instrumental, user) no character: background + floating props, title logo"),
  (123.60,           "D", "black",       "-",      "ink_wipe_black","end",     [],          66, "black to end"),
 ]
 
@@ -89,7 +89,7 @@ for k, sh in enumerate(shots):
         # the ink belongs to the picture group that ends here (text events of the same picture carry it too)
 # camera from the reference measurements: verse/B close-ups fast after the cut then decelerate, chorus/silhouette/credits near-static
 CAM = {"backlit": "handheld", "prop_close": "fast_decel", "prop_band": "fast_decel", "char_close": "fast_decel", "prop_manga": "fast_decel",
-       "char_manga": "slow_push", "grey_blur": "drift", "face_close": "slow_push", "char_tight": "pan_mid"}
+       "char_manga": "slow_push", "grey_blur": "drift", "face_close": "slow_push", "props_float": "drift", "char_tight": "pan_mid"}
 for s in shots: s["camera"] = CAM.get(s["framing"], "static")
 
 # pills per frame (rises toward the end; to be checked against the reference count once the counter exists)
