@@ -59,11 +59,11 @@
    "ending": "P3"
   },
   "camera": {
-   "push_in": 28,
-   "pull_out": 5,
-   "pan_x": 9,
-   "pan_y": 7,
-   "static": 56
+   "push_in": 21,
+   "pull_out": 4,
+   "pan_x": 7,
+   "pan_y": 5,
+   "static": 68
   },
   "impacts": [
    6.873,
@@ -391,7 +391,7 @@
    "clock_at": "focus",
    "transition_in": "T3",
    "cam": "pull_out",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0334,
    "pan_dir": 1,
    "impact": false
   },
@@ -442,7 +442,7 @@
    ],
    "transition_in": "T6",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0337,
    "pan_dir": -1,
    "impact": true
   },
@@ -493,7 +493,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.034,
    "pan_dir": 1,
    "impact": false
   },
@@ -545,7 +545,7 @@
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0334,
    "pan_dir": -1,
    "impact": false
   },
@@ -583,7 +583,7 @@
    ],
    "flip_h": true,
    "deco": [
-    "speed_lines"
+    "clock_crop"
    ],
    "transition_in": "T5",
    "cam": "static",
@@ -639,7 +639,7 @@
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0337,
    "pan_dir": -1,
    "impact": false
   },
@@ -690,7 +690,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0334,
    "pan_dir": 1,
    "impact": false
   },
@@ -793,7 +793,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0343,
    "pan_dir": 1,
    "impact": false
   },
@@ -831,11 +831,11 @@
    ],
    "flip_h": false,
    "deco": [
-    "speed_lines"
+    "clock_crop"
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0337,
    "pan_dir": -1,
    "impact": false
   },
@@ -886,7 +886,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0337,
    "pan_dir": 1,
    "impact": false
   },
@@ -1172,7 +1172,7 @@
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     548,
     300
@@ -1232,8 +1232,8 @@
     "band"
    ],
    "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -1274,7 +1274,7 @@
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     548,
     300
@@ -1283,8 +1283,8 @@
     "band"
    ],
    "transition_in": "T3",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false
   },
@@ -1334,8 +1334,8 @@
     "band"
    ],
    "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -1479,7 +1479,7 @@
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0399,
    "pan_dir": 1,
    "impact": false
   },
@@ -1734,7 +1734,7 @@
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.034,
    "pan_dir": -1,
    "impact": false
   },
@@ -1786,7 +1786,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.0334,
    "pan_dir": 1,
    "impact": false
   },
@@ -2961,7 +2961,7 @@
    ],
    "flip_h": true,
    "deco": [
-    "speed_lines"
+    "clock_crop"
    ],
    "transition_in": "T1",
    "cam": "static",
@@ -3313,8 +3313,8 @@
     "band"
    ],
    "transition_in": "T6",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": true
   },
@@ -3553,7 +3553,7 @@
     0.6666666666666666,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     548,
     300
@@ -3614,8 +3614,8 @@
     "band"
    ],
    "transition_in": "T3",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -3657,7 +3657,7 @@
     0.6666666666666666,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     548,
     300
@@ -3666,8 +3666,8 @@
     "checker"
    ],
    "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false
   },
@@ -3716,8 +3716,8 @@
     "checker"
    ],
    "transition_in": "T3",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -3758,7 +3758,7 @@
     0.6666666666666666,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     548,
     300
@@ -3767,8 +3767,8 @@
     "checker"
    ],
    "transition_in": "T5",
-   "cam": "pull_out",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false
   },
@@ -3981,7 +3981,7 @@
    ],
    "flip_h": true,
    "deco": [
-    "speed_lines"
+    "clock_crop"
    ],
    "transition_in": "T4",
    "cam": "static",
@@ -4222,7 +4222,7 @@
    ],
    "flip_h": false,
    "deco": [
-    "speed_lines"
+    "clock_crop"
    ],
    "transition_in": "T2",
    "cam": "pan_x",
@@ -4469,8 +4469,8 @@
     "band"
    ],
    "transition_in": "T6",
-   "cam": "pan_x",
-   "cam_amount": 0.025,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": true
   },
@@ -4662,8 +4662,8 @@
     "band"
    ],
    "transition_in": "T1",
-   "cam": "pan_x",
-   "cam_amount": 0.025,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -4763,8 +4763,8 @@
     "band"
    ],
    "transition_in": "T1",
-   "cam": "pan_y",
-   "cam_amount": 0.025,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },
@@ -4972,8 +4972,8 @@
     "starburst"
    ],
    "transition_in": "T4",
-   "cam": "pan_y",
-   "cam_amount": 0.025,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false
   },

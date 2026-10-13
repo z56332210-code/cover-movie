@@ -181,7 +181,7 @@ def cam_motion(ci, c, t):
     carried by decorations, not by the camera. Channels: zoom or pan, plus a ~1 px handheld drift. No rotation."""
     W, H = Q.W, Q.H
     u = clamp((t - c["start"]) / max(c["dur"], 1e-3))
-    e = ease_inout(u)                                                 # monotonic: the direction never reverses
+    e = 1 - (1 - u) ** 3                                              # ease-out: fastest at the cut, then decelerating; never reverses
     cam = c.get("cam", "static"); amt = c.get("cam_amount", 0.0)
     zoom = px = py = 0.0
     if cam == "push_in":
@@ -741,7 +741,7 @@ def _plate_for(img_rgb, bbox, text_rgb, target=5.0):
     reg = np.asarray(img_rgb.crop((x0, y0, x1, y1)).resize((max(1, (x1 - x0) // 8), max(1, (y1 - y0) // 8)))).reshape(-1, 3)
     lt = rel_lum(text_rgb)
     lums = np.array([rel_lum(p) for p in reg[:: max(1, len(reg) // 400)]])
-    worst = lums.max() if lt < 0.2 else lums.min()          # the background pixel least like the text
+    worst = float(np.percentile(lums, 25 if lt < 0.2 else 75))   # background behind the text (typical, leaning to the bad side)
     cr = contrast(lt, worst)
     if cr >= target:
         return None, 0.0, cr
@@ -772,10 +772,14 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         col = RED if giant[0]["red"] else (PAPER_L if dark else INK)
         plate, pa, cr = _plate_for(out, ub, col)
         amax = max(it["alpha"] for it in giant)
-        if plate:
-            pl = Image.new("RGBA", out.size, (0, 0, 0, 0))
-            ImageDraw.Draw(pl).rounded_rectangle(ub, radius=S(18), fill=plate + (int(255 * pa * amax),))
-            L.alpha_composite(pl.filter(ImageFilter.GaussianBlur(S(6))))
+        if plate:                                    # soft halo around the glyphs (no box)
+            hm = Image.new("L", out.size, 0)
+            for it in giant:
+                g = htext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
+                hm.paste(g.getchannel("A"), (int(it["x"] - 2), int(it["y"] - 2 + it["dy"])), g.getchannel("A"))
+            hm = hm.filter(ImageFilter.MaxFilter(max(3, S(9) | 1))).filter(ImageFilter.GaussianBlur(S(7)))
+            halo = Image.new("RGBA", out.size, plate + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * amax)))
+            L.alpha_composite(halo)
         for it in giant:
             g = htext(it["text"], it["size"], col + (255,), it["font"])
             paste(L, g, it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
@@ -791,11 +795,12 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         elif it["kind"] == "red":
             bb = item_bbox(it)
             plate, pa, cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)
-            if plate:
-                pl = Image.new("RGBA", out.size, (0, 0, 0, 0))
-                ImageDraw.Draw(pl).rounded_rectangle((bb[0] - S(14) + hx, bb[1] - S(10) + hy + it["dy"], bb[2] + S(14) + hx, bb[3] + S(10) + hy + it["dy"]),
-                                                     radius=S(14), fill=plate + (int(255 * pa * it["alpha"]),))
-                L.alpha_composite(pl)
+            if plate:                                # soft halo around the glyphs (no box)
+                hm = Image.new("L", out.size, 0)
+                hm.paste(it["img"].getchannel("A"), (int(it["x"] + hx), int(it["y"] + hy + it["dy"])), it["img"].getchannel("A"))
+                hm = hm.filter(ImageFilter.MaxFilter(max(3, S(9) | 1))).filter(ImageFilter.GaussianBlur(S(7)))
+                halo = Image.new("RGBA", out.size, plate + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * it["alpha"])))
+                L.alpha_composite(halo)
             paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
             crs.append(cr)
     if cap and cap["alpha"] > 0.01:
@@ -1222,6 +1227,9 @@ def decorations(ci, c, t, focus, bg, excl):
         elif k == "checker":
             checker_floor(back, td * (3 if c["scene"] == 9 else 1), blur=(10 + 40 * (t - c["start"])) if c["scene"] == 9 else 0,
                           alpha=0.65 + 0.35 * beat_flash(t))
+        elif k == "clock_crop":     # roman numeral ring, enlarged and cropped by the frame edge
+            cx_ = W * (0.86 if fx < W / 2 else 0.14); cy_ = H * 0.72
+            draw_clock(back, td * 1.5, cx_, cy_, GRAY_M, 0.75, 2.1, t_real=t)
         elif k == "speed_lines":
             speed_lines(back, td, ci, GRAY_M, alpha=0.8, cx=fx, cy=fy)
         elif k == "guides":

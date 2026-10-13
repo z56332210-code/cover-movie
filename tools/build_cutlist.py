@@ -91,7 +91,7 @@ CHORUS = {"chorus_a", "chorus_b", "last_chorus"}
 DECO = {1: ["clock"], 2: ["torn_edge", "code"], 3: ["band"], 4: ["guides"], 5: ["torn_edge"], 6: ["clock"], 7: ["torn_edge"],
         8: ["band", "checker"], 9: ["checker"], 10: [], 11: ["torn_edge"], 12: ["code", "torn_edge"], 13: [], 14: ["band"],
         15: ["clock"], 16: [], 17: ["clock"], 18: []}
-NOCHAR_DECO = {"ink_type": "speed_lines", "band_only": "band", "clock_type": "clock", "paper_type": "guides", "empty_room": None}
+NOCHAR_DECO = {"ink_type": "clock_crop", "band_only": "band", "clock_type": "clock", "paper_type": "guides", "empty_room": None}
 T2_AT = [L[6], L[22], L[48], L[63]]          # slice glitch: 4 times, >= 15 s apart
 
 # ---- scenes (audio sec), aligned to lyric lines; mirrors scene_plan_nightcord_v3.json ids ----
@@ -283,8 +283,8 @@ for sc in S:
         k_in_sec = sum(1 for q in cuts if q["section"] == sec)
         c.update(section=sec, layout=SECTION_PRESET[sec], lyric_orient=pre["orient"], lyric_rect=pre["rects"][0] if len(pre["rects"]) == 1 else pre["rects"],
                  focus_target=list(pre["focus"][k_in_sec % len(pre["focus"])]), flip_h=bool(k_in_sec % 2))
-        if c.get("crop") == "silhouette":           # whole figure: head on an upper third, body stays in frame
-            c["focus_target"][1] = TH[0]
+        if c.get("crop") == "silhouette":           # whole figure: head on an upper third, body stays in frame, never mirrored
+            c["focus_target"][1] = TH[0]; c["flip_h"] = False
         if c.get("crop"):
             c["focus_src"] = list(FOCUS[c["crop"]])
         if c.get("nochar"):
@@ -326,8 +326,8 @@ IMPACT_GAP = 1.7               # full-screen impact zoom at most once per 1.7 s
 
 
 def _zoom_amount(dur):
-    cap = ZOOM_SPEED_MAX * dur / (math.pi / 2)          # ease-in-out peak speed = amount * pi/2 / dur
-    return round(min(0.04, cap), 4)
+    cap = ZOOM_SPEED_MAX * dur / 3.0                    # ease-out cubic: fastest at the start, peak speed = amount * 3 / dur
+    return math.floor(min(0.04, cap) * 10000) / 10000   # round down: never above the speed cap
 
 
 push_run, last_impact = 0, -99.0
@@ -338,7 +338,7 @@ for idx, c in enumerate(cuts):
     last = idx + 1 == len(cuts) or cuts[idx + 1]["section"] != sec
     prev_cam = cuts[idx - 1].get("cam") if idx else None
     cam, amt = "static", 0.0
-    if dur > 1.0 and c["scene"] not in (10, 18):
+    if dur > 1.0 and c["scene"] not in (10, 18) and c.get("crop") != "silhouette":   # full figure: camera stays still
         if last and prev_cam != "pull_out" and _zoom_amount(dur) >= 0.02:
             cam = "pull_out"                                  # breathe out once at the end of a section
         elif sec in VERSE_LIKE:
@@ -381,7 +381,7 @@ for idx, c in enumerate(cuts):
     if tr == "T3" and idx:
         c["focus_target"] = list(cuts[idx - 1]["focus_target"])     # flash match: same screen position
     if c.get("crop") == "silhouette":
-        c["focus_target"][1] = TH[0]
+        c["focus_target"][1] = TH[0]; c["flip_h"] = False
 
 # ---- density table (cuts starting in each 10 s window) ----
 dens = []

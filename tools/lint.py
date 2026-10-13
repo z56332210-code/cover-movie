@@ -254,13 +254,15 @@ def new_checks():
         cam = c.get("cam"); amt = c.get("cam_amount", 0)
         if cam not in ("push_in", "pull_out", "pan_x", "pan_y", "static"):
             bad("4-2", ci, f"cam={cam}"); continue
+        if c.get("crop") == "silhouette" and (cam != "static" or c.get("flip_h")):
+            bad("4-2", ci, "전신 컷에 카메라 이동/좌우반전")
         if c["dur"] <= 1.0 and cam != "static":
             bad("4-2", ci, f"{c['dur']:.2f}s 컷에 {cam}")
         if cam in ("push_in", "pull_out"):
             if not 0.02 - 1e-9 <= amt <= 0.06 + 1e-9:
                 bad("4-3", ci, f"줌 {amt * 100:.1f}%")
-            if amt * _m.pi / 2 / c["dur"] > 0.08 + 1e-9:
-                bad("4-3", ci, f"줌 속도 {amt * _m.pi / 2 / c['dur'] * 100:.1f}%/s")
+            if amt * 3 / c["dur"] > 0.08 + 1e-9:          # ease-out cubic peak speed at the start of the cut
+                bad("4-3", ci, f"줌 속도 {amt * 3 / c['dur'] * 100:.1f}%/s")
         sec = c.get("section"); last = ci + 1 == len(CUTS) or CUTS[ci + 1].get("section") != sec
         if cam == "pull_out" and (not last or (ci and CUTS[ci - 1].get("cam") == "pull_out")):
             bad("4-4", ci, "풀아웃이 구간 끝이 아니거나 연속")
