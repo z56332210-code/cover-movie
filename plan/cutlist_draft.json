@@ -8,6 +8,7 @@
  },
  "stats": {
   "total_cuts": 104,
+  "nochar_cuts": 27,
   "mean_beat_err_ms": 0.0,
   "red_windows": [
    [
@@ -413,19 +414,14 @@
    "lyric_lines": [
     3
    ],
-   "crop": "eye_r",
-   "rot": -8,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
     "code_text_block"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 925,
-    "cy": 425,
-    "w": 360
-   },
+   "nochar": "ink_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -540,19 +536,14 @@
     4,
     5
    ],
-   "crop": "neck_frill",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
     "code_text_block"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 935,
-    "cy": 700,
-    "w": 420
-   },
+   "nochar": "ink_type",
    "red": false,
    "transition_in": "black"
   },
@@ -693,19 +684,14 @@
     7,
     8
    ],
-   "crop": "silhouette",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 562,
-    "cy": 1000,
-    "w": null
-   },
+   "nochar": "band_only",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -822,19 +808,14 @@
     11,
     12
    ],
-   "crop": "shoes",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
-   },
+   "nochar": "band_only",
    "red": false,
    "transition_in": "cut_shake"
   },
@@ -929,20 +910,15 @@
     15,
     16
    ],
-   "crop": "buttons",
-   "rot": -3,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "circle_guides",
     "mini_icon",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1000,
-    "cy": 1010,
-    "w": 520
-   },
+   "nochar": "paper_type",
    "red": false,
    "transition_in": "cut_shake"
   },
@@ -1060,19 +1036,14 @@
    "lyric_lines": [
     20
    ],
-   "crop": "face",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "mirror_symmetry",
     "hud_frame_ornate:dim"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
-   },
+   "nochar": "paper_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -1184,20 +1155,15 @@
    "lyric_lines": [
     24
    ],
-   "crop": "point_hand",
-   "rot": 180,
-   "flip_v": true,
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
-   },
+   "nochar": "clock_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -1446,20 +1412,15 @@
     29,
     30
    ],
-   "crop": "face",
-   "rot": 160,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
-   },
+   "nochar": "clock_type",
    "red": false,
    "transition_in": "whip"
   },
@@ -1545,18 +1506,13 @@
     30,
     31
    ],
-   "crop": "eyes",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
-   },
+   "nochar": "ink_type",
    "red": false,
    "transition_in": "black"
   },
@@ -1755,7 +1711,7 @@
    "lyric_lines": [
     37
    ],
-   "crop": "shoes",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
@@ -1763,12 +1719,7 @@
     "halftone",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
-   },
+   "nochar": "band_only",
    "red": false,
    "transition_in": "whip"
   },
@@ -2034,18 +1985,13 @@
     44,
     45
    ],
-   "crop": "point_hand",
-   "rot": -20,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
-   },
+   "nochar": "ink_type",
    "red": false,
    "transition_in": "flip"
   },
@@ -2159,20 +2105,15 @@
     47,
     48
    ],
-   "crop": "ribbon_L",
-   "rot": -30,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
     "code_text_block",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 420,
-    "cy": 1190,
-    "w": 560
-   },
+   "nochar": "ink_type",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
   },
@@ -2359,19 +2300,14 @@
     52,
     53
    ],
-   "crop": "shoes",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
     "hud_frame_ornate:dim"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
-   },
+   "nochar": "band_only",
    "red": false,
    "transition_in": "cut_shake"
   },
@@ -2701,20 +2637,15 @@
     60,
     61
    ],
-   "crop": "face",
-   "rot": -12,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "mirror_symmetry",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
-   },
+   "nochar": "clock_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -2810,19 +2741,14 @@
    "lyric_lines": [
     64
    ],
-   "crop": "bust",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "window_light",
     "hud_frame_ornate:dim"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 760,
-    "w": 1400
-   },
+   "nochar": "empty_room",
    "red": false,
    "transition_in": "lightleak_8f"
   },

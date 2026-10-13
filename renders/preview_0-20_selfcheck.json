@@ -1,0 +1,44 @@
+{
+ "density": [
+  {
+   "window": "0-10",
+   "cuts": 6,
+   "per10s": 6.0,
+   "scenes": [
+    1,
+    2
+   ],
+   "target": "예외(인트로/아웃트로)"
+  },
+  {
+   "window": "10-20",
+   "cuts": 7,
+   "per10s": 7.0,
+   "scenes": [
+    2
+   ],
+   "target": "7~9"
+  }
+ ],
+ "fast_zone_per10s": 7.9,
+ "motion": {
+  "mean_diff": 2.56,
+  "min_diff": 0.113,
+  "static_frames_pct": 6.0
+ },
+ "beat_err_ms": {
+  "mean": 9.9,
+  "max": 14.3,
+  "n": 12
+ },
+ "colour": {
+  "red_pct": 0.03,
+  "other_pct": 0.0,
+  "worst_frame_other_pct": 0.0
+ },
+ "red_windows": [],
+ "glitches": [],
+ "nochar_cuts": 4,
+ "cuts": 13,
+ "compare": "renders/preview_0-20_vs_refB.jpg"
+}

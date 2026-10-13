@@ -187,6 +187,16 @@ for sc in S:
             run = run + 1 if cuts and cuts[-1]["type"] == "inverted_crop_box_text" else 1
             if run > 3:
                 c.update(type="black_crop_vertical", rot=-12, flip_v=False); run = 0
+        # character-less cuts: every ~5th cut in fast scenes, one per relaxed zone (no wall-to-wall character)
+        NOCHAR = {2: "ink_type", 12: "ink_type", 11: "ink_type", 3: "band_only", 8: "band_only", 14: "band_only",
+                  6: "clock_type", 15: "clock_type", 7: "ink_type", 4: "paper_type", 16: "empty_room", 5: "paper_type"}
+        is_red = bool(sc.get("red") and snap(sc["red"][0]) - 0.01 <= t0 < snap(sc["red"][1]) - 0.01)
+        if sc["id"] in NOCHAR and c.get("type") != "black_card" and not is_red and not c.get("note"):
+            relaxed_pick = sc.get("zone") == "relaxed" and j == (1 if sc["id"] == 4 else 0)
+            fast_pick = sc.get("zone") != "relaxed" and j % 5 == 3
+            if relaxed_pick or fast_pick:
+                c.update(nochar=NOCHAR[sc["id"]], crop=None, rot=0, flip_v=False)
+                c.pop("crop_src", None); c.pop("crop_box", None)
         red = sc.get("red")
         c["red"] = bool(red and snap(red[0]) - 0.01 <= t0 < snap(red[1]) - 0.01)
         if c["red"]:
@@ -233,7 +243,7 @@ out = dict(
             "transition_in=이 컷으로 들어오는 전환. red=빨강 구간 여부.",
     audio=dict(duration=DUR, bpm=round(60 / 0.4214, 1), jump_sec=JUMP,
                jump_note="원곡(=레퍼런스 B 음원) 91.63초 → 147.50초로 점프. scene_plan의 88.0~89.3초 추정을 90.80초로 보정."),
-    stats=dict(total_cuts=len(cuts), mean_beat_err_ms=round(sum(err) / len(err), 1),
+    stats=dict(total_cuts=len(cuts), nochar_cuts=sum(1 for c in cuts if not c.get("crop")), mean_beat_err_ms=round(sum(err) / len(err), 1),
                red_windows=[[round(a, 2), round(b, 2), round(b - a, 2)] for a, b in reds],
                glitches=[round(snap(t), 3) for t in GLITCH_AT],
                clock_scenes=[s["id"] for s in S if any(o.startswith("roman_clock_ring") for o in s["ov"])]),

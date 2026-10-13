@@ -107,6 +107,11 @@ def cut_at(t):
 
 def scene_bg(c):
     sc = c["scene"]
+    nc = c.get("nochar")
+    if nc in ("ink_type", "clock_type"):
+        return INK
+    if nc == "paper_type":
+        return PAPER_L
     if c.get("type") == "black_card" or sc in (1, 2, 12, 17, 10):
         return INK
     if sc in (3, 4, 5, 14, 18):
@@ -718,6 +723,21 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
     tc = text_color_for(bg)
     li = active_line(t)
     red = c.get("red")
+    nc = c.get("nochar")
+    if nc == "ink_type":       # typography only: giant thin serif + small stacked boxes
+        text_B(L, t, c, [], PAPER_L, size_h=0.40, slide=0.22)
+        return
+    if nc == "band_only":
+        return                 # bands are drawn in band_text
+    if nc == "clock_type":
+        text_A(L, t, c, 60, side="right", mirror=True, max_lines=2)
+        return
+    if nc == "paper_type":
+        text_A(L, t, c, 64, side="right", max_lines=3)
+        return
+    if nc == "empty_room":
+        text_B(L, t, c, [], PAPER_L, size_h=0.32, slide=0.06)
+        return
     if typ == "black_card":
         if li:
             im = htext(line_text(li), S(30), PAPER_L + (230,), F_L)
@@ -781,6 +801,9 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
 
 def band_text(L, t, c, bg):
     sc = c["scene"]; li = active_line(t); tc = text_color_for(bg)
+    if c.get("nochar") == "band_only":   # full-screen repeat grid, no figure (ref B t081)
+        text_D(L, t, c, GRAY_M if sc == 8 else tc, rows=5, size_h=0.13)
+        return
     if sc == 3 and li != 13:
         text_D(L, t, c, tc)
     elif sc == 8:
@@ -922,6 +945,17 @@ def motifs(L, t, c, ci, eyes, bg, layer):
     sc = c["scene"]; ov = c.get("overlays", [])
     col = text_color_for(bg) if sc not in (6, 15) else GRAY_D
     if layer == "back":
+        if c.get("nochar") == "clock_type":   # the clock itself is the subject
+            draw_clock(L, t * 2.5, Q.W / 2, Q.H / 2, PAPER_L, 0.85, 1.25)
+            draw_clock(L, -t * 1.5, Q.W / 2, Q.H / 2, GRAY_M, 0.35, 0.7)
+            return
+        if c.get("nochar") == "paper_type":
+            circle_guides(L, t, [], GRAY_M); mini_icons(L, GRAY_D)
+            return
+        if c.get("nochar") == "ink_type":
+            speed_lines(L, t, ci, GRAY_D, alpha=0.6)
+            slice_bars(L, ci, t, GRAY_D)
+            return
         if any(o.startswith("roman_clock_ring") for o in ov):
             faint = any(o.endswith(":faint") for o in ov); passing = any(o.endswith(":pass") for o in ov)
             if passing:  # numerals and hands sweep past in the background
