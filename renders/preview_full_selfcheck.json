@@ -150,9 +150,9 @@
  ],
  "fast_zone_per10s": 8.2,
  "motion": {
-  "mean_diff": 3.36,
+  "mean_diff": 3.44,
   "min_diff": 0.068,
-  "static_frames_pct": 3.4
+  "static_frames_pct": 0.3
  },
  "beat_err_ms": {
   "mean": 8.3,
@@ -161,8 +161,8 @@
  },
  "colour": {
   "red_pct": 1.17,
-  "other_pct": 0.0004,
-  "worst_frame_other_pct": 0.029
+  "other_pct": 0.0003,
+  "worst_frame_other_pct": 0.011
  },
  "red_windows": [
   [
