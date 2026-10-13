@@ -50,6 +50,12 @@ RULES = {
     "3-3": "T2 횟수(4~5회)·간격(15초에 1번) 위반",
     "3-4": "구간별 추천 전환이 아님 (후렴 T1/T4/T6, 절 T3/T5/T6)",
     "3-5": "전환이 박자에 안 맞음 (>50ms)",
+    "4-1": "박자 줌 펄스가 켜져 있음 (BEAT_PULSE_ZOOM≠0)",
+    "4-2": "1초 이하 컷에서 카메라가 움직임 / 카메라 동작 미지정",
+    "4-3": "줌 양 2~6% 밖 또는 줌 속도 초당 8% 초과",
+    "4-4": "카메라 방향 정책 위반 (절=푸시인, 후렴=팬/정지, 풀아웃은 구간 끝 1번·연속 금지, 푸시인 연속 3컷 초과)",
+    "4-5": "충격 줌이 1.7초에 1번 넘음 / 후렴 첫 박·구간 시작·큰 악센트가 아닌 곳",
+    "4-6": "움직이는 채널 3개 이상 / 핸드헬드 0.05% 초과 / 회전 떨림",
 }
 V = []
 
@@ -231,8 +237,50 @@ def new_checks():
     for a, b in zip(t2_times, t2_times[1:]):
         if b - a < 15:
             bad("3-3", None, f"T2 간격 {b - a:.1f}s ({a:.1f}→{b:.1f})")
-    # lyric timing (data side)
+    # camera rules
+    import math as _m
     import render as R
+    if R.BEAT_PULSE_ZOOM != 0:
+        bad("4-1", None, f"BEAT_PULSE_ZOOM={R.BEAT_PULSE_ZOOM}")
+    if R.HANDHELD > 0.0005 + 1e-9:
+        bad("4-6", None, f"핸드헬드 {R.HANDHELD * 100:.2f}%")
+    verse_like = {"intro", "verse_a", "pre_chorus", "verse_b", "ending"}
+    push_run, last_imp = 0, -99.0
+    red_starts = set()
+    for ci, c in enumerate(CUTS):
+        if c.get("red") and not (ci and CUTS[ci - 1].get("red")):
+            red_starts.add(ci)
+    for ci, c in enumerate(CUTS):
+        cam = c.get("cam"); amt = c.get("cam_amount", 0)
+        if cam not in ("push_in", "pull_out", "pan_x", "pan_y", "static"):
+            bad("4-2", ci, f"cam={cam}"); continue
+        if c["dur"] <= 1.0 and cam != "static":
+            bad("4-2", ci, f"{c['dur']:.2f}s 컷에 {cam}")
+        if cam in ("push_in", "pull_out"):
+            if not 0.02 - 1e-9 <= amt <= 0.06 + 1e-9:
+                bad("4-3", ci, f"줌 {amt * 100:.1f}%")
+            if amt * _m.pi / 2 / c["dur"] > 0.08 + 1e-9:
+                bad("4-3", ci, f"줌 속도 {amt * _m.pi / 2 / c['dur'] * 100:.1f}%/s")
+        sec = c.get("section"); last = ci + 1 == len(CUTS) or CUTS[ci + 1].get("section") != sec
+        if cam == "pull_out" and (not last or (ci and CUTS[ci - 1].get("cam") == "pull_out")):
+            bad("4-4", ci, "풀아웃이 구간 끝이 아니거나 연속")
+        if cam == "push_in" and sec in CHORUS:
+            bad("4-4", ci, "후렴에 푸시인")
+        if cam in ("pan_x", "pan_y") and sec in verse_like:
+            bad("4-4", ci, "절에 팬")
+        push_run = push_run + 1 if cam == "push_in" else 0
+        if push_run > 3:
+            bad("4-4", ci, "푸시인 4컷 연속")
+        if c.get("impact"):
+            first = ci == 0 or CUTS[ci - 1].get("section") != sec
+            if not (first or ci in red_starts):
+                bad("4-5", ci, "후렴 첫 박/구간 시작/큰 악센트가 아닌 충격 줌")
+            if c["start"] - last_imp < 1.7:
+                bad("4-5", ci, f"충격 줌 간격 {c['start'] - last_imp:.2f}s")
+            last_imp = c["start"]
+    if R.IMPACT_ZOOM > 0.03 + 1e-9:
+        bad("4-5", None, f"충격 줌 {R.IMPACT_ZOOM * 100:.0f}%")
+    # lyric timing (data side)
     R.setup(False)
     for i in LINES:
         if not (T0 - 1 <= LINES[i] < T1):

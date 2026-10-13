@@ -4,6 +4,7 @@ Every cut boundary snaps to a tracked beat. Lyric line starts inside a scene are
 the gaps between them are filled with a beat pattern (fast scenes ~3 beats/cut, relaxed ~10 beats/cut).
 """
 import json
+import math
 import numpy as np
 from pathlib import Path
 
@@ -318,6 +319,70 @@ for sc in S:
         prev_tr = tr
         cuts.append(c)
 
+# ---- camera policy: one move per cut, in one direction (or none) ----
+VERSE_LIKE = {"intro", "verse_a", "pre_chorus", "verse_b", "ending"}
+ZOOM_SPEED_MAX = 0.08          # per second (peak of the eased move)
+IMPACT_GAP = 1.7               # full-screen impact zoom at most once per 1.7 s
+
+
+def _zoom_amount(dur):
+    cap = ZOOM_SPEED_MAX * dur / (math.pi / 2)          # ease-in-out peak speed = amount * pi/2 / dur
+    return round(min(0.04, cap), 4)
+
+
+push_run, last_impact = 0, -99.0
+red_starts = {round(snap(sc["red"][0]), 3) for sc in S if sc.get("red")}
+for idx, c in enumerate(cuts):
+    sec = c["section"]; dur = c["dur"]
+    first = idx == 0 or cuts[idx - 1]["section"] != sec
+    last = idx + 1 == len(cuts) or cuts[idx + 1]["section"] != sec
+    prev_cam = cuts[idx - 1].get("cam") if idx else None
+    cam, amt = "static", 0.0
+    if dur > 1.0 and c["scene"] not in (10, 18):
+        if last and prev_cam != "pull_out" and _zoom_amount(dur) >= 0.02:
+            cam = "pull_out"                                  # breathe out once at the end of a section
+        elif sec in VERSE_LIKE:
+            cam = "push_in" if push_run < 3 and _zoom_amount(dur) >= 0.02 else "static"
+        elif sec in CHORUS:
+            k = sum(1 for q in cuts[:idx] if q["section"] == sec)
+            cam = ("pan_x", "static", "pan_y", "static")[k % 4]
+    if cam in ("push_in", "pull_out"):
+        amt = _zoom_amount(dur)
+    elif cam in ("pan_x", "pan_y"):
+        amt = 0.025
+    push_run = push_run + 1 if cam == "push_in" else 0
+    c.update(cam=cam, cam_amount=amt, pan_dir=(1 if idx % 2 else -1))
+    # impact zoom (1.00 -> 1.03 -> 1.00): chorus first beat, section start, big accent (red start); >= 1.7 s apart
+    accent = first or round(c["start"], 3) in red_starts
+    c["impact"] = bool(accent and c["start"] - last_impact >= IMPACT_GAP and c["scene"] not in (1, 10, 13, 17, 18)
+                       and c["transition_in"] not in ("T2", "edit_mask", "fade_in", "white_blowout", "cut_to_black")
+                       and not (idx and cuts[idx - 1].get("impact")))
+    if c["impact"]:
+        last_impact = c["start"]
+
+# ---- transitions again: T6 (beat cut + impact zoom) only on impact cuts, otherwise T1/T4 (chorus) or T3/T5 (verse) ----
+prev_tr, tr_used = None, {}
+for idx, c in enumerate(cuts):
+    tr = c["transition_in"]
+    if tr in ("fade_in", "edit_mask", "white_blowout", "cut_to_black", "T2"):
+        prev_tr = tr; continue
+    if c["impact"] and prev_tr != "T6":
+        tr = "T6"
+    else:
+        c["impact"] = False
+        allowed = ["T1", "T4"] if c["section"] in CHORUS else ["T3", "T5"]
+        cand = [x for x in allowed if x != prev_tr]
+        tr = min(cand, key=lambda x: (tr_used.get(x, 0), allowed.index(x)))
+    tr_used[tr] = tr_used.get(tr, 0) + 1
+    c["transition_in"] = tr; prev_tr = tr
+    sec = c["section"]; pre = PRESETS[SECTION_PRESET[sec]]
+    k_in_sec = sum(1 for q in cuts[:idx] if q["section"] == sec)
+    c["focus_target"] = list(pre["focus"][k_in_sec % len(pre["focus"])])
+    if tr == "T3" and idx:
+        c["focus_target"] = list(cuts[idx - 1]["focus_target"])     # flash match: same screen position
+    if c.get("crop") == "silhouette":
+        c["focus_target"][1] = TH[0]
+
 # ---- density table (cuts starting in each 10 s window) ----
 dens = []
 for w in range(0, 150, 10):
@@ -341,7 +406,9 @@ out = dict(
                red_windows=[[round(a, 2), round(b, 2), round(b - a, 2)] for a, b in reds],
                glitches=[round(snap(t), 3) for t in T2_AT] + [round(snap(JUMP), 3)],
                clock_scenes=sorted({c["scene"] for c in cuts if "clock" in c.get("deco", [])}),
-               presets={k: v["name"] for k, v in PRESETS.items()}, section_preset=SECTION_PRESET),
+               presets={k: v["name"] for k, v in PRESETS.items()}, section_preset=SECTION_PRESET,
+               camera={k: sum(1 for c in cuts if c["cam"] == k) for k in ("push_in", "pull_out", "pan_x", "pan_y", "static")},
+               impacts=[c["start"] for c in cuts if c["impact"]]),
     density=dens, scenes=[{k: s[k] for k in ("id", "start", "end", "type", "color")} for s in S], cuts=cuts)
 if __name__ == "__main__":
     json.dump(out, open(ROOT / "plan/cutlist_draft.json", "w"), ensure_ascii=False, indent=1)

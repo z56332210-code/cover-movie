@@ -171,48 +171,50 @@ BEATS = json.load(open(ROOT / "plan/audio_analysis.json"))["beats"]
 BEATS_IN_CUT = [[b for b in BEATS if c["start"] + 3 / FPS < b < c["start"] + c["dur"] - 5 / FPS] for c in CUTS]
 
 
+BEAT_PULSE_ZOOM = float(os.environ.get("BEAT_PULSE_ZOOM", "0"))   # 0 = no zoom pulse on the beat (default)
+HANDHELD = 0.0005                                                  # handheld drift: 0.05 % of width, 0.5~1 Hz, no rotation
+IMPACT_ZOOM = 0.03                                                 # 1.00 -> 1.03 -> 1.00 over 6 frames, impact cuts only
+
+
 def cam_motion(ci, c, t):
-    """Image-layer camera: slow eased drift, snap on beats (4 f), arrival with overshoot (10 f), pre-cut acceleration (4 f)."""
-    W = Q.W
-    f = (t - c["start"]) * FPS
-    fe = (c["start"] + c["dur"] - t) * FPS
-    r = np.random.default_rng(ci * 7919 + 5)
-    ang = r.uniform(0, 2 * math.pi); dvx, dvy = math.cos(ang), math.sin(ang)
+    """Calm camera: exactly one move per cut (push in / pull out / pan / still), one direction, eased; the beat is
+    carried by decorations, not by the camera. Channels: zoom or pan, plus a ~1 px handheld drift. No rotation."""
+    W, H = Q.W, Q.H
+    u = clamp((t - c["start"]) / max(c["dur"], 1e-3))
+    e = ease_inout(u)                                                 # monotonic: the direction never reverses
+    cam = c.get("cam", "static"); amt = c.get("cam_amount", 0.0)
     zoom = px = py = 0.0
-    e = ease_inout((t - c["start"]) / max(c["dur"], 0.2))           # hold: ~1% per cut
-    zoom += 0.008 * e; px += 0.006 * W * e * dvx; py += 0.006 * W * e * dvy
-    for k, b in enumerate(BEATS_IN_CUT[ci]):                          # then snap on the beat (punch in / out, never piling up)
-        if b > t:
-            break
-        p = EASE_OUT(clamp((t - b) * FPS / 4))
-        sgn = 1 if k % 2 == 0 else -1
-        zoom += 0.05 * sgn * p
-        px += sgn * 0.030 * W * p * (dvx if abs(dvx) > 0.3 else 1)      # alternate every beat: the eye stays on its third
-        py += sgn * 0.020 * W * p * (dvy if abs(dvy) > 0.3 else 1)
-    tr = c.get("transition_in")
-    if ci > 0 and f < 14:                                             # arrival: ease-out (sine) over 14 f, ~4.5% overshoot
-        u = clamp(f / 14)
-        g = math.sin(math.pi / 2 * u) + 0.045 * 1.9 * math.sin(math.pi * u) ** 2 * u
-        a2 = r.uniform(0, 2 * math.pi)
-        dist = 0.0 if tr == "T3" else 0.09 * W
-        px += dist * math.cos(a2) * (1 - g); py += dist * math.sin(a2) * 0.6 * (1 - g)
-        zoom += 0.07 * (1 - g)
-    if tr == "T6" and 0 <= f < 6:                                     # beat cut + impact zoom 1.00 -> 1.06 -> 1.00
-        zoom += 0.06 * math.sin(math.pi * clamp(f / 6))
-    if fe < 6 and ci + 1 < len(CUTS):                                 # outgoing acceleration (6 f, ease-in)
-        v = (clamp(1 - fe / 6)) ** 2.2
-        zoom += 0.12 * v; px += 0.08 * W * v * dvx; py += 0.08 * W * v * dvy
-    if 0 <= f < 16:                                                   # impact shake, settles over ~0.5 s
-        amp = 20 * Q.s * (1 - f / 16) ** 1.5
-        px += amp * math.sin(f * 2.1 + ci); py += amp * math.cos(f * 2.7 + ci)
-    px += snoise(t, ci * 7919 + 1) * 0.001 * W; py += snoise(t, ci * 7919 + 2) * 0.001 * W
-    rot = 0.15 * snoise(t, ci * 7919 + 3, (0.6, 1.1))
-    return 1 + zoom, px, py, rot
+    if cam == "push_in":
+        zoom = amt * e
+    elif cam == "pull_out":
+        zoom = amt * (1 - e)
+    elif cam == "pan_x":
+        px = c.get("pan_dir", 1) * amt * W * (e - 0.5)
+    elif cam == "pan_y":
+        py = c.get("pan_dir", 1) * amt * H * (e - 0.5)
+    f = (t - c["start"]) * FPS
+    if c.get("impact") and 0 <= f < 6:
+        zoom += IMPACT_ZOOM * math.sin(math.pi * f / 6)
+    if BEAT_PULSE_ZOOM:                                               # legacy beat pulse, off unless switched on
+        for k, b in enumerate(BEATS_IN_CUT[ci]):
+            if b > t:
+                break
+            zoom += BEAT_PULSE_ZOOM * 0.05 * (1 if k % 2 == 0 else -1) * EASE_OUT(clamp((t - b) * FPS / 4))
+    px += snoise(t, ci * 7919 + 1, (0.5, 0.75, 1.0)) * HANDHELD * W
+    py += snoise(t, ci * 7919 + 2, (0.5, 0.75, 1.0)) * HANDHELD * W
+    return 1 + zoom, px, py, 0.0
 
 
 def fast_motion(ci, c, t):
-    f = (t - c["start"]) * FPS; fe = (c["start"] + c["dur"] - t) * FPS
-    return f < 14 or fe < 6 or any(0 <= (t - b) * FPS < 4 for b in BEATS_IN_CUT[ci])
+    return bool(c.get("impact")) and 0 <= (t - c["start"]) * FPS < 6
+
+
+def beat_flash(t, frames=4):
+    """1 on the beat, fading to 0 over `frames` (drives decoration / text flashes)."""
+    bi = bisect.bisect_right(BEATS, t)
+    if not bi:
+        return 0.0
+    return clamp(1 - (t - BEATS[bi - 1]) * FPS / frames)
 
 
 def focus_target_px(c):
@@ -689,17 +691,17 @@ def _line_layout(t, li):
     for n_, (j, piece) in enumerate(vis):
         ri = 0 if (len(rects) == 1 or n_ < 2) else 1          # P4: right rect takes the first two columns, then the left rect
         if ctx["orient"] == "vbox":
-            box = vbox(piece, size)
+            box = vbox(piece, size); bright = vbox(piece, size, fg=(255, 255, 255))
             x = xs[ri] - box.size[0]; xs[ri] = x - int(size * 0.35)
             y = rects[ri][1] + (n_ % 2) * S(40)
             if last_x is not None and x >= last_x:          # reading order must run right -> left across the screen
                 dbg["order_ok"] = False
             last_x = x
         else:
-            box = hbox(piece, size)
+            box = hbox(piece, size); bright = hbox(piece, size, fg=(255, 255, 255))
             x = rects[ri][0]; y = ys[ri]; ys[ri] = y + box.size[1] + int(size * 0.3)
         a, dy = _enter_exit(t, chunk_appear(li)[j], w1)
-        items.append(dict(kind="box", img=box, x=x, y=y, alpha=a, dy=dy, red=False))
+        items.append(dict(kind="box", img=box, bright=bright, x=x, y=y, alpha=a, dy=dy, red=False))
     return items, cap, dbg
 
 
@@ -751,6 +753,9 @@ def _plate_for(img_rgb, bbox, text_rgb, target=5.0):
     return plate, 1.0, contrast(lt, lp)
 
 
+t_now = [0.0]
+
+
 def draw_lyrics(out, items, cap, dbg, hx, hy):
     """Draw lyrics + caption onto the RGB frame; giant type stays still once it has landed."""
     L = Image.new("RGBA", out.size, (0, 0, 0, 0))
@@ -779,6 +784,9 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         if it["kind"] == "box":
             paste(L, box_shadow(it["img"]), it["x"] + hx + S(7), it["y"] + hy + it["dy"] + S(9), it["alpha"] * 0.45)
             paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
+            bf = beat_flash(t_now[0])
+            if bf > 0 and not it.get("dim"):
+                paste(L, it.get("bright") or it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"] * 0.7 * bf)
             crs.append(contrast(rel_lum(PAPER_L), rel_lum(INK)))
         elif it["kind"] == "red":
             bb = item_bbox(it)
@@ -870,7 +878,7 @@ def hud_dynamic(L, t, alpha):
     tc = f"{fr // (FPS * 3600):02d}:{fr // (FPS * 60) % 60:02d}:{fr // FPS % 60:02d}:{fr % FPS:02d}"
     m2 = S(34)
     d.text((m2 + S(16), Q.H - m2 - S(28)), "TC " + tc, font=f, fill=col)
-    s = f"BPM 142.4   CUT {cut_at(t)[0] + 1:03d}"
+    s = f"BPM 142.4   BEAT {bisect.bisect_right(BEATS, t):03d}   CUT {cut_at(t)[0] + 1:03d}"
     d.text((Q.W - m2 - S(16) - d.textlength(s, font=f), Q.H - m2 - S(28)), s, font=f, fill=col)
 
 
@@ -1025,7 +1033,7 @@ def checker_strip(L, t, angle=-18, width=150, sq=34, y_frac=0.82):
     paste(L, strip, W / 2 - strip.size[0] / 2, H * y_frac - strip.size[1] / 2)
 
 
-def checker_floor(L, t, blur=0.0):
+def checker_floor(L, t, blur=0.0, alpha=1.0):
     W, H = Q.W, Q.H
     floor = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(floor)
     hz = H * 0.58
@@ -1040,7 +1048,7 @@ def checker_floor(L, t, blur=0.0):
             if (r + cidx) % 2:
                 continue
             q = [P(cidx, r), P(cidx + 1, r), P(cidx + 1, r + 1), P(cidx, r + 1)]
-            d.polygon(q, fill=GRAY_M + (150,))
+            d.polygon(q, fill=GRAY_M + (int(150 * alpha),))
     if blur > 0:
         floor = floor.filter(ImageFilter.BoxBlur(S(blur)))
     L.alpha_composite(floor)
@@ -1212,7 +1220,8 @@ def decorations(ci, c, t, focus, bg, excl):
             rows = 5 if c.get("nochar") == "band_only" or (c["scene"] == 14 and active_line(t) in (56, 57, 58)) else 1
             text_D(back, td, c, GRAY_M if c["scene"] in (8, 9) else tc, rows=rows, size_h=0.13 if rows > 1 else 0.15)
         elif k == "checker":
-            checker_floor(back, td * (3 if c["scene"] == 9 else 1), blur=(10 + 40 * (t - c["start"])) if c["scene"] == 9 else 0)
+            checker_floor(back, td * (3 if c["scene"] == 9 else 1), blur=(10 + 40 * (t - c["start"])) if c["scene"] == 9 else 0,
+                          alpha=0.65 + 0.35 * beat_flash(t))
         elif k == "speed_lines":
             speed_lines(back, td, ci, GRAY_M, alpha=0.8, cx=fx, cy=fy)
         elif k == "guides":
@@ -1227,7 +1236,7 @@ def decorations(ci, c, t, focus, bg, excl):
                 u = ((t - c["start"]) * FPS - 3 * j) / 10
                 if u <= 0:
                     continue
-                starburst(front, W * px_, H * py_, H * R * pop(u), td, ci * 10 + j)
+                starburst(front, W * px_, H * py_, H * R * pop(u), td, ci * 10 + j, alpha=0.72 + 0.28 * beat_flash(t))
         elif k == "torn_edge":      # edge line of the tear that cuts the illustration
             _, edge = torn_mask(ci, c)
             ImageDraw.Draw(front).line(edge, fill=GRAY_M + (170,), width=max(1, S(2)))
@@ -1379,8 +1388,9 @@ def render_frame(t):
         im2 = htext("cover  /  暁山 瑞希", S(20), GRAY_M + (int(220 * a),), F_L)
         paste(T, im2, W / 2 - im2.size[0] / 2, H / 2 + S(30))
         out = out.convert("RGBA"); out.alpha_composite(T); out = out.convert("RGB")
-    hx = snoise(t, ci * 7919 + 14) * 0.001 * W * 0.4      # boxes follow 40% of the handheld; giant type stays still
-    hy = snoise(t, ci * 7919 + 15) * 0.001 * W * 0.4
+    hx = snoise(t, ci * 7919 + 14, (0.5, 0.75, 1.0)) * HANDHELD * W * 0.4   # boxes follow 40% of the handheld; giant type stays still
+    hy = snoise(t, ci * 7919 + 15, (0.5, 0.75, 1.0)) * HANDHELD * W * 0.4
+    t_now[0] = t
     out = draw_lyrics(out, items, cap, dbg, int(round(hx)), int(round(hy)))
     if c["scene"] not in (10, 13, 17, 18):
         a = 0.35 if any(o.endswith(":dim") for o in c.get("overlays", [])) else 0.62

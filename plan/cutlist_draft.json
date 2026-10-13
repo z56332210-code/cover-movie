@@ -57,7 +57,24 @@
    "chorus_b": "P2",
    "last_chorus": "P3",
    "ending": "P3"
-  }
+  },
+  "camera": {
+   "push_in": 28,
+   "pull_out": 5,
+   "pan_x": 9,
+   "pan_y": 7,
+   "static": 56
+  },
+  "impacts": [
+   6.873,
+   43.224,
+   73.851,
+   77.648,
+   91.162,
+   108.066,
+   117.365,
+   131.32
+  ]
  },
  "density": [
   {
@@ -335,7 +352,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "fade_in"
+   "transition_in": "fade_in",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 5.619,
@@ -368,7 +389,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "pull_out",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 6.873,
@@ -415,7 +440,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T5"
+   "transition_in": "T6",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": true
   },
   {
    "start": 8.139,
@@ -462,7 +491,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 9.416,
@@ -510,7 +543,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 10.67,
@@ -548,7 +585,11 @@
    "deco": [
     "speed_lines"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 11.947,
@@ -586,7 +627,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.3333333333333333
+    0.6666666666666666
    ],
    "flip_h": false,
    "focus_src": [
@@ -596,7 +637,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 13.212,
@@ -633,7 +678,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.3333333333333333
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -643,7 +688,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 14.466,
@@ -680,7 +729,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.3333333333333333
+    0.6666666666666666
    ],
    "flip_h": false,
    "focus_src": [
@@ -690,7 +739,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 15.302,
@@ -738,7 +791,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 16.591,
@@ -776,7 +833,11 @@
    "deco": [
     "speed_lines"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 17.856,
@@ -823,7 +884,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 19.122,
@@ -861,7 +926,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.3333333333333333
+    0.6666666666666666
    ],
    "flip_h": false,
    "focus_src": [
@@ -871,7 +936,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 20.341,
@@ -917,7 +986,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T2"
+   "transition_in": "T2",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 21.873,
@@ -954,7 +1027,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": false,
    "focus_src": [
@@ -964,7 +1037,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 22.721,
@@ -1000,7 +1077,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": true,
    "focus_src": [
@@ -1010,7 +1087,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 23.557,
@@ -1048,7 +1129,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 25.252,
@@ -1095,7 +1180,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 26.099,
@@ -1142,7 +1231,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 27.365,
@@ -1189,7 +1282,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 28.63,
@@ -1236,7 +1333,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 30.314,
@@ -1267,13 +1368,17 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": true,
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 31.173,
@@ -1320,7 +1425,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 31.997,
@@ -1368,7 +1477,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 33.495,
@@ -1418,7 +1531,11 @@
    "deco": [
     "guides"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 36.455,
@@ -1452,13 +1569,17 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": true,
    "deco": [
     "guides"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 40.252,
@@ -1498,7 +1619,7 @@
    ],
    "focus_target": [
     0.3333333333333333,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": false,
    "focus_src": [
@@ -1508,7 +1629,11 @@
    "deco": [
     "guides"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "pull_out",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 43.224,
@@ -1556,7 +1681,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T5"
+   "transition_in": "T6",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": true
   },
   {
    "start": 44.896,
@@ -1592,7 +1721,7 @@
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": true,
@@ -1603,7 +1732,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 46.173,
@@ -1640,7 +1773,7 @@
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -1651,7 +1784,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 47.427,
@@ -1682,14 +1819,18 @@
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": true,
    "deco": [
     "guides"
    ],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 48.576,
@@ -1727,7 +1868,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 49.342,
@@ -1774,7 +1919,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 50.178,
@@ -1832,7 +1981,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T2"
+   "transition_in": "T2",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 51.873,
@@ -1889,7 +2042,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 53.139,
@@ -1936,7 +2093,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 53.557,
@@ -1985,7 +2146,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 54.822,
@@ -2042,7 +2207,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 55.67,
@@ -2099,7 +2268,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 56.947,
@@ -2157,7 +2330,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 58.63,
@@ -2215,7 +2392,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 59.896,
@@ -2262,7 +2443,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 60.314,
@@ -2319,7 +2504,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 62.009,
@@ -2376,7 +2565,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 63.716,
@@ -2434,7 +2627,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 65.399,
@@ -2492,7 +2689,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 66.235,
@@ -2540,7 +2741,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 67.082,
@@ -2594,7 +2799,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 68.348,
@@ -2647,7 +2856,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 69.195,
@@ -2700,7 +2913,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 70.461,
@@ -2746,7 +2963,11 @@
    "deco": [
     "speed_lines"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 72.574,
@@ -2799,7 +3020,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 73.421,
@@ -2852,7 +3077,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 73.851,
@@ -2909,7 +3138,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T4"
+   "transition_in": "T6",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": true
   },
   {
    "start": 75.535,
@@ -2965,7 +3198,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T1"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 76.8,
@@ -3023,7 +3260,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T4"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 77.648,
@@ -3071,7 +3312,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T6",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": true
   },
   {
    "start": 79.331,
@@ -3118,7 +3363,11 @@
    "deco": [
     "checker"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 80.179,
@@ -3156,7 +3405,7 @@
    ],
    "focus_target": [
     0.6666666666666666,
-    0.6666666666666666
+    0.3333333333333333
    ],
    "flip_h": false,
    "focus_src": [
@@ -3166,7 +3415,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 81.026,
@@ -3205,7 +3458,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 82.709,
@@ -3252,7 +3509,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 83.569,
@@ -3300,7 +3561,11 @@
    "deco": [
     "checker"
    ],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 84.405,
@@ -3348,7 +3613,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 86.518,
@@ -3396,7 +3665,11 @@
    "deco": [
     "checker"
    ],
-   "transition_in": "T6"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 87.783,
@@ -3442,7 +3715,11 @@
    "deco": [
     "checker"
    ],
-   "transition_in": "T3"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 89.049,
@@ -3489,7 +3766,11 @@
    "deco": [
     "checker"
    ],
-   "transition_in": "T5"
+   "transition_in": "T5",
+   "cam": "pull_out",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 90.755,
@@ -3519,7 +3800,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "edit_mask"
+   "transition_in": "edit_mask",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 91.162,
@@ -3566,7 +3851,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T1"
+   "transition_in": "T6",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": true
   },
   {
    "start": 92.439,
@@ -3613,7 +3902,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 93.704,
@@ -3649,7 +3942,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 94.122,
@@ -3686,7 +3983,11 @@
    "deco": [
     "speed_lines"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 95.817,
@@ -3731,7 +4032,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 97.512,
@@ -3780,7 +4085,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 99.196,
@@ -3828,7 +4137,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T6"
+   "transition_in": "T1",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 100.461,
@@ -3867,7 +4180,11 @@
    ],
    "flip_h": true,
    "deco": [],
-   "transition_in": "T1"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 100.879,
@@ -3907,7 +4224,11 @@
    "deco": [
     "speed_lines"
    ],
-   "transition_in": "T2"
+   "transition_in": "T2",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 102.156,
@@ -3955,7 +4276,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T4"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 102.992,
@@ -4003,7 +4328,11 @@
    "deco": [
     "torn_edge"
    ],
-   "transition_in": "T6"
+   "transition_in": "T4",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 104.269,
@@ -4053,7 +4382,11 @@
    "deco": [
     "code"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 106.382,
@@ -4085,7 +4418,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "white_blowout"
+   "transition_in": "white_blowout",
+   "cam": "pull_out",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 108.066,
@@ -4131,7 +4468,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T4"
+   "transition_in": "T6",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": -1,
+   "impact": true
   },
   {
    "start": 109.761,
@@ -4177,7 +4518,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 111.026,
@@ -4224,7 +4569,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 111.874,
@@ -4262,7 +4611,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 113.139,
@@ -4308,7 +4661,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T1",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 114.405,
@@ -4355,7 +4712,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T1"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 115.252,
@@ -4401,7 +4762,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T4"
+   "transition_in": "T1",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 116.518,
@@ -4447,7 +4812,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T6"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 117.365,
@@ -4496,7 +4865,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T1"
+   "transition_in": "T6",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": true
   },
   {
    "start": 118.213,
@@ -4545,7 +4918,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T4"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 119.478,
@@ -4594,7 +4971,11 @@
    "deco": [
     "starburst"
    ],
-   "transition_in": "T6"
+   "transition_in": "T4",
+   "cam": "pan_y",
+   "cam_amount": 0.025,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 121.173,
@@ -4642,7 +5023,11 @@
    "deco": [
     "band"
    ],
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 122.857,
@@ -4691,7 +5076,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T4",
+   "cam": "pan_x",
+   "cam_amount": 0.025,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 124.54,
@@ -4741,7 +5130,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T6"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 125.388,
@@ -4790,7 +5183,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 126.235,
@@ -4831,7 +5228,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T4"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 127.93,
@@ -4880,7 +5281,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T6"
+   "transition_in": "T4",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 128.766,
@@ -4930,7 +5335,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T1"
+   "transition_in": "T1",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 129.614,
@@ -4981,7 +5390,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T2"
+   "transition_in": "T2",
+   "cam": "pull_out",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 131.32,
@@ -5019,7 +5432,11 @@
    ],
    "flip_h": false,
    "deco": [],
-   "transition_in": "T3"
+   "transition_in": "T6",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": true
   },
   {
    "start": 134.896,
@@ -5056,7 +5473,7 @@
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": true,
@@ -5065,7 +5482,11 @@
     438
    ],
    "deco": [],
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 138.275,
@@ -5102,7 +5523,7 @@
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -5111,7 +5532,11 @@
     415
    ],
    "deco": [],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.04,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 140.817,
@@ -5147,7 +5572,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "cut_to_black"
+   "transition_in": "cut_to_black",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   },
   {
    "start": 144.196,
@@ -5176,7 +5605,7 @@
     0.86
    ],
    "focus_target": [
-    0.3333333333333333,
+    0.6666666666666666,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -5184,7 +5613,11 @@
     "clock"
    ],
    "clock_at": "focus",
-   "transition_in": "T5"
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false
   },
   {
    "start": 145.055,
@@ -5210,12 +5643,16 @@
     0.86
    ],
    "focus_target": [
-    0.3333333333333333,
+    0.6666666666666666,
     0.3333333333333333
    ],
    "flip_h": true,
    "deco": [],
-   "transition_in": "T3"
+   "transition_in": "T5",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false
   }
  ]
 }
