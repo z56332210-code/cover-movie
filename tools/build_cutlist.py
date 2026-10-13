@@ -25,11 +25,11 @@ def bidx(t):
 
 # ---- crop presets: source, center (px), width (px) of a 16:9 window, rotation (deg), flip_v ----
 CROPS = {
-    "eyes":        ("upper", (985, 440), 440),
-    "eye_r":       ("upper", (915, 420), 240),
-    "eye_l":       ("upper", (1035, 455), 240),
+    "eyes":        ("upper", (985, 440), 540),
+    "eye_r":       ("upper", (925, 425), 360),
+    "eye_l":       ("upper", (1030, 455), 360),
     "face":        ("upper", (965, 450), 760),
-    "mouth":       ("upper", (965, 585), 340),
+    "mouth":       ("upper", (965, 585), 440),
     "point_hand":  ("upper", (1160, 560), 560),
     "lolly_hand":  ("upper", (330, 760), 560),
     "neck_frill":  ("upper", (935, 700), 420),
@@ -238,7 +238,8 @@ out = dict(
                glitches=[round(snap(t), 3) for t in GLITCH_AT],
                clock_scenes=[s["id"] for s in S if any(o.startswith("roman_clock_ring") for o in s["ov"])]),
     density=dens, scenes=[{k: s[k] for k in ("id", "start", "end", "type", "color")} for s in S], cuts=cuts)
-json.dump(out, open(ROOT / "plan/cutlist_draft.json", "w"), ensure_ascii=False, indent=1)
-print(json.dumps(out["stats"], ensure_ascii=False))
-for d in dens:
-    print(d)
+if __name__ == "__main__":
+    json.dump(out, open(ROOT / "plan/cutlist_draft.json", "w"), ensure_ascii=False, indent=1)
+    print(json.dumps(out["stats"], ensure_ascii=False))
+    for d in dens:
+        print(d)
