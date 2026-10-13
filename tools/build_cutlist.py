@@ -59,6 +59,40 @@ CROPS = {
     "shoes":       ("full", (560, 1780), 760),
 }
 
+# ---- focus point (eye / mask / hand / prop) of every crop preset, source px ----
+FOCUS = {
+    "eyes": (980, 438), "eye_r": (935, 415), "eye_l": (1030, 460), "face": (935, 415), "mouth": (960, 594),
+    "tongue": (960, 594), "point_hand": (1060, 500), "finger_eye": (1040, 490), "lolly_hand": (330, 700),
+    "lolly": (300, 690), "nails": (440, 760), "neck_frill": (935, 690), "collar_L": (730, 1050), "collar_R": (1150, 960),
+    "cross_close": (730, 1060), "buttons": (1000, 960), "halo": (1090, 110), "ribbon_R": (1540, 760),
+    "ribbon_L": (420, 1180), "cuff_L": (470, 960), "cuff_R": (1450, 660), "hood_top": (935, 415), "hair_L": (720, 720),
+    "wide_upper": (935, 415), "sleeve_R": (1500, 1100), "skirt": (1100, 1600), "bust": (935, 415),
+    "silhouette": (548, 300), "legs": (560, 1500), "shoes": (560, 1780),
+}
+
+# ---- 5 layout presets (normalised rects; lyric rects stay fixed for a whole section) ----
+TH = (1 / 3, 2 / 3)
+PRESETS = {
+    "P1": dict(name="right_column", orient="vertical", rects=[[0.68, 0.11, 0.95, 0.84]], focus=[(TH[0], TH[0]), (TH[0], TH[1])]),
+    "P2": dict(name="left_column", orient="vertical", rects=[[0.05, 0.11, 0.32, 0.84]], focus=[(TH[1], TH[0]), (TH[1], TH[1])]),
+    "P3": dict(name="center_giant", orient="horizontal", rects=[[0.04, 0.56, 0.96, 0.86]], focus=[(TH[0], TH[0]), (TH[1], TH[0])]),
+    "P4": dict(name="mirror", orient="vertical", rects=[[0.74, 0.11, 0.96, 0.84], [0.04, 0.11, 0.26, 0.84]],
+               focus=[(TH[0], TH[0]), (TH[1], TH[0])]),
+    "P5": dict(name="illustration_only", orient=None, rects=[], focus=[(TH[0], TH[0]), (TH[1], TH[0]), (TH[1], TH[1]), (TH[0], TH[1])]),
+}
+SECTION = {1: "intro", 2: "verse_a", 3: "verse_a", 4: "verse_a", 5: "pre_chorus", 6: "chorus_a", 7: "chorus_a",
+           8: "verse_b", 9: "verse_b", 10: "audio_edit", 11: "chorus_b", 12: "chorus_b", 13: "chorus_b",
+           14: "last_chorus", 15: "last_chorus", 16: "ending", 17: "ending", 18: "ending"}
+SECTION_PRESET = {"intro": "P5", "verse_a": "P1", "pre_chorus": "P3", "chorus_a": "P4", "verse_b": "P2",
+                  "audio_edit": "P5", "chorus_b": "P2", "last_chorus": "P3", "ending": "P3"}
+CHORUS = {"chorus_a", "chorus_b", "last_chorus"}
+# one decoration kind per cut, each with a reason (clock behind the subject, starburst only in red, torn edge cuts the art)
+DECO = {1: ["clock"], 2: ["torn_edge", "code"], 3: ["band"], 4: ["guides"], 5: ["torn_edge"], 6: ["clock"], 7: ["torn_edge"],
+        8: ["band", "checker"], 9: ["checker"], 10: [], 11: ["torn_edge"], 12: ["code", "torn_edge"], 13: [], 14: ["band"],
+        15: ["clock"], 16: [], 17: ["clock"], 18: []}
+NOCHAR_DECO = {"ink_type": "speed_lines", "band_only": "band", "clock_type": "clock", "paper_type": "guides", "empty_room": None}
+T2_AT = [L[6], L[22], L[48], L[63]]          # slice glitch: 4 times, >= 15 s apart
+
 # ---- scenes (audio sec), aligned to lyric lines; mirrors scene_plan_nightcord_v3.json ids ----
 # pool entries: (crop, rotation_deg, flip_v)
 S = [
@@ -179,7 +213,7 @@ TRANS_ALT = ["cut_shake", "flip", "whip", "cut_shake", "black", "cut_shake"]
 GLITCH_AT = [L[6], L[22], L[28], JUMP, L[48], L[49], L[63]]  # 7 glitches incl. the mandatory edit mask
 glitch_beats = {snap(t) for t in GLITCH_AT}
 
-cuts, prev_tr, alt_i, run, recent = [], None, 0, 0, []
+cuts, prev_tr, alt_i, run, recent, tr_used = [], None, 0, 0, [], {}
 for sc in S:
     pts, s1 = scene_points(sc)
     for j, t0 in enumerate(pts):
@@ -205,7 +239,7 @@ for sc in S:
             c["crop_src"] = f"art/char_{src}.webp"
             c["crop_box"] = dict(cx=cx, cy=cy, w=w)
             if w is not None and sc["id"] in (2, 4, 5, 6, 12, 15, 16):
-                v = jr.choice(["single", "negative", "split", "strip"], p=[0.6, 0.12, 0.16, 0.12])
+                v = jr.choice(["single", "negative", "strip"], p=[0.72, 0.14, 0.14])
                 if sc["id"] in (4, 16) and v != "single":
                     v = "strip" if v == "strip" else "single"
                 c["variant"] = str(v)
@@ -243,25 +277,43 @@ for sc in S:
         c["red"] = bool(red and snap(red[0]) - 0.01 <= t0 < snap(red[1]) - 0.01)
         if c["red"]:
             c["overlays"] += sc["red_ov"]
-        # transition into this cut: light-leak by default, never the same twice in a row
+        # ---- section / layout preset / lyric rect / focus target / single decoration ----
+        sec = SECTION[sc["id"]]; pre = PRESETS[SECTION_PRESET[sec]]
+        k_in_sec = sum(1 for q in cuts if q["section"] == sec)
+        c.update(section=sec, layout=SECTION_PRESET[sec], lyric_orient=pre["orient"], lyric_rect=pre["rects"][0] if len(pre["rects"]) == 1 else pre["rects"],
+                 focus_target=list(pre["focus"][k_in_sec % len(pre["focus"])]), flip_h=bool(k_in_sec % 2))
+        if c.get("crop") == "silhouette":           # whole figure: head on an upper third, body stays in frame
+            c["focus_target"][1] = TH[0]
+        if c.get("crop"):
+            c["focus_src"] = list(FOCUS[c["crop"]])
+        if c.get("nochar"):
+            dk = NOCHAR_DECO[c["nochar"]]; c["deco"] = [dk] if dk else []
+        elif c["red"]:
+            c["deco"] = ["starburst"]
+        elif c.get("type") == "black_card":
+            c["deco"] = []
+        else:
+            opts = DECO[sc["id"]]; c["deco"] = [opts[j % len(opts)]] if opts else []
+        if "clock" in c["deco"]:
+            c["clock_at"] = "focus"
+        # ---- transition library T1..T6 (never twice in a row), specials for title / edit / white / black ----
+        allowed = ["T1", "T4", "T6"] if sec in CHORUS else ["T3", "T5", "T6"]
         if j == 0 and sc["id"] == 1:
             tr = "fade_in"
-        elif round(t0, 3) in {round(g, 3) for g in glitch_beats}:
-            tr = "glitch_mosaic_0.2s"
         elif sc["id"] == 10:
-            tr = "glitch_mosaic_0.2s"
-        elif sc["id"] in (13,):
+            tr = "edit_mask"
+        elif sc["id"] == 13 and j == 0:
             tr = "white_blowout"
         elif sc["id"] == 17 and j == 0:
             tr = "cut_to_black"
-        elif sc["id"] == 18:
-            tr = "hard_cut"
-        elif prev_tr != "lightleak_8f":
-            tr = "lightleak_8f"
+        elif any(abs(t0 - snap(x)) < 0.01 for x in T2_AT):
+            tr = "T2"
         else:
-            tr = TRANS_ALT[alt_i % len(TRANS_ALT)]; alt_i += 1
-        if tr == prev_tr:
-            tr = "cut_shake" if tr != "cut_shake" else "lightleak_8f"
+            cand = [x for x in allowed if x != prev_tr]
+            tr = min(cand, key=lambda x: (tr_used.get(x, 0), allowed.index(x)))
+        tr_used[tr] = tr_used.get(tr, 0) + 1
+        if tr == "T3" and cuts and cuts[-1].get("focus_target"):
+            c["focus_target"] = list(cuts[-1]["focus_target"])     # flash match: same screen position
         c["transition_in"] = tr
         prev_tr = tr
         cuts.append(c)
@@ -287,8 +339,9 @@ out = dict(
                jump_note="원곡(=레퍼런스 B 음원) 91.63초 → 147.50초로 점프. scene_plan의 88.0~89.3초 추정을 90.80초로 보정."),
     stats=dict(total_cuts=len(cuts), nochar_cuts=sum(1 for c in cuts if not c.get("crop")), mean_beat_err_ms=round(sum(err) / len(err), 1),
                red_windows=[[round(a, 2), round(b, 2), round(b - a, 2)] for a, b in reds],
-               glitches=[round(snap(t), 3) for t in GLITCH_AT],
-               clock_scenes=[s["id"] for s in S if any(o.startswith("roman_clock_ring") for o in s["ov"])]),
+               glitches=[round(snap(t), 3) for t in T2_AT] + [round(snap(JUMP), 3)],
+               clock_scenes=sorted({c["scene"] for c in cuts if "clock" in c.get("deco", [])}),
+               presets={k: v["name"] for k, v in PRESETS.items()}, section_preset=SECTION_PRESET),
     density=dens, scenes=[{k: s[k] for k in ("id", "start", "end", "type", "color")} for s in S], cuts=cuts)
 if __name__ == "__main__":
     json.dump(out, open(ROOT / "plan/cutlist_draft.json", "w"), ensure_ascii=False, indent=1)

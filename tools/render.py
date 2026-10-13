@@ -7,7 +7,7 @@
 --preview (default): 960x540, heavy post (grain / bloom / blur) off.
 --final:             1920x1080, all post on.  Direction logic is identical in both.
 """
-import argparse, json, math, os, re, subprocess, sys
+import argparse, bisect, json, math, os, re, subprocess, sys
 from functools import lru_cache
 from pathlib import Path
 
@@ -125,106 +125,197 @@ def scene_bg(c):
     return PAPER
 
 
+# ------------------------------------------------------------------ easing (no linear motion anywhere)
+def clamp(u, a=0.0, b=1.0):
+    return a if u < a else b if u > b else u
+
+
+def bezier(x1, y1, x2, y2):
+    def f(u):
+        if u <= 0:
+            return 0.0
+        if u >= 1:
+            return 1.0
+        s = u
+        for _ in range(10):
+            x = 3 * (1 - s) ** 2 * s * x1 + 3 * (1 - s) * s * s * x2 + s ** 3 - u
+            dx = 3 * (1 - s) ** 2 * x1 + 6 * (1 - s) * s * (x2 - x1) + 3 * s * s * (1 - x2)
+            if abs(dx) < 1e-6:
+                break
+            s = clamp(s - x / dx)
+        return 3 * (1 - s) ** 2 * s * y1 + 3 * (1 - s) * s * s * y2 + s ** 3
+    return f
+
+
+EASE_OUT = bezier(0.16, 1, 0.3, 1)      # entrances, 8~12 frames
+EASE_IN = bezier(0.7, 0, 0.84, 0)       # exits, 4~6 frames
+
+
+def ease_inout(u):
+    return 0.5 - 0.5 * math.cos(math.pi * clamp(u))
+
+
+def arrive(u, over=0.045):
+    """ease-out arrival that overshoots by ~over and settles (incoming cuts)."""
+    u = clamp(u)
+    return EASE_OUT(u) + over * 1.9 * math.sin(math.pi * u) ** 2 * u
+
+
+def pop(u):
+    """popup scale 0 -> 1.08 -> 1.00 over u in [0, 1] (10 frames)."""
+    u = clamp(u)
+    return 1.08 * EASE_OUT(u / 0.6) if u < 0.6 else 1.08 - 0.08 * ease_inout((u - 0.6) / 0.4)
+
+
+BEATS = json.load(open(ROOT / "plan/audio_analysis.json"))["beats"]
+BEATS_IN_CUT = [[b for b in BEATS if c["start"] + 3 / FPS < b < c["start"] + c["dur"] - 5 / FPS] for c in CUTS]
+
+
+def cam_motion(ci, c, t):
+    """Image-layer camera: slow eased drift, snap on beats (4 f), arrival with overshoot (10 f), pre-cut acceleration (4 f)."""
+    W = Q.W
+    f = (t - c["start"]) * FPS
+    fe = (c["start"] + c["dur"] - t) * FPS
+    r = np.random.default_rng(ci * 7919 + 5)
+    ang = r.uniform(0, 2 * math.pi); dvx, dvy = math.cos(ang), math.sin(ang)
+    zoom = px = py = 0.0
+    e = ease_inout((t - c["start"]) / max(c["dur"], 0.2))           # hold: ~1% per cut
+    zoom += 0.008 * e; px += 0.006 * W * e * dvx; py += 0.006 * W * e * dvy
+    for k, b in enumerate(BEATS_IN_CUT[ci]):                          # then snap on the beat (punch in / out, never piling up)
+        if b > t:
+            break
+        p = EASE_OUT(clamp((t - b) * FPS / 4))
+        sgn = 1 if k % 2 == 0 else -1
+        zoom += 0.05 * sgn * p
+        px += sgn * 0.030 * W * p * (dvx if abs(dvx) > 0.3 else 1)      # alternate every beat: the eye stays on its third
+        py += sgn * 0.020 * W * p * (dvy if abs(dvy) > 0.3 else 1)
+    tr = c.get("transition_in")
+    if ci > 0 and f < 14:                                             # arrival: ease-out (sine) over 14 f, ~4.5% overshoot
+        u = clamp(f / 14)
+        g = math.sin(math.pi / 2 * u) + 0.045 * 1.9 * math.sin(math.pi * u) ** 2 * u
+        a2 = r.uniform(0, 2 * math.pi)
+        dist = 0.0 if tr == "T3" else 0.09 * W
+        px += dist * math.cos(a2) * (1 - g); py += dist * math.sin(a2) * 0.6 * (1 - g)
+        zoom += 0.07 * (1 - g)
+    if tr == "T6" and 0 <= f < 6:                                     # beat cut + impact zoom 1.00 -> 1.06 -> 1.00
+        zoom += 0.06 * math.sin(math.pi * clamp(f / 6))
+    if fe < 6 and ci + 1 < len(CUTS):                                 # outgoing acceleration (6 f, ease-in)
+        v = (clamp(1 - fe / 6)) ** 2.2
+        zoom += 0.12 * v; px += 0.08 * W * v * dvx; py += 0.08 * W * v * dvy
+    if 0 <= f < 16:                                                   # impact shake, settles over ~0.5 s
+        amp = 20 * Q.s * (1 - f / 16) ** 1.5
+        px += amp * math.sin(f * 2.1 + ci); py += amp * math.cos(f * 2.7 + ci)
+    px += snoise(t, ci * 7919 + 1) * 0.001 * W; py += snoise(t, ci * 7919 + 2) * 0.001 * W
+    rot = 0.15 * snoise(t, ci * 7919 + 3, (0.6, 1.1))
+    return 1 + zoom, px, py, rot
+
+
+def fast_motion(ci, c, t):
+    f = (t - c["start"]) * FPS; fe = (c["start"] + c["dur"] - t) * FPS
+    return f < 14 or fe < 6 or any(0 <= (t - b) * FPS < 4 for b in BEATS_IN_CUT[ci])
+
+
+def focus_target_px(c):
+    ft = c.get("focus_target") or (0.5, 0.5)
+    return ft[0] * Q.W, ft[1] * Q.H
+
+
 def cut_transform(ci, c, t):
-    """Affine (output px -> source px) for the image layer of cut ci at time t; also returns forward map."""
+    """Affine (output px -> source px). The crop's focus point (eye / mask / hand) is pinned to its rule-of-thirds target."""
     W, H = Q.W, Q.H
-    u = t - c["start"]
-    seed = ci * 7919 + 13
-    rng = np.random.default_rng(seed)
-    box = c.get("_box") or c.get("crop_box")
     src = CROPS[c["crop"]][0]
-    cx, cy, w = (box["cx"], box["cy"], box["w"]) if box else CROPS[c["crop"]][1] + (CROPS[c["crop"]][2],)
+    w = (c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2]
     im = art(src)
-    if w is None:  # silhouette: whole figure fits ~86% of height
-        k = im.size[1] / ART_UP / (H * 0.86)
-    else:
-        k = w / W
-    k /= 1.04                                                   # 4% oversize, edges never empty
-    relaxed = c["scene"] in (4, 16)
-    push = (0.045 if relaxed else 0.03) * min(1, u / max(c["dur"], 0.01))
-    breathe = 0.0075 * (1 + math.sin(2 * math.pi * 0.35 * t + seed))      # scale 1.000~1.015
-    k /= (1 + push + breathe)
-    drift = rng.uniform(-1, 1, 2) * (0.035 if relaxed else 0.05) * W * u / max(c["dur"], 0.5)
-    # handheld: std ~0.1% of width, 0.5~1.5 Hz; rotation +-0.15 deg
-    hx = snoise(t, seed + 1) * 0.001 * W * 1.0
-    hy = snoise(t, seed + 2) * 0.001 * W * 1.0
-    rot = c.get("rot", 0) + 0.15 * snoise(t, seed + 3, (0.6, 1.1))
-    # impact shake right after a cut: 10~25 px (1920 basis), decays in ~9 frames
-    amp = (25 if c.get("transition_in") == "cut_shake" else 12) * Q.s
-    f = u * FPS
-    if f < 10:
-        decay = math.exp(-f / 3.0) * (1 - f / 10)
-        hx += amp * decay * math.sin(f * 2.3 + seed)
-        hy += amp * decay * math.cos(f * 2.9 + seed)
-    th = math.radians(rot)
+    k = (im.size[1] / ART_UP / (H * 0.86)) if w is None else w / W
+    k /= 1.04
+    zm, px, py, rot = cam_motion(ci, c, t)
+    k /= zm
+    th = math.radians(c.get("rot", 0) + rot)
+    fx = -1 if c.get("flip_h") else 1
     fy = -1 if c.get("flip_v") else 1
-    # out(x,y) -> centered -> rotate -> scale -> flip -> source
     ca, sa = math.cos(th), math.sin(th)
-    a, b = k * ca, k * sa
-    d, e = -k * sa * fy, k * ca * fy
-    ox, oy = W / 2 + hx + drift[0], H / 2 + hy + drift[1]
-    c0 = cx - a * ox - b * oy
-    f0 = cy - d * ox - e * oy
-    inv = tuple(v * ART_UP for v in (a, b, c0, d, e, f0))
-    M = np.array([[a, b], [d, e]]); Mi = np.linalg.inv(M)
-    def fwd(px, py):
-        v = Mi @ np.array([px - c0, py - f0]); return float(v[0]), float(v[1])
+    A = np.diag([1.0, fy]) @ np.array([[ca, sa], [-sa, ca]]) @ np.diag([k * fx, k])
+    fs = c.get("focus_src") or list(CROPS[c["crop"]][1])
+    tx, ty = focus_target_px(c)
+    tx += px; ty += py
+    c0 = fs[0] - A[0, 0] * tx - A[0, 1] * ty
+    f0 = fs[1] - A[1, 0] * tx - A[1, 1] * ty
+    inv = tuple(v * ART_UP for v in (A[0, 0], A[0, 1], c0, A[1, 0], A[1, 1], f0))
+    Ai = np.linalg.inv(A)
+    def fwd(sx, sy):
+        v = Ai @ np.array([sx - c0, sy - f0]); return float(v[0]), float(v[1])
     return src, inv, fwd
 
 
-def image_layer(ci, c, t):
-    """RGBA image layer (or None) for the cut, incl. layout variants; returns (layer, eye_boxes_on_screen)."""
-    if not c.get("crop"):
-        return None, []
-    acc, eyes = _image_single(ci, c, t)
-    v = c.get("variant")
+def torn_mask(ci, c):
+    """Torn-paper edge that cuts the illustration (the art is torn away there, the background shows)."""
+    r = np.random.default_rng(ci * 31)
     W, H = Q.W, Q.H
-    if v == "split" and c.get("split"):
-        sp = c["split"]
-        c2 = dict(c, crop=sp["crop"], rot=sp["rot"], flip_v=sp["flip_v"], variant="single",
-                  _box=dict(cx=sp["cx"], cy=sp["cy"], w=sp["w"]))
-        b, eyes2 = _image_single(ci + 500, c2, t)
-        ang = math.radians(sp["angle"]); u = (t - c["start"]) / max(c["dur"], 0.3)
-        cx = W * (0.5 + 0.06 * (u - 0.5)); cy = H / 2
-        dx, dy = math.cos(ang) * W * 2, math.sin(ang) * W * 2
-        m = Image.new("L", (W, H), 0)
-        ImageDraw.Draw(m).polygon([(cx - dx, cy - dy), (cx + dx, cy + dy), (cx + dx + dy, cy + dy - dx), (cx - dx + dy, cy - dy - dx)], fill=255)
-        acc = Image.composite(b, acc, m)
-        ImageDraw.Draw(acc).line((cx - dx, cy - dy, cx + dx, cy + dy), fill=PAPER_L + (255,), width=max(1, S(3)))
-        eyes = eyes + eyes2
-    elif v == "strip":  # image only inside a slanted band, the rest stays background
-        m = Image.new("L", (W, H), 0); r = np.random.default_rng(ci)
-        y0 = H * r.uniform(0.22, 0.4); hgt = H * r.uniform(0.32, 0.45); sl = H * r.uniform(-0.12, 0.12)
-        ImageDraw.Draw(m).polygon([(0, y0), (W, y0 + sl), (W, y0 + sl + hgt), (0, y0 + hgt)], fill=255)
-        a = ImageChops.multiply(acc.getchannel("A"), m); acc.putalpha(a)
-        d = ImageDraw.Draw(acc)
-        for yy in (y0 - S(10), y0 + hgt + S(10)):
-            d.line((0, yy, W, yy + sl), fill=GRAY_M + (220,), width=max(1, S(2)))
-    return acc, eyes
+    tx, ty = focus_target_px(c)
+    side = 1 if tx < W / 2 else 0                       # tear on the side away from the subject's eye
+    if r.random() < 0.5:
+        side = 3 if ty < H / 2 else 2
+    cover = r.uniform(0.18, 0.30); n = 60
+    tear = [r.uniform(-1, 1) * S(10) + math.sin(k * 0.7) * S(6) for k in range(n + 1)]
+    if side in (0, 1):
+        x_top = W * (cover + 0.10); x_bot = W * (cover - 0.10)
+        edge = [(x_top + (x_bot - x_top) * k / n + tear[k], H * k / n) for k in range(n + 1)]
+        poly = [(0, 0)] + edge + [(0, H)]
+        if side == 1:
+            edge = [(W - x, y) for x, y in edge]; poly = [(W - x, y) for x, y in poly]
+    else:
+        y_l = H * (cover + 0.08); y_r = H * (cover - 0.08)
+        edge = [(W * k / n, y_l + (y_r - y_l) * k / n + tear[k]) for k in range(n + 1)]
+        poly = [(0, 0)] + edge + [(W, 0)]
+        if side == 3:
+            edge = [(x, H - y) for x, y in edge]; poly = [(x, H - y) for x, y in poly]
+    m = Image.new("L", (W, H), 255); ImageDraw.Draw(m).polygon(poly, fill=0)
+    return m, edge
 
 
-def _image_single(ci, c, t):
+def _image_once(ci, c, t):
     src, inv, fwd = cut_transform(ci, c, t)
     neg = (c["scene"] in (8, 9) and c["crop"] == "silhouette") or c.get("variant") == "negative"
-    im = art(src, negative=neg)
-    samples = [0.0]
-    if Q.post:  # 180-degree shutter motion blur
-        samples = [-1 / (4 * FPS), 0.0, 1 / (4 * FPS)]
-    acc = None
-    for dt in samples:
-        _, inv2, _ = cut_transform(ci, c, t + dt) if dt else (src, inv, fwd)
-        L = im.transform((Q.W, Q.H), Image.AFFINE, inv2, resample=Image.BICUBIC, fillcolor=(0, 0, 0, 0))
-        acc = L if acc is None else Image.blend(acc, L, 1 / (samples.index(dt) + 1))
+    return art(src, negative=neg).transform((Q.W, Q.H), Image.AFFINE, inv, resample=Image.BICUBIC, fillcolor=(0, 0, 0, 0)), fwd, src
+
+
+def image_layer(ci, c, t):
+    """RGBA illustration layer (exactly one crop) + its focus point on screen + eye boxes."""
+    if not c.get("crop"):
+        return None, focus_target_px(c), []
+    acc, fwd, src = _image_once(ci, c, t)
+    if Q.post:                                           # 180-degree shutter motion blur (final only)
+        for k, dt in enumerate((-1 / (4 * FPS), 1 / (4 * FPS))):
+            acc = Image.blend(acc, _image_once(ci, c, t + dt)[0], 1 / (k + 2))
+    if fast_motion(ci, c, t):                            # 2-frame after-image trail on fast moves
+        trail = Image.new("RGBA", acc.size, (0, 0, 0, 0))
+        for dt, a in ((2 / FPS, 0.18), (1 / FPS, 0.35)):
+            L, _, _ = _image_once(ci, c, t - dt)
+            L.putalpha(L.getchannel("A").point(lambda v, a=a: int(v * a)))
+            trail.alpha_composite(L)
+        trail.alpha_composite(acc); acc = trail
+    W, H = Q.W, Q.H
+    if c.get("variant") == "strip":
+        m = Image.new("L", (W, H), 0); r = np.random.default_rng(ci)
+        fy_ = focus_target_px(c)[1]
+        hgt = H * r.uniform(0.36, 0.46); y0 = fy_ - hgt / 2; sl = H * r.uniform(-0.08, 0.08)
+        ImageDraw.Draw(m).polygon([(0, y0), (W, y0 + sl), (W, y0 + sl + hgt), (0, y0 + hgt)], fill=255)
+        acc.putalpha(ImageChops.multiply(acc.getchannel("A"), m))
+    if "torn_edge" in (c.get("deco") or []):
+        m, _ = torn_mask(ci, c)
+        acc.putalpha(ImageChops.multiply(acc.getchannel("A"), m))
+    fsrc = c.get("focus_src") or list(CROPS[c["crop"]][1])
+    focus = fwd(*fsrc)
     eyes = []
     if src == "upper":
+        bw = (c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000
         for ex, ey in EYES_SRC:
-            px, py = fwd(ex, ey)
-            bw = (c.get("_box") or c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000
-            r = 70 / bw * Q.W
-            eyes.append((px - r, py - r * 0.7, px + r, py + r * 0.7))
-    if c["scene"] == 16:  # grayscale photo-ish: lower contrast, slight blur
+            px, py = fwd(ex, ey); r_ = 70 / bw * W
+            eyes.append((px - r_, py - r_ * 0.7, px + r_, py + r_ * 0.7))
+    if c["scene"] == 16:
         acc = Image.blend(acc, acc.filter(ImageFilter.GaussianBlur(S(2))), 0.5)
-    return acc, eyes
+    return acc, focus, eyes
+
 
 
 # ------------------------------------------------------------------ lyric chunking (segmentation only, no new words)
@@ -243,10 +334,15 @@ def chunks(i):
             out.append(p)
     res = []
     for p in out:
-        while len(p) > 10:
-            cand = [k + 1 for k, ch in enumerate(p[:-2]) if ch in "でにはをのてがとも" and 2 <= k + 1 <= len(p) - 2]
-            cut = min(cand, key=lambda k: abs(k - len(p) / 2)) if cand else len(p) // 2
-            res.append(p[:cut]); p = p[cut:]
+        while len(p) > 9:
+            cand = [k + 1 for k, ch in enumerate(p[:-2]) if ch in "でにはをのてがとも" and 2 <= k + 1 <= len(p) - 2
+                    and p[k + 1] not in "っゃゅょぁぃぅぇぉー"]
+            if not cand:
+                cand = [k for k in range(2, len(p) - 1) if p[k - 1] == " " or not (p[k - 1].isascii() and p[k].isascii())]
+            if not cand:
+                break
+            cut = min(cand, key=lambda k: abs(k - len(p) / 2))
+            res.append(p[:cut].rstrip()); p = p[cut:].lstrip()
         res.append(p)
     return tuple(res)
 
@@ -280,14 +376,55 @@ def chunk_starts(i):
     return tuple(out)
 
 
+LEAD_FRAMES = 4          # every line appears 4 frames before it is sung
+TAIL_SEC = 0.2           # ... and stays 0.2 s after the singing ends (never overlapping the next line)
+
+
+def _line_end(i):
+    nxt = LINE_T.get(i + 1, LT["end_sec"] + 0.6)
+    src = next((s for k, _, s in LT["lines"] if k == i), "")
+    m = _AC.get(i)
+    e = (max(tt for _, tt in m) + 0.28) if (m and src.startswith("whisper")) else nxt - 0.05
+    return min(max(e, LINE_T[i] + 0.3), nxt)
+
+
+LINE_END = {i: _line_end(i) for i in LINE_T}
+
+
+@lru_cache(None)
+def line_window(i):
+    if i not in LINE_T:
+        return (1e9, 1e9)
+    w0 = LINE_T[i] - LEAD_FRAMES / FPS
+    w1 = LINE_END[i] + TAIL_SEC
+    w1 = min(w1, LINE_T[i + 1] - LEAD_FRAMES / FPS) if i + 1 in LINE_T else min(w1, LT["end_sec"] + 0.4)
+    return w0, w1
+
+
+def tail_end(i):
+    return max(line_window(i)[1], LINE_END[i] + TAIL_SEC)
+
+
 def active_line(t):
-    cur = None
-    for i, lt in LINE_T.items():
-        if lt <= t:
-            cur = i
-    if cur is None or t >= LT["end_sec"] + 1.5:
-        return None
-    return cur
+    for i in LINE_T:
+        w0, w1 = line_window(i)
+        if w0 <= t < w1:
+            return i
+    return None
+
+
+@lru_cache(None)
+def chunk_appear(i):
+    """Appear time of every chunk: 4 frames before it is sung, staggered >= 3 frames in reading order."""
+    w0, _ = line_window(i)
+    out = []
+    for j, st in enumerate(chunk_starts(i)):
+        a = max(st - LEAD_FRAMES / FPS, w0)
+        if out:
+            a = max(a, out[-1] + 3 / FPS)
+        out.append(a)
+    return tuple(out)
+
 
 
 # ------------------------------------------------------------------ text primitives
@@ -357,67 +494,321 @@ def overlaps(box, boxes):
 
 
 # ------------------------------------------------------------------ text levels
-def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=2):
-    """Small vertical lyric boxes; chunks of the current line appear one by one, older lines stay (2~3 deep)."""
+# ------------------------------------------------------------------ lyric layout (presets P1..P5, one line at a time)
+LYRIC_MODE = os.environ.get("LYRIC_MODE", "vertical")   # "horizontal": every lyric becomes a left-to-right box
+BOX_PX_MIN_1080 = 56
+CAPTION_PX_1080 = 36
+CAPTION_BAND_ALPHA = 0.6
+CAPTION_BAND_H_1080 = 70
+EXCL_PX_1080 = 60
+RED_TEXT = {33: "神っぽいな", 34: "憧れちゃう！", 43: "神っぽいな", 55: "憧れちゃうわ！", 56: "「風」", 57: "「風」"}
+BOX_PX = {"verse_a": 60, "pre_chorus": 60, "chorus_a": 70, "verse_b": 62, "audio_edit": 66, "chorus_b": 66,
+          "last_chorus": 70, "ending": 60, "intro": 60}
+DEBUG = {}
+
+
+def rel_lum(rgb):
+    def ch(v):
+        v = v / 255
+        return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * ch(rgb[0]) + 0.7152 * ch(rgb[1]) + 0.0722 * ch(rgb[2])
+
+
+def contrast(l1, l2):
+    a, b = max(l1, l2), min(l1, l2)
+    return (a + 0.05) / (b + 0.05)
+
+
+@lru_cache(4096)
+def hbox(text, size, fg=PAPER_L, bg=INK, pad=0.30, fontpath=F_L):
+    """Black box with white left-to-right text (LYRIC_MODE=horizontal)."""
+    f = font(fontpath, size)
+    bb = f.getbbox(text)
+    p = int(size * pad)
+    im = Image.new("RGBA", (bb[2] - bb[0] + 2 * p, bb[3] - bb[1] + 2 * p), bg + (255,))
+    ImageDraw.Draw(im).text((p - bb[0], p - bb[1]), text, font=f, fill=fg + (255,))
+    return im
+
+
+def line_cut(i):
+    ci, c = cut_at(LINE_T[i] + 1e-3)
+    if c["scene"] == 10:                      # the edit mask is 0.4 s of flash; the line belongs to the next cut
+        ci += 1; c = CUTS[ci]
+    return ci, c
+
+
+def rects_px(c):
+    r = c.get("lyric_rect")
+    if not r:
+        return []
+    rs = r if isinstance(r[0], list) else [r]
+    return [(a * Q.W, b * Q.H, cc * Q.W, d * Q.H) for a, b, cc, d in rs]
+
+
+@lru_cache(None)
+def line_ctx(i):
+    ci, c = line_cut(i)
+    orient = c.get("lyric_orient")
+    red = bool(c.get("red")) and i in RED_TEXT
+    text = RED_TEXT[i] if red else line_text(i).replace('"', "")
+    if orient == "vertical":
+        orient = "hbox" if LYRIC_MODE == "horizontal" else "vbox"
+    elif orient == "horizontal":
+        orient = "giant"
+    return dict(ci=ci, section=c.get("section"), preset=c.get("layout"), orient=orient, red=red, text=text)
+
+
+def is_giant_line(i):
+    return line_ctx(i)["orient"] == "giant"
+
+
+@lru_cache(None)
+def giant_rows(i):
+    ctx = line_ctx(i); text = ctx["text"]
+    if len(text) <= 8:
+        return (text,)
+    ch = list(chunks(i)) if not ctx["red"] else [text]
+    if len(ch) < 2:                               # split on a kana boundary, never inside a latin word
+        cands = [k for k in range(2, len(text) - 1) if text[k - 1] == " " or not (text[k - 1].isascii() and text[k].isascii())]
+        if not cands:
+            return (text,)
+        k = min(cands, key=lambda k: abs(k - len(text) / 2)); return (text[:k].rstrip(), text[k:].lstrip())
+    best = min(range(1, len(ch)), key=lambda k: abs(len("".join(ch[:k])) - len("".join(ch[k:]))))
+    return ("".join(ch[:best]), "".join(ch[best:]))
+
+
+@lru_cache(None)
+def giant_layout(i, W_, H_):
+    """Rows of a giant line inside the preset rect: whole words, first and last glyph always inside the frame."""
+    ctx = line_ctx(i); c = CUTS[ctx["ci"]]
+    x0, y0, x1, y1 = rects_px(c)[0]
+    rows = giant_rows(i)
+    fp = F_L if ctx["red"] else F_XL
+    size = min(int(H_ * 0.22), int((y1 - y0) / (len(rows) * 1.12)))
+    widest = max(font(fp, size).getlength(r) for r in rows)
+    if widest > (x1 - x0) * 0.96:
+        size = int(size * (x1 - x0) * 0.96 / widest)
+    f = font(fp, size)
+    asc = f.getbbox("国")[1]
+    lh = size * 1.12
+    top = (y0 + y1) / 2 - lh * len(rows) / 2
+    chars = []
+    for r, row in enumerate(rows):
+        wrow = f.getlength(row); x = (x0 + x1) / 2 - wrow / 2
+        for k, ch_ in enumerate(row):
+            chars.append((ch_, x + f.getlength(row[:k]), top + r * lh - asc * 0.2))
+    boxes = [((x0 + x1) / 2 - f.getlength(row) / 2, top + r * lh, (x0 + x1) / 2 + f.getlength(row) / 2, top + r * lh + size * 1.05)
+             for r, row in enumerate(rows)]
+    return dict(size=size, font=fp, chars=chars, boxes=boxes)
+
+
+@lru_cache(None)
+def giant_plan(i):
+    """(entrance frames, stagger frames, hold frames): hold >= 12 frames whenever the window allows."""
+    w0, w1 = line_window(i)
+    N = int(round((w1 - w0) * FPS))
+    n = max(1, len(line_ctx(i)["text"].replace(" ", "")))
+    for ent, stg in ((10, 2), (10, 1), (8, 1), (8, 0)):
+        hold = N - (ent + stg * (n - 1)) - 5
+        if hold >= 12:
+            return ent, stg, hold
+    return 8, 0, N - 8 - 5
+
+
+def giant_hold_frames(i):
+    return giant_plan(i)[2]
+
+
+def _enter_exit(t, appear, w1, ent=10):
+    e = EASE_OUT(clamp((t - appear) * FPS / ent))
+    x = clamp((w1 - t) * FPS / 5)
+    out = 1 - EASE_IN(1 - x) if x < 1 else 1.0
+    return e * out, -S(26) * (1 - e) + S(16) * (1 - out)
+
+
+def lyric_layout(t):
+    """Geometry of everything lyric on screen at t. One line is bright; the line before may linger at 25 %
+    until 0.2 s after its singing ends (then it is gone)."""
     li = active_line(t)
+    items, cap, dbg = _line_layout(t, li)
+    p = (li - 1) if li else None
+    if li is None:                                  # gap: the last line may still be in its tail
+        p = max((i for i in LINE_T if line_window(i)[1] <= t < tail_end(i)), default=None)
+    if p and p in LINE_T and line_window(p)[1] <= t < tail_end(p):
+        w1 = line_window(p)[1]
+        old, _, _ = _line_layout(w1 - 1e-3, p)
+        fade = clamp((tail_end(p) - t) * FPS / 5)
+        for it in old:
+            it["alpha"] *= 0.25 * fade; it["dim"] = True
+        items = old + items
+    return items, cap, dbg
+
+
+def _line_layout(t, li):
+    W, H = Q.W, Q.H
+    items, cap = [], None
+    dbg = dict(line=li, giant_boxes=[], order_ok=True, lines_bright=0)
     if li is None:
-        return
-    cols = []
-    for k, i in enumerate(range(li, max(0, li - max_lines), -1)):
-        if i < 1 or (k > 0 and t - LINE_T[i] > 9):
-            break
-        ch = chunks(i)
-        span = (LINE_T.get(i + 1, LT["end_sec"]) - LINE_T[i])
-        n_vis = len(ch) if k > 0 else max(1, sum(1 for st in chunk_starts(i) if st <= t + 0.03))
-        cols.append((k, ch[:n_vis]))
-    size = S(stack_size)
-    gap = int(size * 0.35)
-    x = Q.W - S(120) if side == "right" else S(120)
-    order = []
-    for k, ch in cols:
-        for j, piece in enumerate(ch):
-            order.append((k, j, piece))
-    # only the line being sung (finished lines are not kept), at most 3 boxes on screen at once
-    cols = [(0, cols[0][1][-3:])] if cols else []
-    mirror = False
-    # right-to-left columns (vertical writing): newest line at the outer edge
-    xs = x
-    y0 = S(90)
-    for k, ch in cols:
-        for j, piece in enumerate(ch):
+        return items, cap, dbg
+    w0, w1 = line_window(li)
+    ctx = line_ctx(li); c = CUTS[ctx["ci"]]
+    rects = rects_px(c)
+    ko = KO[li - 1].strip()
+    if ko:
+        a, dy = _enter_exit(t, w0, w1, 8)
+        cap = dict(text=ko, alpha=a, dy=dy)
+    if not rects or ctx["orient"] is None:
+        return items, cap, dbg
+    dbg["lines_bright"] = 1
+    if ctx["orient"] == "giant":
+        L = giant_layout(li, W, H)
+        ent, stg, _ = giant_plan(li)
+        for k, (ch_, x, y) in enumerate(L["chars"]):
+            a, dy = _enter_exit(t, w0 + k * stg / FPS, w1, ent)
+            items.append(dict(kind="giant", text=ch_, size=L["size"], font=L["font"], x=x, y=y, alpha=a, dy=dy, red=ctx["red"], still=True))
+        dbg["giant_boxes"] = list(L["boxes"])
+        return items, cap, dbg
+    size = max(S(BOX_PX_MIN_1080), S(BOX_PX.get(ctx["section"], 62)))
+    if ctx["red"]:                                   # red keyword, written in the section's own direction
+        x0, y0, x1, y1 = rects[0]
+        n = len(ctx["text"])
+        if ctx["orient"] == "vbox":
+            sz = int(min((x1 - x0) * 0.8, (y1 - y0) / (n * 1.04), S(150)))
+            im = vtext(ctx["text"], sz, RED + (255,), F_L)
+            x, y = x1 - im.size[0], y0
+        else:
+            sz = int(min((y1 - y0) * 0.5, (x1 - x0) / (n * 1.04), S(150)))
+            im = htext(ctx["text"], sz, RED + (255,), F_L)
+            x, y = x0, y0
+        a, dy = _enter_exit(t, w0, w1)
+        items.append(dict(kind="red", img=im, x=x, y=y, alpha=a, dy=dy, red=True))
+        return items, cap, dbg
+    vis = [(j, p) for j, (p, ap) in enumerate(zip(chunks(li), chunk_appear(li))) if ap <= t][-3:]   # max 3 boxes
+    xs = [r[2] for r in rects]; ys = [r[1] for r in rects]
+    last_x = None
+    for n_, (j, piece) in enumerate(vis):
+        ri = 0 if (len(rects) == 1 or n_ < 2) else 1          # P4: right rect takes the first two columns, then the left rect
+        if ctx["orient"] == "vbox":
             box = vbox(piece, size)
-            age_alpha = [1.0, 0.55, 0.35][min(k, 2)]
-            yy = y0 + (j % 2) * S(54) + k * S(36)
-            if side == "right":
-                xs -= box.size[0] + gap; px = xs + gap
-            else:
-                px = xs; xs += box.size[0] + gap
-            sh = box_shadow(box)
-            if mirror:  # mirror-symmetric twin on the other side
-                paste(L, sh, Q.W - px - box.size[0] + S(7), yy + S(9), age_alpha * 0.45)
-                paste(L, box, Q.W - px - box.size[0], yy, age_alpha * 0.9)
-            paste(L, sh, px + S(7), yy + S(9), age_alpha * 0.45)
-            paste(L, box, px, yy, age_alpha)
+            x = xs[ri] - box.size[0]; xs[ri] = x - int(size * 0.35)
+            y = rects[ri][1] + (n_ % 2) * S(40)
+            if last_x is not None and x >= last_x:          # reading order must run right -> left across the screen
+                dbg["order_ok"] = False
+            last_x = x
+        else:
+            box = hbox(piece, size)
+            x = rects[ri][0]; y = ys[ri]; ys[ri] = y + box.size[1] + int(size * 0.3)
+        a, dy = _enter_exit(t, chunk_appear(li)[j], w1)
+        items.append(dict(kind="box", img=box, x=x, y=y, alpha=a, dy=dy, red=False))
+    return items, cap, dbg
 
 
-def text_B(L, t, c, eyes, color, text=None, size_h=0.42, rows=None, slide=0.12):
-    """Giant thin serif, cropped off-frame, slides; placed to avoid the eyes."""
-    li = active_line(t)
-    if text is None:
-        if li is None:
-            return
-        text = line_text(li).replace('"', "")
-    pieces = rows or ([text] if len(text) <= 7 else [text[:len(text) // 2 + (len(text) % 2)], text[len(text) // 2 + (len(text) % 2):]])
-    size = int(Q.H * size_h / (1 if len(pieces) == 1 else 1.55))
-    u = (t - c["start"]) / max(c["dur"], 0.3)
-    for r, p in enumerate(pieces):
-        im = htext(p, size, color + (235,))
-        x = Q.W * 0.5 - im.size[0] / 2 + (0.5 - u) * Q.W * slide * (1 if r % 2 == 0 else -1)
-        ys = [Q.H * 0.5 - im.size[1] / 2 + (r - (len(pieces) - 1) / 2) * size * 1.05,
-              Q.H * 0.62 - im.size[1] / 2 + r * size, Q.H * 0.08 + r * size, Q.H * 0.70 + r * size * 0.9]
-        x, y = best_pos([(x, yy) for yy in ys], im.size[0], im.size[1], eyes)
-        paste(L, im, x, y)
+def item_bbox(it):
+    if it["kind"] == "giant":
+        f = font(it["font"], it["size"]); bb = f.getbbox(it["text"])
+        return (it["x"] + bb[0], it["y"] + bb[1], it["x"] + bb[2], it["y"] + bb[3])
+    return (it["x"], it["y"], it["x"] + it["img"].size[0], it["y"] + it["img"].size[1])
 
+
+def caption_rect(cap):
+    f = font(F_L, S(CAPTION_PX_1080), 1)
+    w = f.getlength(cap["text"]) + S(80); hb = S(CAPTION_BAND_H_1080)
+    yc = Q.H - S(78)
+    return (Q.W / 2 - w / 2, yc - hb / 2, Q.W / 2 + w / 2, yc + hb / 2)
+
+
+def exclusion_mask(items, cap):
+    """255 where decorations may draw; lyric boxes (+60 px @1080) and the caption band are kept clear."""
+    W, H = Q.W, Q.H
+    m = Image.new("L", (W, H), 255); d = ImageDraw.Draw(m)
+    e = S(EXCL_PX_1080)
+    boxes = [item_bbox(it) for it in items if it["alpha"] > 0.01]
+    if cap:
+        boxes.append(caption_rect(cap))
+    for x0, y0, x1, y1 in boxes:
+        d.rectangle((x0 - e, y0 - e - S(30), x1 + e, y1 + e + S(30)), fill=0)
+    return m, boxes
+
+
+def _plate_for(img_rgb, bbox, text_rgb, target=5.0):
+    """Measure luminance contrast of text against what is behind it; return (plate_rgb, alpha) needed to reach target."""
+    x0, y0, x1, y1 = [int(v) for v in bbox]
+    x0, y0 = max(0, x0), max(0, y0); x1, y1 = min(Q.W, x1), min(Q.H, y1)
+    if x1 <= x0 or y1 <= y0:
+        return None, 0.0, 21.0
+    reg = np.asarray(img_rgb.crop((x0, y0, x1, y1)).resize((max(1, (x1 - x0) // 8), max(1, (y1 - y0) // 8)))).reshape(-1, 3)
+    lt = rel_lum(text_rgb)
+    lums = np.array([rel_lum(p) for p in reg[:: max(1, len(reg) // 400)]])
+    worst = lums.max() if lt < 0.2 else lums.min()          # the background pixel least like the text
+    cr = contrast(lt, worst)
+    if cr >= target:
+        return None, 0.0, cr
+    plate = PAPER_L if lt < 0.2 else INK
+    lp = rel_lum(plate)
+    for a in np.arange(0.5, 1.0001, 0.05):
+        if contrast(lt, a * lp + (1 - a) * worst) >= target:
+            return plate, float(a), contrast(lt, a * lp + (1 - a) * worst)
+    return plate, 1.0, contrast(lt, lp)
+
+
+def draw_lyrics(out, items, cap, dbg, hx, hy):
+    """Draw lyrics + caption onto the RGB frame; giant type stays still once it has landed."""
+    L = Image.new("RGBA", out.size, (0, 0, 0, 0))
+    crs = []
+    giant = [it for it in items if it["kind"] == "giant" and not it.get("dim")]
+    for it in items:
+        if it["kind"] == "giant" and it.get("dim"):
+            paste(L, htext(it["text"], it["size"], GRAY_M + (255,), it["font"]), it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
+    if giant:
+        bb = [item_bbox(it) for it in giant]
+        ub = (min(b[0] for b in bb) - S(20), min(b[1] for b in bb) - S(16), max(b[2] for b in bb) + S(20), max(b[3] for b in bb) + S(16))
+        reg = np.asarray(out.crop(tuple(int(v) for v in (max(0, ub[0]), max(0, ub[1]), min(Q.W, ub[2]), min(Q.H, ub[3]))))).reshape(-1, 3)
+        dark = reg.mean() < 128
+        col = RED if giant[0]["red"] else (PAPER_L if dark else INK)
+        plate, pa, cr = _plate_for(out, ub, col)
+        amax = max(it["alpha"] for it in giant)
+        if plate:
+            pl = Image.new("RGBA", out.size, (0, 0, 0, 0))
+            ImageDraw.Draw(pl).rounded_rectangle(ub, radius=S(18), fill=plate + (int(255 * pa * amax),))
+            L.alpha_composite(pl.filter(ImageFilter.GaussianBlur(S(6))))
+        for it in giant:
+            g = htext(it["text"], it["size"], col + (255,), it["font"])
+            paste(L, g, it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
+        crs.append(cr)
+    for it in items:
+        if it["kind"] == "box":
+            paste(L, box_shadow(it["img"]), it["x"] + hx + S(7), it["y"] + hy + it["dy"] + S(9), it["alpha"] * 0.45)
+            paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
+            crs.append(contrast(rel_lum(PAPER_L), rel_lum(INK)))
+        elif it["kind"] == "red":
+            bb = item_bbox(it)
+            plate, pa, cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)
+            if plate:
+                pl = Image.new("RGBA", out.size, (0, 0, 0, 0))
+                ImageDraw.Draw(pl).rounded_rectangle((bb[0] - S(14) + hx, bb[1] - S(10) + hy + it["dy"], bb[2] + S(14) + hx, bb[3] + S(10) + hy + it["dy"]),
+                                                     radius=S(14), fill=plate + (int(255 * pa * it["alpha"]),))
+                L.alpha_composite(pl)
+            paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
+            crs.append(cr)
+    if cap and cap["alpha"] > 0.01:
+        x0, y0, x1, y1 = caption_rect(cap)
+        reg = np.asarray(out.crop((int(x0), int(y0), int(x1), int(y1))).resize((40, 4))).reshape(-1, 3)
+        bgw = max(rel_lum(p) for p in reg)
+        ba = CAPTION_BAND_ALPHA                     # 60 %, darkened only as much as the picture behind needs
+        while ba < 0.97 and contrast(rel_lum(PAPER_L), bgw * (1 - ba) + rel_lum(INK) * ba) < 4.8:
+            ba += 0.03
+        band = Image.new("RGBA", out.size, (0, 0, 0, 0))
+        ImageDraw.Draw(band).rectangle((x0, y0 + cap["dy"] * 0.3, x1, y1 + cap["dy"] * 0.3), fill=INK + (int(255 * ba * cap["alpha"]),))
+        L.alpha_composite(band)
+        f = font(F_L, S(CAPTION_PX_1080), 1)
+        bb = f.getbbox(cap["text"])
+        ImageDraw.Draw(L).text((Q.W / 2 - (bb[2] - bb[0]) / 2 - bb[0], (y0 + y1) / 2 - (bb[1] + bb[3]) / 2 + cap["dy"] * 0.3), cap["text"],
+                               font=f, fill=PAPER_L + (int(255 * cap["alpha"]),))
+        worst = bgw * (1 - ba) + rel_lum(INK) * ba
+        crs.append(contrast(rel_lum(PAPER_L), worst))
+    out = out.convert("RGBA"); out.alpha_composite(L)
+    dbg["contrast"] = [round(float(x), 2) for x in crs]
+    return out.convert("RGB")
 
 def text_D(L, t, c, color, rows=1, size_h=0.14, echo=True):
     """Repeat band: the onomatopoeia line repeated across the full width, scrolling."""
@@ -439,20 +830,6 @@ def text_D(L, t, c, color, rows=1, size_h=0.14, echo=True):
             x += im.size[0]
 
 
-def caption(img, t):
-    """Korean pronunciation + translation, small and thin, bottom centre, colour adapts to background."""
-    li = active_line(t)
-    if li is None:
-        return
-    b = KO[li - 1].strip()
-    region = img.crop((Q.W // 4, Q.H - S(120), Q.W * 3 // 4, Q.H - S(20))).convert("L")
-    dark = np.asarray(region).mean() < 128
-    col = PAPER_L if dark else INK
-    f2 = font(F_L, S(26), 1)
-    d = ImageDraw.Draw(img)
-    for txt, f, y, al in ((b, f2, Q.H - S(70), 235),):
-        w = d.textlength(txt, font=f)
-        d.text((Q.W / 2 - w / 2, y), txt, font=f, fill=col + (al,))
 
 
 # ------------------------------------------------------------------ overlays (pre-rendered per resolution)
@@ -519,7 +896,8 @@ def clock_ring(color):
     return L
 
 
-def draw_clock(L, t, cx, cy, color, alpha, scale=1.0):
+def draw_clock(L, t, cx, cy, color, alpha, scale=1.0, t_real=None):
+    """Numeral ring rotates slowly (12 fps); the hand ticks one numeral on every beat."""
     ring = clock_ring(color)
     if scale != 1.0:
         ring = ring.resize((int(ring.size[0] * scale), int(ring.size[1] * scale)), Image.BICUBIC)
@@ -528,13 +906,15 @@ def draw_clock(L, t, cx, cy, color, alpha, scale=1.0):
     d = ImageDraw.Draw(L)
     col = color + (int(255 * alpha),)
     R = Q.H * 0.40 * scale
-    step = math.floor(t / 1.6855)                    # minute hand jumps every bar, with a small overshoot
-    ph = (t / 1.6855) % 1
-    ang = step * 30 + (8 * math.exp(-ph * 12) * math.sin(ph * 30))
+    tr = t if t_real is None else t_real
+    bi = bisect.bisect_right(BEATS, tr)
+    last = BEATS[bi - 1] if bi else 0.0
+    ang = (bi - 1) * 30 + 30 * EASE_OUT(clamp((tr - last) * FPS / 3))
     for a, ln, wdt in ((ang, R * 0.78, max(1, S(2))), (ang / 12 + 140, R * 0.5, max(1, S(4)))):
         ar = math.radians(a)
         d.line((cx, cy, cx + ln * math.sin(ar), cy - ln * math.cos(ar)), fill=col, width=wdt)
     d.ellipse((cx - S(8), cy - S(8), cx + S(8), cy + S(8)), outline=col, width=max(1, S(2)))
+
 
 
 @lru_cache(None)
@@ -736,16 +1116,6 @@ def glitch(img, t, seed, strength=1.0):
 
 
 # ------------------------------------------------------------------ transitions (image layer only; text stays continuous)
-def transition_state(t):
-    """Returns (kind, phase in [-4..4] frames around the cut boundary, cut index of the incoming cut)."""
-    f = t * FPS
-    for i, c in enumerate(CUTS):
-        if i == 0:
-            continue
-        b = c["start"] * FPS
-        if -4 <= f - b < 5:
-            return c.get("transition_in"), f - b, i
-    return None, None, None
 
 
 def dir_blur(im, px):
@@ -775,124 +1145,6 @@ def text_color_for(bg):
     return INK if sum(bg) > 380 else PAPER_L
 
 
-def scene_text(L, img_layer_eyes, t, c, ci, bg):
-    sc = c["scene"]; typ = c.get("type")
-    tc = text_color_for(bg)
-    li = active_line(t)
-    red = c.get("red")
-    nc = c.get("nochar")
-    if nc == "ink_type":       # typography only: giant thin serif + small stacked boxes
-        text_B(L, t, c, [], PAPER_L, size_h=0.40, slide=0.22)
-        return
-    if nc == "band_only":
-        return                 # bands are drawn in band_text
-    if nc == "clock_type":
-        text_A(L, t, c, 60, side="right", mirror=True, max_lines=2)
-        return
-    if nc == "paper_type":
-        text_A(L, t, c, 64, side="right", max_lines=2)
-        return
-    if nc == "empty_room":
-        text_B(L, t, c, [], PAPER_L, size_h=0.32, slide=0.06)
-        return
-    if typ == "black_card":
-        if li:
-            im = htext(line_text(li), S(30), PAPER_L + (230,), F_L)
-            paste(L, im, Q.W / 2 - im.size[0] / 2, Q.H / 2 - im.size[1] / 2)
-        return
-    if sc == 1:
-        if t > 5.5 and li == 1:
-            im = htext("“Oh my god”", S(28), PAPER_L + (220,), F_L)
-            paste(L, im, Q.W / 2 - im.size[0] / 2, Q.H / 2 - im.size[1] / 2)
-        else:
-            a = min(1, t / 3)
-            im = htext("神っぽいな", S(54), PAPER_L + (int(220 * a),), F_XL)
-            paste(L, im, Q.W / 2 - im.size[0] / 2, Q.H / 2 - S(60))
-            im2 = htext("cover  /  暁山 瑞希", S(18), GRAY_M + (int(220 * a),), F_L)
-            paste(L, im2, Q.W / 2 - im2.size[0] / 2, Q.H / 2 + S(30))
-        return
-    if sc in (2, 12):
-        text_A(L, t, c, 58 if sc == 2 else 62, side="right" if (ci % 2) else "left")
-    elif sc == 3:
-        if li == 13:
-            text_B(L, t, c, img_layer_eyes, tc, text="神っぽいな", size_h=0.5)
-    elif sc == 4:
-        text_A(L, t, c, 44, side="right")
-    elif sc == 5:
-        text_A(L, t, c, 44, side="right", mirror=True, max_lines=2)
-        text_B(L, t, c, img_layer_eyes, tc, size_h=0.36)
-    elif sc in (6, 15):
-        if li in (63,):
-            text_B(L, t, c, img_layer_eyes, tc, text="神っぽいな", size_h=0.55, slide=0.25)
-        text_A(L, t, c, 70 if sc == 6 else 76, side="right", mirror=(sc == 15))
-    elif sc == 7:
-        if red:
-            word = "憧れちゃう！" if li == 34 else "神っぽいな"
-            text_C(L, t, c, word, img_layer_eyes, horizontal=(li == 34))
-        else:
-            text_A(L, t, c, 86, side="right", max_lines=2)
-    elif sc == 9:
-        if li == 42:
-            text_B(L, t, c, [], PAPER_L, text="神っぽいな", size_h=0.5, slide=0.4)
-    elif sc == 10:
-        pass
-    elif sc == 11:
-        if red:
-            text_C(L, t, c, "神っぽいな", img_layer_eyes, horizontal=False)
-        else:
-            text_A(L, t, c, 64, side="left")
-    elif sc == 13:
-        text_A(L, t, c, 44, side="right", max_lines=1)
-    elif sc == 14:
-        if red:
-            text_C(L, t, c, "憧" if li == 55 else "風", [], horizontal=True, center=True)
-    elif sc == 16:
-        text_B(L, t, c, img_layer_eyes, PAPER_L, size_h=0.30, slide=0.08)
-    elif sc == 17:
-        if li == 68:
-            im = htext("人生", S(120), PAPER_L + (235,), F_XL)
-        else:
-            im = htext(line_text(li) if li else "", S(30), PAPER_L + (220,), F_L)
-        paste(L, im, Q.W / 2 - im.size[0] / 2, Q.H / 2 - im.size[1] / 2)
-
-
-def band_text(L, t, c, bg):
-    sc = c["scene"]; li = active_line(t); tc = text_color_for(bg)
-    if c.get("nochar") == "band_only":   # full-screen repeat grid, no figure (ref B t081)
-        text_D(L, t, c, GRAY_M if sc == 8 else tc, rows=5, size_h=0.13)
-        return
-    if sc == 3 and li != 13:
-        text_D(L, t, c, tc)
-    elif sc == 8:
-        text_D(L, t, c, GRAY_M, rows=1, size_h=0.15)
-    elif sc == 9 and li != 42:
-        text_D(L, t, c, GRAY_M)
-    elif sc == 14:
-        rows = 5 if li in (56, 57, 58) else 1
-        text_D(L, t, c, tc, rows=rows, size_h=0.13 if rows > 1 else 0.14)
-
-
-def text_C(L, t, c, word, eyes, horizontal=False, center=False):
-    """Red keyword, half the screen, thin serif."""
-    if horizontal:
-        size = int(Q.H * (0.66 if center else 0.34))
-        im = htext(word, size, RED + (245,), F_R if center else F_L)
-        u = (t - c["start"]) / max(c["dur"], 0.3)
-        x = Q.W / 2 - im.size[0] / 2 + (0.5 - u) * Q.W * 0.05
-        y = Q.H / 2 - im.size[1] / 2
-        if not center:
-            x, y = best_pos([(x, Q.H * f - im.size[1] / 2) for f in (0.68, 0.50, 0.30, 0.76, 0.20)], im.size[0], im.size[1], eyes)
-        paste(L, im, x + S(26), y + S(14), 0.28)       # offset echo (ref B doubles its big type)
-        paste(L, im, x, y, 0.93)
-    else:
-        size = int(Q.H * 0.34)
-        im = vtext(word, size, RED + (245,), F_L)
-        y = -size * 0.2 + (t - c["start"]) * S(60)
-        x, _ = best_pos([(Q.W * f, y) for f in (0.05, 0.80, 0.02, 0.86, 0.40)], im.size[0], im.size[1], eyes)
-        paste(L, im, x + S(22), y + S(30), 0.28)
-        paste(L, im, x, y, 0.93)
-
-
 CROP_SCENES = (2, 6, 7, 11, 12, 15)
 
 
@@ -907,50 +1159,9 @@ def ghost_echo(img, ci, t):
     return g
 
 
-def black_wedge(L, ci, t, c):
-    """Large black shape with a torn edge that cuts across the frame (ref B crops are half swallowed by black)."""
-    if ci % 4 == 3:
-        return
-    r = np.random.default_rng(ci * 31)
-    W, H = Q.W, Q.H
-    side = int(r.integers(0, 4))
-    cover = r.uniform(0.22, 0.38)
-    u = min(1, (t - c["start"]) * FPS / 6)
-    slide = (1 - u) ** 2 * 0.08
-    n = 60
-    tear = lambda k: r.uniform(-1, 1) * S(10) + math.sin(k * 0.7) * S(6)
-    if side in (0, 1):  # diagonal from left / right edge
-        x_top = W * (cover + 0.12 - slide); x_bot = W * (cover - 0.12 - slide)
-        edge = [(x_top + (x_bot - x_top) * k / n + tear(k), H * k / n) for k in range(n + 1)]
-        poly = [(0, 0)] + edge + [(0, H)]
-        if side == 1:
-            poly = [(W - x, y) for x, y in poly]
-    else:  # from top / bottom
-        y_l = H * (cover + 0.1 - slide); y_r = H * (cover - 0.12 - slide)
-        edge = [(W * k / n, y_l + (y_r - y_l) * k / n + tear(k)) for k in range(n + 1)]
-        poly = [(0, 0)] + edge + [(W, 0)]
-        if side == 3:
-            poly = [(x, H - y) for x, y in poly]
-    d = ImageDraw.Draw(L)
-    d.polygon(poly, fill=INK + (255,))
-    d.line(edge if side in (0, 2) else [(W - x, y) if side == 1 else (x, H - y) for x, y in edge], fill=GRAY_M + (150,), width=max(1, S(2)))
-
-
-def slice_bars(L, ci, t, color, cx=None, cy=None):
-    """Short horizontal glitch bars around the figure (ref B t024 / t081)."""
-    r = np.random.default_rng(ci * 17 + int(t * 6))
-    W, H = Q.W, Q.H
-    cx = W / 2 if cx is None else cx; cy = H / 2 if cy is None else cy
-    d = ImageDraw.Draw(L)
-    for k in range(int(r.integers(3, 7))):
-        w = r.uniform(0.04, 0.16) * W; h = r.uniform(0.008, 0.03) * H
-        x = cx + r.uniform(-0.22, 0.14) * W; y = cy + r.uniform(-0.38, 0.38) * H
-        d.rectangle((x, y, x + w, y + h), fill=color + (235,))
-
-
 def speed_lines(L, t, ci, color, alpha=0.55, cx=None, cy=None):
     """Radial concentration lines (ref B t033)."""
-    r = np.random.default_rng(ci * 7 + int(t * 10))
+    r = np.random.default_rng(ci * 7 + int(t * 12))
     W, H = Q.W, Q.H
     cx = W / 2 if cx is None else cx; cy = H * 0.45 if cy is None else cy
     d = ImageDraw.Draw(L)
@@ -959,27 +1170,6 @@ def speed_lines(L, t, ci, color, alpha=0.55, cx=None, cy=None):
         r0 = r.uniform(0.22, 0.34) * H; r1 = r0 + r.uniform(0.15, 0.55) * H
         d.line((cx + r0 * math.cos(a), cy + r0 * math.sin(a), cx + r1 * math.cos(a), cy + r1 * math.sin(a)),
                fill=color + (int(255 * alpha * r.uniform(0.4, 1)),), width=max(1, S(r.uniform(1, 2.5))))
-
-
-def smoke_wisps(L, t, ci, color=PAPER_L):
-    """Curling ink-smoke strokes drifting upward (ref B cigarette smoke, here as an overlay)."""
-    r = np.random.default_rng(ci * 53)
-    W, H = Q.W, Q.H
-    tmp = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(tmp)
-    for k in range(3):
-        x0 = r.uniform(0.15, 0.85) * W; y0 = r.uniform(0.6, 1.0) * H
-        ph = r.uniform(0, 6.28); amp = r.uniform(0.03, 0.08) * W
-        pts = []
-        for j in range(40):
-            v = j / 39
-            y = y0 - v * H * 0.75 - (t * S(40)) % S(120)
-            x = x0 + amp * math.sin(v * 7 + ph + t * 1.2) * (0.3 + v)
-            pts.append((x, y))
-        for j in range(len(pts) - 1):
-            wdt = max(1, int(S(12) * (1 - j / 40) + S(2)))
-            d.line(pts[j] + pts[j + 1], fill=color + (int(150 * (1 - j / 45)),), width=wdt)
-    tmp = tmp.filter(ImageFilter.GaussianBlur(max(1, S(4))))
-    L.alpha_composite(tmp)
 
 
 def shade(frame, ci, dark):
@@ -994,206 +1184,253 @@ def shade(frame, ci, dark):
     rgb = ImageChops.multiply(frame.convert("RGB"), Image.merge("RGB", [mi] * 3))
     hl = Image.fromarray(((1 - np.clip(g, 0, 1)) ** 3 * (40 if not dark else 26)).astype(np.uint8), "L").resize((W, H), Image.BILINEAR)
     rgb = ImageChops.add(rgb, Image.merge("RGB", [hl] * 3))
-    out = rgb.convert("RGBA"); return out
+    return rgb.convert("RGBA")
 
 
-def motifs(L, t, c, ci, eyes, bg, layer):
-    """MV decoration for the cut. layer: 'back' (behind image) or 'front'."""
-    sc = c["scene"]; ov = c.get("overlays", [])
-    col = text_color_for(bg) if sc not in (6, 15) else GRAY_D
-    if layer == "back":
-        if c.get("nochar") == "clock_type":   # the clock itself is the subject
-            draw_clock(L, t * 2.5, Q.W / 2, Q.H / 2, PAPER_L, 0.85, 1.25)
-            draw_clock(L, -t * 1.5, Q.W / 2, Q.H / 2, GRAY_M, 0.35, 0.7)
-            return
-        if c.get("nochar") == "paper_type":
-            circle_guides(L, t, [], GRAY_M); mini_icons(L, GRAY_D)
-            return
-        if c.get("nochar") == "ink_type":
-            speed_lines(L, t, ci, GRAY_D, alpha=0.6)
-            slice_bars(L, ci, t, GRAY_D)
-            return
-        if any(o.startswith("roman_clock_ring") for o in ov):
-            faint = any(o.endswith(":faint") for o in ov); passing = any(o.endswith(":pass") for o in ov)
-            if passing:  # numerals and hands sweep past in the background
-                cx = Q.W * (0.2 + ((t - c["start"]) / max(c["dur"], 0.4)) * 0.6)
-                draw_clock(L, t, cx, Q.H * 0.5, GRAY_M, 0.45, 1.25)
+def _masked(L, excl):
+    L.putalpha(ImageChops.multiply(L.getchannel("A"), excl))
+    return L
+
+
+def decorations(ci, c, t, focus, bg, excl):
+    """Exactly one decoration kind per cut, animated on twos (12 fps), kept 60 px away from the lyrics.
+    Returns (back layer drawn behind the illustration, front layer)."""
+    W, H = Q.W, Q.H
+    td = math.floor(t * 12) / 12
+    back = Image.new("RGBA", (W, H), (0, 0, 0, 0)); front = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    kinds = c.get("deco") or []
+    fx, fy = focus
+    tc = text_color_for(bg)
+    for k in kinds:
+        if k == "clock":            # behind the subject, centred on its eye point
+            if c.get("nochar") == "clock_type":
+                draw_clock(back, td * 2.5, fx, fy, PAPER_L, 0.85, 1.25, t_real=t)
             else:
-                draw_clock(L, t * (4 if faint else 1), Q.W / 2, Q.H / 2, GRAY_M if faint else col, 0.34 if faint else 0.55)
-        if "checker_floor" in ov:
-            checker_floor(L, t)
-        if "checker_blur" in ov:
-            checker_floor(L, t * 3, blur=10 + 40 * (t - c["start"]))
-        return
-    if "circle_guides" in ov:
-        circle_guides(L, t, eyes, GRAY_M)
-    if "mini_icon" in ov:
-        mini_icons(L, GRAY_D)
-    if "code_text_block" in ov:
-        cb = code_block(); off = int(t * S(30)) % max(1, cb.size[1] // 2)
-        paste(L, cb.crop((0, off, cb.size[0], off + Q.H // 3)), S(60) if ci % 2 else Q.W - S(60) - cb.size[0], Q.H * 0.58, 0.8)
-    if "torn_paper_strips" in ov:
-        torn_strips(L, t, ci)
-    if c.get("red"):
-        u0 = c["start"]
-        r = np.random.default_rng(ci)
-        if "starburst_red" in ov:
-            for k, (fx, fy, R) in enumerate(((0.06, 0.12, 0.17), (0.95, 0.85, 0.24), (0.88, 0.08, 0.10))):
-                pop = min(1, (t - u0) * FPS / 3 + 0.2)
-                starburst(L, Q.W * fx, Q.H * fy, Q.H * R * pop * (1 + 0.03 * math.sin(t * 9 + k)), t, ci * 10 + k)
-        if "red_slash" in ov:
-            red_slash(L, u0, t, ci)
-        if "checker_strip" in ov:
-            checker_strip(L, t)
+                faint = c["scene"] in (1, 17)
+                draw_clock(back, td * (4 if faint else 1), fx, fy, GRAY_M if faint else (GRAY_D if sum(bg) > 380 else GRAY_M), 0.34 if faint else 0.6, 1.0, t_real=t)
+        elif k == "band":
+            rows = 5 if c.get("nochar") == "band_only" or (c["scene"] == 14 and active_line(t) in (56, 57, 58)) else 1
+            text_D(back, td, c, GRAY_M if c["scene"] in (8, 9) else tc, rows=rows, size_h=0.13 if rows > 1 else 0.15)
+        elif k == "checker":
+            checker_floor(back, td * (3 if c["scene"] == 9 else 1), blur=(10 + 40 * (t - c["start"])) if c["scene"] == 9 else 0)
+        elif k == "speed_lines":
+            speed_lines(back, td, ci, GRAY_M, alpha=0.8, cx=fx, cy=fy)
+        elif k == "guides":
+            circle_guides(front, td, [(fx - 1, fy - 1, fx + 1, fy + 1)], GRAY_M)
+        elif k == "code":
+            cb = code_block(); off = int(td * S(30)) % max(1, cb.size[1] // 2)
+            x = S(70) if fx > W / 2 else W - S(70) - cb.size[0]
+            paste(front, cb.crop((0, off, cb.size[0], off + H // 3)), x, H * 0.56, 0.85)
+        elif k == "starburst":      # red sections only; pops 0 -> 1.08 -> 1.00, staggered 3 frames
+            for j, (px_, py_, R) in enumerate(((0.07 if fx > W / 2 else 0.93, 0.14, 0.17), (0.93 if fx > W / 2 else 0.07, 0.86, 0.22),
+                                              (0.50, 0.06, 0.09))):
+                u = ((t - c["start"]) * FPS - 3 * j) / 10
+                if u <= 0:
+                    continue
+                starburst(front, W * px_, H * py_, H * R * pop(u), td, ci * 10 + j)
+        elif k == "torn_edge":      # edge line of the tear that cuts the illustration
+            _, edge = torn_mask(ci, c)
+            ImageDraw.Draw(front).line(edge, fill=GRAY_M + (170,), width=max(1, S(2)))
+    return _masked(back, excl), _masked(front, excl)
+
+
+def scene_layer(ci, t, excl):
+    """Background + decoration + illustration for cut ci at time t (no lyrics)."""
+    W, H = Q.W, Q.H
+    c = CUTS[ci]
+    bg = scene_bg(c)
+    base = Image.new("RGB", (W, H), bg)
+    if sum(bg) > 380:
+        pt = paper_tex()
+        base = ImageChops.multiply(base, Image.merge("RGB", [pt.point(lambda v: 255 - abs(v - 128) // 2)] * 3))
+    if c["scene"] == 16:  # grayscale room with long window light (background, not a decoration)
+        g = np.linspace(0.18, 0.42, W)[None, :].repeat(H, 0)
+        base = Image.fromarray((np.stack([g] * 3, -1) * 255).astype(np.uint8))
+        shaft = Image.new("L", (W, H), 0); d = ImageDraw.Draw(shaft)
+        for k in range(4):
+            x = W * (0.15 + 0.12 * k) + ease_inout((t - c["start"]) / max(c["dur"], 0.5)) * S(40)
+            d.polygon([(x, 0), (x + S(70), 0), (x + S(70) + H * 0.9, H), (x + H * 0.9, H)], fill=150)
+        shaft = shaft.filter(ImageFilter.GaussianBlur(S(30)))
+        base = ImageChops.screen(base, Image.merge("RGB", [shaft.point(lambda v: int(v * 0.6))] * 3))
+    frame = base.convert("RGBA")
+    src_ci, src_c = (ci + 1, dict(CUTS[ci + 1], transition_in="T3")) if c["scene"] == 10 else (ci, c)   # edit mask: borrowed art, already in place
+    img, focus, eyes = image_layer(src_ci, src_c, t)
+    back, front = decorations(ci, c, t, focus, bg, excl)
+    frame.alpha_composite(back)
+    if img is not None:
+        if c["scene"] in CROP_SCENES + (4, 5, 16):
+            frame.alpha_composite(ghost_echo(img, ci, t))
+        frame.alpha_composite(img)
+    frame.alpha_composite(front)
+    if img is None and c["scene"] not in (10, 18):
+        zm, px, py, rot = cam_motion(ci, c, t)
+        cx, cy = W / 2, H / 2
+        k = 1 / zm
+        frame = frame.transform((W, H), Image.AFFINE, (k, 0, cx - k * (cx + px), 0, k, cy - k * (cy + py)), resample=Image.BILINEAR,
+                                fillcolor=bg + (255,))
+    if img is not None and c["scene"] not in (10, 13, 17, 18):
+        frame = shade(frame, ci, sum(bg) <= 380)
+    if c["scene"] in (3, 8, 14):  # cinema letterbox like ref B's band scenes (framing)
+        d = ImageDraw.Draw(frame); lb = int(H * 0.115)
+        d.rectangle((0, 0, W, lb), fill=INK + (255,)); d.rectangle((0, H - lb, W, H), fill=INK + (255,))
+    if c["scene"] == 13:
+        frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.82)
+    deco_px = int((np.asarray(back.getchannel("A")) > 8).sum() + (np.asarray(front.getchannel("A")) > 8).sum()) if excl is not None else 0
+    return frame, dict(focus=focus, eyes=eyes, bg=bg, deco_px=deco_px)
+
+
+# ------------------------------------------------------------------ transition library T1..T6
+def slice_glitch(img, seed, strength=1.0):
+    r = np.random.default_rng(seed)
+    W, H = Q.W, Q.H
+    n = int(r.integers(4, 7))
+    cuts = sorted(r.uniform(0.08, 0.92, n - 1)); edges = [0] + [int(H * v) for v in cuts] + [H]
+    out = Image.new(img.mode, img.size, INK + ((255,) if img.mode == "RGBA" else ()))
+    for k in range(n):
+        y0, y1 = edges[k], edges[k + 1]
+        dx = int(r.choice([-1, 1]) * r.uniform(40, 120) * Q.s * strength)
+        out.paste(img.crop((0, y0, W, y1)), (dx, y0))
+        if r.random() < 0.5:
+            bw = int(r.uniform(0.08, 0.3) * W); bx = int(r.uniform(0, W - bw))
+            ImageDraw.Draw(out).rectangle((bx, y0, bx + bw, y0 + max(2, (y1 - y0) // 3)), fill=INK)
+    return out
+
+
+def hblur(img, px):
+    if px < 1:
+        return img
+    W, H = img.size
+    k = max(1.0, px / 3)
+    return img.resize((max(1, int(W / k)), H), Image.BILINEAR).resize((W, H), Image.BILINEAR)
+
+
+def boundary(t):
+    f = t * FPS
+    for i in range(1, len(CUTS)):
+        d = f - CUTS[i]["start"] * FPS
+        if -6 <= d < 8:
+            return i, d
+    return None, None
+
+
+def compose_scene(t, excl):
+    W, H = Q.W, Q.H
+    ci, c = cut_at(t)
+    frame, info = scene_layer(ci, t, excl)
+    i, f = boundary(t)
+    if i is None:
+        return frame, info, None
+    kind = CUTS[i]["transition_in"]
+    seed = i * 977
+    if kind == "T1":                     # circle wipe: ink disc grows (6 f), then shrinks into the next ring (6 f)
+        d = ImageDraw.Draw(frame); diag = math.hypot(W, H) * 0.62
+        if -6 <= f < 0:
+            cx, cy = focus_target_px(CUTS[i - 1]); r = diag * EASE_IN((f + 6) / 6)
+            d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=INK + (255,), outline=PAPER_L + (255,), width=max(2, S(5)))
+        elif 0 <= f < 6:
+            cx, cy = info["focus"]; u = EASE_OUT(f / 6); r = diag + (H * 0.36 - diag) * u
+            ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
+            od.ellipse((cx - r, cy - r, cx + r, cy + r), fill=INK + (int(255 * (1 - u)),), outline=PAPER_L + (int(255 * (1 - 0.6 * u)),), width=max(2, S(4)))
+            frame.alpha_composite(ov)
+    elif kind == "T2" and -5 <= f < 1:   # slice glitch, 6 frames
+        frame = slice_glitch(frame, seed + int(f), 0.5 + 0.5 * (f + 5) / 5)
+    elif kind == "T3" and -2 <= f < 0:   # flash match cut (white 2 frames, then the same spot in another crop)
+        frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.55 if f < -1 else 0.92)
+    elif kind == "T4" and -6 <= f < 2:   # torn-paper wipe carries the next illustration in (8 frames)
+        other, _ = scene_layer(i if f < 0 else i - 1, t, excl)
+        out_l, in_l = (frame, other) if f < 0 else (other, frame)
+        u = ease_inout((f + 6) / 8)
+        p = -0.25 + 1.5 * u
+        y, x = np.mgrid[0:H:2, 0:W:2].astype(np.float32)
+        g = (x / W * 0.62 + y / H * 0.38)
+        m = Image.fromarray(((g < p) * 255).astype(np.uint8), "L").resize((W, H))
+        frame = Image.composite(in_l, out_l, m)
+        strip = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        r = np.random.default_rng(seed)
+        band = ((g > p - 0.06 + (r.random(g.shape) * 0.012)) & (g < p + 0.02 + (r.random(g.shape) * 0.012))) * 1
+        sa = Image.fromarray((band * 235).astype(np.uint8), "L").resize((W, H))
+        strip = Image.new("RGBA", (W, H), PAPER + (0,)); strip.putalpha(sa)
+        frame.alpha_composite(strip)
+    elif kind == "T5" and -6 <= f < 0:   # whip blur 0 -> 160 px over 6 frames into the cut
+        u = (f + 6) / 6
+        frame = hblur(ImageChops.offset(frame, int(W * 0.08 * u * u), 0), S(160) * u)
+    elif kind == "cut_to_black" and 0 <= f < 3:
+        frame = Image.blend(frame, Image.new("RGBA", (W, H), INK + (255,)), 0.8 - 0.25 * f)
+    return frame, info, kind
 
 
 def render_frame(t):
     W, H = Q.W, Q.H
     ci, c = cut_at(t)
-    bg = scene_bg(c)
-    base = Image.new("RGB", (W, H), bg)
-    if sum(bg) > 380:  # paper grain texture
-        pt = paper_tex()
-        base = ImageChops.multiply(base, Image.merge("RGB", [pt.point(lambda v: 255 - abs(v - 128) // 2)] * 3))
-    if c["scene"] == 16:  # grayscale room with long window light
-        g = np.linspace(0.18, 0.42, W)[None, :].repeat(H, 0)
-        base = Image.fromarray((np.stack([g] * 3, -1) * 255).astype(np.uint8))
-        shaft = Image.new("L", (W, H), 0); d = ImageDraw.Draw(shaft)
-        for k in range(4):
-            x = W * (0.15 + 0.12 * k) + (t - c["start"]) * S(6)
-            d.polygon([(x, 0), (x + S(70), 0), (x + S(70) + H * 0.9, H), (x + H * 0.9, H)], fill=150)
-        shaft = shaft.filter(ImageFilter.GaussianBlur(S(30)))
-        base = ImageChops.screen(base, Image.merge("RGB", [shaft.point(lambda v: int(v * 0.6))] * 3))
-    frame = base.convert("RGBA")
-
-    # back motifs
-    back = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    motifs(back, t, c, ci, [], bg, "back")
-    frame.alpha_composite(back)
-
-    # repeat bands (text level D) sit behind the figure, like ref B
-    band = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    band_text(band, t, c, bg)
-    frame.alpha_composite(band)
-
-    # image layer + transition (the edit mask borrows the incoming cut so the mosaic has something to chew on)
-    img, eyes = image_layer(ci + 1, CUTS[ci + 1], t) if c["scene"] == 10 else image_layer(ci, c, t)
-    kind, ph, inc = transition_state(t)
-    if kind and img is not None or kind in ("lightleak_8f", "white_blowout"):
-        if kind == "lightleak_8f":
-            amt = {-4: 0.25, -3: 0.5, -2: 0.75, -1: 0.92, 0: 0.92, 1: 0.7, 2: 0.45, 3: 0.2, 4: 0.05}.get(int(math.floor(ph)), 0)
-            blur = (40 + 80 * (ph + 4) / 4) if ph < 0 else 120 * (1 - ph / 4)
-            if img is not None:
-                img = dir_blur(expose(img, amt), S(blur))
-        elif kind == "flip" and img is not None and 0 <= ph < 3:
-            sy = max(0.05, ph / 3)
-            img = img.resize((W, max(1, int(H * sy))), Image.BILINEAR).transpose(Image.FLIP_TOP_BOTTOM)
-            pad = Image.new("RGBA", (W, H), (0, 0, 0, 0)); pad.paste(img, (0, (H - img.size[1]) // 2)); img = pad
-        elif kind == "whip" and img is not None and -2 <= ph < 3:
-            off = int((1 - abs(ph) / 3) * W * 0.18 * (1 if ph < 0 else -1))
-            img = dir_blur(ImageChops.offset(img, off, 0), S(90 * (1 - abs(ph) / 3)))
-        elif kind == "black" and 0 <= ph < 2:
-            img = None
-    sc = c["scene"]
-    if img is not None:
-        if sc in CROP_SCENES + (4, 5, 16):
-            frame.alpha_composite(ghost_echo(img, ci, t))
-        frame.alpha_composite(img)
-    rich = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    if img is not None and sc in CROP_SCENES and c.get("type") != "black_card":
-        black_wedge(rich, ci, t, c)
-    if sc in (3, 8, 9, 14) and img is not None:
-        slice_bars(rich, ci, t, INK if sum(bg) > 380 else PAPER_L)
-    if (sc in (3, 15) and active_line(t) in (13, 63)) or sc == 9 or (c.get("red") and sc == 14):
-        speed_lines(rich, t, ci, INK if sum(bg) > 380 else PAPER_L)
-    if img is not None and sc in (2, 4, 7, 12, 16):
-        smoke_wisps(rich, t, ci, PAPER_L if sc != 4 else GRAY_M)
-    frame.alpha_composite(rich)
-    if img is not None and sc not in (10, 13, 17, 18):
-        frame = shade(frame, ci, sum(bg) <= 380)
-    if sc in (3, 8, 14):  # cinema letterbox like ref B's band scenes
-        d = ImageDraw.Draw(frame); lb = int(H * 0.115)
-        d.rectangle((0, 0, W, lb), fill=INK + (255,)); d.rectangle((0, H - lb, W, H), fill=INK + (255,))
-
-    # front motifs
-    front = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    motifs(front, t, c, ci, eyes, bg, "front")
-    frame.alpha_composite(front)
-
-    # white flash / edit mask
-    if c["scene"] == 13:
-        frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.82)
-    out = frame.convert("RGB")
-    out = ambient(out, t, sum(bg) <= 380)
-
-    # text layer (separate; moves 40% of the image handheld for parallax; survives transitions)
-    T = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    scene_text(T, eyes, t, c, ci, bg)
-    hx = snoise(t, ci * 7919 + 14) * 0.001 * W * 0.4
+    items, cap, dbg = lyric_layout(t)
+    excl, lyric_boxes = exclusion_mask(items, cap)
+    frame, info, tr = compose_scene(t, excl)
+    if c["scene"] == 10:                 # audio edit mask: white hit + mosaic over the incoming cut
+        u = (t - c["start"]) * FPS
+        frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.92 if u < 1.5 else max(0, 0.75 - (u - 1.5) * 0.25))
+        if 1.5 <= u < 7.5:
+            frame = glitch(frame.convert("RGB"), t, 9090, 2.2).convert("RGBA")
+    out = ambient(frame.convert("RGB"), t, sum(info["bg"]) <= 380)
+    if c["scene"] == 1:                  # title card (not lyrics)
+        T = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        a = min(1, t / 3)
+        im = htext("神っぽいな", S(54), PAPER_L + (int(220 * a),), F_XL)
+        paste(T, im, W / 2 - im.size[0] / 2, H / 2 - S(60))
+        im2 = htext("cover  /  暁山 瑞希", S(20), GRAY_M + (int(220 * a),), F_L)
+        paste(T, im2, W / 2 - im2.size[0] / 2, H / 2 + S(30))
+        out = out.convert("RGBA"); out.alpha_composite(T); out = out.convert("RGB")
+    hx = snoise(t, ci * 7919 + 14) * 0.001 * W * 0.4      # boxes follow 40% of the handheld; giant type stays still
     hy = snoise(t, ci * 7919 + 15) * 0.001 * W * 0.4
-    if c["scene"] in (1, 17) or c.get("type") == "black_card":   # slow drift so cards never freeze
-        hx += math.sin(t * 0.9) * S(14); hy += (t - c["start"]) * S(10)
-    T = ImageChops.offset(T, int(round(hx)), int(round(hy)))
-    out = out.convert("RGBA"); out.alpha_composite(T)
-
-    # HUD (always, dim on giant-type scenes)
+    out = draw_lyrics(out, items, cap, dbg, int(round(hx)), int(round(hy)))
     if c["scene"] not in (10, 13, 17, 18):
         a = 0.35 if any(o.endswith(":dim") for o in c.get("overlays", [])) else 0.62
         hud = hud_layer().copy(); hud.putalpha(hud.getchannel("A").point(lambda v: int(v * a)))
         hud_dynamic(hud, t, 1.0)
-        out.alpha_composite(hud)
-    out = out.convert("RGB")
-    giant = c.get("red") or (c["scene"] in (3, 9, 15) and active_line(t) in (13, 42, 63))
-    if c["scene"] not in (1, 10, 13, 17, 18) and c.get("type") != "black_card" and not giant:
-        caption(out, t)
-
-    # glitch events (<=0.2 s) and the audio edit mask
-    gl = [c2 for c2 in CUTS if c2.get("transition_in") == "glitch_mosaic_0.2s"]
-    for c2 in gl:
-        if c2["start"] - 0.03 <= t < c2["start"] + 0.2:
-            out = glitch(out, t, int(c2["start"] * 100), 1.6 if c2["scene"] == 10 else 1.0)
-    if c["scene"] == 10:
-        u = (t - c["start"]) * FPS
-        wa = 0.92 if u < 1.5 else max(0, 0.75 - (u - 1.5) * 0.25)
-        out = Image.blend(out, Image.new("RGB", (W, H), (250, 250, 250)), wa)
-        if 1.5 <= u < 7.5:
-            out = glitch(out, t, 9090, 2.2)
+        out = out.convert("RGBA"); out.alpha_composite(hud); out = out.convert("RGB")
     if c["scene"] == 18:
         u = (t - c["start"]) / max(c["dur"], 0.1)
         d = ImageDraw.Draw(out)
         for k in range(5):
-            x = W * (0.3 + 0.1 * k); a = max(0, 1 - u * 1.2 - k * 0.05)
+            x = W * (0.3 + 0.1 * k); a = max(0, 1 - ease_inout(u) * 1.2 - k * 0.05)
             d.rectangle((x, H * 0.2, x + S(18), H * 0.8), fill=tuple(int(PAPER_L[j] + (GRAY_M[j] - PAPER_L[j]) * a) for j in range(3)))
-        fade = min(1, max(0, (t - (DUR - 0.8)) / 0.8))
-        out = Image.blend(out, Image.new("RGB", (W, H), (0, 0, 0)), fade)
-
-    if c["scene"] in (1, 17) or c.get("type") == "black_card":
-        band = Image.new("L", (W, H), 0); d = ImageDraw.Draw(band)
-        y = (t * S(140)) % (H + S(200)) - S(100)
-        d.rectangle((0, y, W, y + S(60)), fill=34)
-        for k in range(6):
-            yy = (y * 0.37 + k * H / 6) % H
-            d.line((0, yy, W, yy), fill=22, width=1)
-        band = band.filter(ImageFilter.GaussianBlur(S(18)))
-        out = ImageChops.screen(out, Image.merge("RGB", [band] * 3))
-    # breathing +-3%, per-frame flicker +-1.5%, vignette
-    fr = int(t * FPS)
+        out = Image.blend(out, Image.new("RGB", (W, H), (0, 0, 0)), ease_inout((t - (DUR - 0.8)) / 0.8))
+    # always-moving scanline band (flickers on twos)
+    band = Image.new("L", (W, H), 0); d = ImageDraw.Draw(band)
+    t12 = math.floor(t * 12) / 12
+    y = (t12 * S(140)) % (H + S(200)) - S(100)
+    d.rectangle((0, y, W, y + S(60)), fill=28 if c["scene"] in (1, 17) or c.get("type") == "black_card" else 14)
+    for k in range(6):
+        yy = (y * 0.37 + k * H / 6) % H
+        d.line((0, yy, W, yy), fill=18, width=1)
+    out = ImageChops.screen(out, Image.merge("RGB", [band.filter(ImageFilter.GaussianBlur(S(18)))] * 3))
+    fr = int(round(t * FPS))
     k = 1 + 0.03 * math.sin(2 * math.pi * 0.22 * t) + 0.015 * (np.random.default_rng(fr).random() * 2 - 1)
     out = out.point(lambda v: min(255, int(v * k)))
-    v = vignette()
-    out = ImageChops.multiply(out, Image.merge("RGB", [v] * 3))
+    out = ImageChops.multiply(out, Image.merge("RGB", [vignette()] * 3))
     if c["scene"] == 1:
-        out = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), out, min(1, t / 1.5))
-
-    if Q.post:  # bloom + grain (final only)
+        out = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), out, EASE_OUT(t / 1.5))
+    if Q.post:
         hi = out.convert("L").point(lambda v: max(0, v - 200) * 4)
         bl = hi.filter(ImageFilter.GaussianBlur(S(18)))
         out = ImageChops.screen(out, Image.merge("RGB", [bl.point(lambda v: int(v * 0.18))] * 3))
         n = np.random.default_rng(fr + 1).normal(0, 9.0, (H, W)).astype(np.float32)
-        a = np.asarray(out).astype(np.float32) + n[..., None]
-        out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+        out = Image.fromarray(np.clip(np.asarray(out).astype(np.float32) + n[..., None], 0, 255).astype(np.uint8))
+    DEBUG.clear()
+    DEBUG.update(dbg, cut=ci, focus=None if c.get("nochar") else info["focus"], transition=tr,
+                 deco_over_lyrics=0 if not lyric_boxes else _deco_overlap(t, ci, c, info, lyric_boxes))
     return out
 
+
+def _deco_overlap(t, ci, c, info, boxes):
+    """Re-draw the decorations unmasked and count pixels that would fall inside the lyric keep-out zone (after masking: must be 0)."""
+    W, H = Q.W, Q.H
+    excl = Image.new("L", (W, H), 255); d = ImageDraw.Draw(excl); e = S(EXCL_PX_1080)
+    for x0, y0, x1, y1 in boxes:
+        d.rectangle((x0 - e, y0 - e, x1 + e, y1 + e), fill=0)
+    keep, _ = exclusion_mask(*lyric_layout(t)[:2])
+    back, front = decorations(ci, c, t, info["focus"], info["bg"], keep)
+    z = np.asarray(excl) == 0
+    return int(((np.asarray(back.getchannel("A")) > 8) & z).sum() + ((np.asarray(front.getchannel("A")) > 8) & z).sum())
 
 def main():
     ap = argparse.ArgumentParser()
@@ -1203,7 +1440,11 @@ def main():
     ap.add_argument("--range", type=float, nargs=2)
     ap.add_argument("--out", default=None)
     ap.add_argument("--jobs", type=int, default=os.cpu_count())
+    ap.add_argument("--lyric-mode", choices=["vertical", "horizontal"], default=None)
     a = ap.parse_args()
+    if a.lyric_mode:
+        global LYRIC_MODE
+        os.environ["LYRIC_MODE"] = LYRIC_MODE = a.lyric_mode
     setup(a.final)
     tag = "final" if a.final else "preview"
     if a.still:

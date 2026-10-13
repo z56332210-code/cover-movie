@@ -30,19 +30,34 @@
   "glitches": [
    20.341,
    50.178,
-   63.716,
-   90.755,
    100.879,
-   104.269,
-   129.614
+   129.614,
+   90.755
   ],
   "clock_scenes": [
    1,
-   3,
    6,
    15,
    17
-  ]
+  ],
+  "presets": {
+   "P1": "right_column",
+   "P2": "left_column",
+   "P3": "center_giant",
+   "P4": "mirror",
+   "P5": "illustration_only"
+  },
+  "section_preset": {
+   "intro": "P5",
+   "verse_a": "P1",
+   "pre_chorus": "P3",
+   "chorus_a": "P4",
+   "verse_b": "P2",
+   "audio_edit": "P5",
+   "chorus_b": "P2",
+   "last_chorus": "P3",
+   "ending": "P3"
+  }
  },
  "density": [
   {
@@ -307,6 +322,19 @@
     "roman_clock_ring:faint"
    ],
    "red": false,
+   "section": "intro",
+   "layout": "P5",
+   "lyric_orient": null,
+   "lyric_rect": [],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
    "transition_in": "fade_in"
   },
   {
@@ -327,7 +355,20 @@
     "roman_clock_ring:faint"
    ],
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "intro",
+   "layout": "P5",
+   "lyric_orient": null,
+   "lyric_rect": [],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T3"
   },
   {
    "start": 6.873,
@@ -353,7 +394,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 8.139,
@@ -379,7 +441,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1040,
+    490
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 9.416,
@@ -406,7 +489,28 @@
    },
    "variant": "strip",
    "red": false,
-   "transition_in": "flip"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "focus_src": [
+    730,
+    1050
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 10.67,
@@ -427,7 +531,24 @@
    "variant": "single",
    "nochar": "ink_type",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [
+    "speed_lines"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 11.947,
@@ -452,9 +573,30 @@
     "cy": 987,
     "w": 529
    },
-   "variant": "negative",
+   "variant": "single",
    "red": false,
-   "transition_in": "whip"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    470,
+    960
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 13.212,
@@ -480,7 +622,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1000,
+    960
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 14.466,
@@ -504,18 +667,30 @@
     "cy": 823,
     "w": 445
    },
-   "variant": "split",
-   "split": {
-    "crop": "eye_r",
-    "cx": 925,
-    "cy": 425,
-    "w": 313,
-    "rot": -8,
-    "flip_v": false,
-    "angle": -64.13822477292318
-   },
+   "variant": "strip",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    440,
+    760
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 15.302,
@@ -542,7 +717,28 @@
    },
    "variant": "strip",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    720,
+    720
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 16.591,
@@ -563,7 +759,24 @@
    "variant": "single",
    "nochar": "ink_type",
    "red": false,
-   "transition_in": "black"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "deco": [
+    "speed_lines"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 17.856,
@@ -589,7 +802,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 19.122,
@@ -616,7 +850,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    960,
+    594
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 20.341,
@@ -641,7 +896,28 @@
     "w": 716
    },
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    560,
+    1780
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T2"
   },
   {
    "start": 21.873,
@@ -667,7 +943,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 22.721,
@@ -692,7 +989,28 @@
     "w": 504
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 23.557,
@@ -713,7 +1031,24 @@
    ],
    "nochar": "band_only",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 25.252,
@@ -739,7 +1074,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "flip"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 26.099,
@@ -765,7 +1121,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 27.365,
@@ -791,7 +1168,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "whip"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 28.63,
@@ -817,7 +1215,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 30.314,
@@ -837,7 +1256,24 @@
    ],
    "nochar": "band_only",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 31.173,
@@ -863,7 +1299,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 31.997,
@@ -890,7 +1347,28 @@
    "text": "B",
    "note": "giant 神っぽいな + mono radial lines (B t033)",
    "red": false,
-   "transition_in": "black"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 33.495,
@@ -919,7 +1397,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1150,
+    960
+   ],
+   "deco": [
+    "guides"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 36.455,
@@ -942,7 +1441,24 @@
    "variant": "single",
    "nochar": "paper_type",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [
+    "guides"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 40.252,
@@ -971,7 +1487,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1500,
+    1100
+   ],
+   "deco": [
+    "guides"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 43.224,
@@ -996,18 +1533,30 @@
     "cy": 804,
     "w": 411
    },
-   "variant": "split",
-   "split": {
-    "crop": "eyes",
-    "cx": 985,
-    "cy": 440,
-    "w": 607,
-    "rot": 0,
-    "flip_v": false,
-    "angle": -79.07198937943119
-   },
+   "variant": "negative",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    440,
+    760
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 44.896,
@@ -1033,7 +1582,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 46.173,
@@ -1060,7 +1630,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "flip"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    980,
+    438
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 47.427,
@@ -1081,7 +1672,24 @@
    "variant": "strip",
    "nochar": "paper_type",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "guides"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 48.576,
@@ -1104,7 +1712,22 @@
    "text": "small",
    "note": "\"Gott ist tot\" tiny on black (B t048)",
    "red": false,
-   "transition_in": "whip"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "T6"
   },
   {
    "start": 49.342,
@@ -1130,7 +1753,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "pre_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 50.178,
@@ -1158,7 +1802,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    935,
+    690
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T2"
   },
   {
    "start": 51.873,
@@ -1185,7 +1859,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    960,
+    594
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 53.139,
@@ -1205,20 +1909,34 @@
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "variant": "split",
-   "split": {
-    "crop": "mouth",
-    "cx": 965,
-    "cy": 585,
-    "w": 424,
-    "rot": 0,
-    "flip_v": true,
-    "angle": 61.264486649965555
-   },
+   "variant": "negative",
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "T4"
   },
   {
    "start": 53.557,
@@ -1241,7 +1959,33 @@
    "variant": "single",
    "nochar": "clock_type",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 54.822,
@@ -1266,18 +2010,39 @@
     "cy": 828,
     "w": 410
    },
-   "variant": "split",
-   "split": {
-    "crop": "tongue",
-    "cx": 960,
-    "cy": 595,
-    "w": 222,
-    "rot": 170,
-    "flip_v": false,
-    "angle": -57.40889929423893
-   },
+   "variant": "negative",
    "red": false,
-   "transition_in": "black"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    440,
+    760
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 55.67,
@@ -1304,7 +2069,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 56.947,
@@ -1332,7 +2127,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1060,
+    500
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 58.63,
@@ -1360,7 +2185,37 @@
    },
    "variant": "strip",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 59.896,
@@ -1384,7 +2239,30 @@
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "T4"
   },
   {
    "start": 60.314,
@@ -1411,7 +2289,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    730,
+    1050
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 62.009,
@@ -1438,7 +2346,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "flip"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1030,
+    460
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 63.716,
@@ -1466,7 +2404,37 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    420,
+    1180
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 65.399,
@@ -1492,9 +2460,39 @@
     "cy": 546,
     "w": 516
    },
-   "variant": "negative",
+   "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    960,
+    594
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 66.235,
@@ -1513,10 +2511,36 @@
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "variant": "negative",
+   "variant": "single",
    "nochar": "clock_type",
    "red": false,
-   "transition_in": "whip"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 67.082,
@@ -1541,7 +2565,36 @@
     "w": 562
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1060,
+    500
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 68.348,
@@ -1565,7 +2618,36 @@
     "w": 786
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 69.195,
@@ -1589,7 +2671,36 @@
     "w": 362
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1030,
+    460
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 70.461,
@@ -1610,7 +2721,32 @@
    ],
    "nochar": "ink_type",
    "red": false,
-   "transition_in": "black"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "speed_lines"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 72.574,
@@ -1634,7 +2770,36 @@
     "w": 528
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    960,
+    594
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 73.421,
@@ -1658,7 +2823,36 @@
     "w": 358
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 73.851,
@@ -1686,7 +2880,36 @@
     "w": 567
    },
    "red": true,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1060,
+    500
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 75.535,
@@ -1713,7 +2936,36 @@
     "w": 948
    },
    "red": true,
-   "transition_in": "cut_shake"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 76.8,
@@ -1742,7 +2994,36 @@
     "w": 354
    },
    "red": true,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_a",
+   "layout": "P4",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    [
+     0.74,
+     0.11,
+     0.96,
+     0.84
+    ],
+    [
+     0.04,
+     0.11,
+     0.26,
+     0.84
+    ]
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1030,
+    460
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 77.648,
@@ -1769,7 +3050,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "flip"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 79.331,
@@ -1795,7 +3097,28 @@
     "w": 798
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    560,
+    1500
+   ],
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 80.179,
@@ -1822,7 +3145,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "whip"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 81.026,
@@ -1844,7 +3188,24 @@
    ],
    "nochar": "band_only",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 82.709,
@@ -1870,7 +3231,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 83.569,
@@ -1897,7 +3279,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 84.405,
@@ -1924,7 +3327,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "black"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 86.518,
@@ -1951,7 +3375,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 87.783,
@@ -1976,7 +3421,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T3"
   },
   {
    "start": 89.049,
@@ -2002,7 +3468,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T5"
   },
   {
    "start": 90.755,
@@ -2022,7 +3509,17 @@
     "glitch_mosaic"
    ],
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "audio_edit",
+   "layout": "P5",
+   "lyric_orient": null,
+   "lyric_rect": [],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "edit_mask"
   },
   {
    "start": 91.162,
@@ -2048,7 +3545,28 @@
     "w": 589
    },
    "red": true,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1060,
+    500
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 92.439,
@@ -2074,7 +3592,28 @@
     "w": 411
    },
    "red": true,
-   "transition_in": "cut_shake"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1040,
+    490
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 93.704,
@@ -2095,7 +3634,22 @@
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "T1"
   },
   {
    "start": 94.122,
@@ -2115,7 +3669,24 @@
    ],
    "nochar": "ink_type",
    "red": false,
-   "transition_in": "flip"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [
+    "speed_lines"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 95.817,
@@ -2139,7 +3710,28 @@
     "w": 452
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1030,
+    460
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 97.512,
@@ -2167,7 +3759,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "whip"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    420,
+    1180
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 99.196,
@@ -2194,7 +3807,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    330,
+    700
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 100.461,
@@ -2218,7 +3852,22 @@
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "deco": [],
+   "transition_in": "T1"
   },
   {
    "start": 100.879,
@@ -2238,10 +3887,27 @@
     "code_text_block",
     "hud_frame_ornate"
    ],
-   "variant": "negative",
+   "variant": "single",
    "nochar": "ink_type",
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [
+    "speed_lines"
+   ],
+   "transition_in": "T2"
   },
   {
    "start": 102.156,
@@ -2268,7 +3934,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1060,
+    500
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 102.992,
@@ -2295,7 +3982,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "black"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1540,
+    760
+   ],
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 104.269,
@@ -2324,7 +4032,28 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1500,
+    1100
+   ],
+   "deco": [
+    "code"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 106.382,
@@ -2341,6 +4070,21 @@
    "flip_v": false,
    "overlays": [],
    "red": false,
+   "section": "chorus_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
    "transition_in": "white_blowout"
   },
   {
@@ -2366,7 +4110,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 109.761,
@@ -2391,7 +4156,28 @@
     "w": 1163
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1100,
+    1600
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 111.026,
@@ -2417,7 +4203,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 111.874,
@@ -2438,7 +4245,24 @@
    ],
    "nochar": "band_only",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 113.139,
@@ -2463,7 +4287,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 114.405,
@@ -2489,7 +4334,28 @@
     "w": 370
    },
    "red": false,
-   "transition_in": "flip"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 115.252,
@@ -2514,7 +4380,28 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 116.518,
@@ -2539,11 +4426,32 @@
     "w": 1025
    },
    "red": false,
-   "transition_in": "whip"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1100,
+    1600
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 117.365,
-   "dur": 0.43,
+   "dur": 0.848,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2567,11 +4475,32 @@
     "w": null
    },
    "red": true,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T1"
   },
   {
-   "start": 117.795,
-   "dur": 1.683,
+   "start": 118.213,
+   "dur": 1.265,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2595,7 +4524,28 @@
     "w": 656
    },
    "red": true,
-   "transition_in": "cut_shake"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    560,
+    1780
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T4"
   },
   {
    "start": 119.478,
@@ -2623,7 +4573,28 @@
     "w": null
    },
    "red": true,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    548,
+    300
+   ],
+   "deco": [
+    "starburst"
+   ],
+   "transition_in": "T6"
   },
   {
    "start": 121.173,
@@ -2650,7 +4621,28 @@
     "w": 468
    },
    "red": false,
-   "transition_in": "black"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
+   "deco": [
+    "band"
+   ],
+   "transition_in": "T1"
   },
   {
    "start": 122.857,
@@ -2677,7 +4669,29 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    960,
+    594
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 124.54,
@@ -2705,7 +4719,29 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    470,
+    960
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T6"
   },
   {
    "start": 125.388,
@@ -2730,18 +4766,31 @@
     "cy": 280,
     "w": 813
    },
-   "variant": "split",
-   "split": {
-    "crop": "lolly_hand",
-    "cx": 330,
-    "cy": 760,
-    "w": 573,
-    "rot": 160,
-    "flip_v": false,
-    "angle": -58.997069053090854
-   },
+   "variant": "negative",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 126.235,
@@ -2764,7 +4813,25 @@
    "variant": "single",
    "nochar": "clock_type",
    "red": false,
-   "transition_in": "cut_shake"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T4"
   },
   {
    "start": 127.93,
@@ -2789,18 +4856,31 @@
     "cy": 506,
     "w": 967
    },
-   "variant": "split",
-   "split": {
-    "crop": "collar_R",
-    "cx": 1190,
-    "cy": 1000,
-    "w": 401,
-    "rot": 0,
-    "flip_v": true,
-    "angle": -68.89008041177362
-   },
+   "variant": "negative",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T6"
   },
   {
    "start": 128.766,
@@ -2828,7 +4908,29 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "flip"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    330,
+    700
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T1"
   },
   {
    "start": 129.614,
@@ -2857,7 +4959,29 @@
    "text": "B",
    "note": "giant 神っぽいな thin serif, cropped off-frame",
    "red": false,
-   "transition_in": "glitch_mosaic_0.2s"
+   "section": "last_chorus",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1150,
+    960
+   ],
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T2"
   },
   {
    "start": 131.32,
@@ -2880,7 +5004,22 @@
    "variant": "single",
    "nochar": "empty_room",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [],
+   "transition_in": "T3"
   },
   {
    "start": 134.896,
@@ -2905,9 +5044,28 @@
     "cy": 382,
     "w": 606
    },
-   "variant": "single",
+   "variant": "strip",
    "red": false,
-   "transition_in": "whip"
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "focus_src": [
+    980,
+    438
+   ],
+   "deco": [],
+   "transition_in": "T5"
   },
   {
    "start": 138.275,
@@ -2934,7 +5092,26 @@
    },
    "variant": "single",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "focus_src": [
+    935,
+    415
+   ],
+   "deco": [],
+   "transition_in": "T3"
   },
   {
    "start": 140.817,
@@ -2952,6 +5129,24 @@
     "roman_clock_ring:faint"
    ],
    "red": false,
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
    "transition_in": "cut_to_black"
   },
   {
@@ -2971,7 +5166,25 @@
     "roman_clock_ring:faint"
    ],
    "red": false,
-   "transition_in": "lightleak_8f"
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": false,
+   "deco": [
+    "clock"
+   ],
+   "clock_at": "focus",
+   "transition_in": "T5"
   },
   {
    "start": 145.055,
@@ -2987,7 +5200,22 @@
    "flip_v": false,
    "overlays": [],
    "red": false,
-   "transition_in": "hard_cut"
+   "section": "ending",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
+   "lyric_rect": [
+    0.04,
+    0.56,
+    0.96,
+    0.86
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [],
+   "transition_in": "T3"
   }
  ]
 }
