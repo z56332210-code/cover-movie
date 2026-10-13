@@ -131,7 +131,9 @@ def cut_transform(ci, c, t):
     u = t - c["start"]
     seed = ci * 7919 + 13
     rng = np.random.default_rng(seed)
-    src, (cx, cy), w = CROPS[c["crop"]]
+    box = c.get("_box") or c.get("crop_box")
+    src = CROPS[c["crop"]][0]
+    cx, cy, w = (box["cx"], box["cy"], box["w"]) if box else CROPS[c["crop"]][1] + (CROPS[c["crop"]][2],)
     im = art(src)
     if w is None:  # silhouette: whole figure fits ~86% of height
         k = im.size[1] / ART_UP / (H * 0.86)
@@ -171,11 +173,39 @@ def cut_transform(ci, c, t):
 
 
 def image_layer(ci, c, t):
-    """RGBA image layer (or None) for the cut; returns (layer, eye_boxes_on_screen)."""
+    """RGBA image layer (or None) for the cut, incl. layout variants; returns (layer, eye_boxes_on_screen)."""
     if not c.get("crop"):
         return None, []
+    acc, eyes = _image_single(ci, c, t)
+    v = c.get("variant")
+    W, H = Q.W, Q.H
+    if v == "split" and c.get("split"):
+        sp = c["split"]
+        c2 = dict(c, crop=sp["crop"], rot=sp["rot"], flip_v=sp["flip_v"], variant="single",
+                  _box=dict(cx=sp["cx"], cy=sp["cy"], w=sp["w"]))
+        b, eyes2 = _image_single(ci + 500, c2, t)
+        ang = math.radians(sp["angle"]); u = (t - c["start"]) / max(c["dur"], 0.3)
+        cx = W * (0.5 + 0.06 * (u - 0.5)); cy = H / 2
+        dx, dy = math.cos(ang) * W * 2, math.sin(ang) * W * 2
+        m = Image.new("L", (W, H), 0)
+        ImageDraw.Draw(m).polygon([(cx - dx, cy - dy), (cx + dx, cy + dy), (cx + dx + dy, cy + dy - dx), (cx - dx + dy, cy - dy - dx)], fill=255)
+        acc = Image.composite(b, acc, m)
+        ImageDraw.Draw(acc).line((cx - dx, cy - dy, cx + dx, cy + dy), fill=PAPER_L + (255,), width=max(1, S(3)))
+        eyes = eyes + eyes2
+    elif v == "strip":  # image only inside a slanted band, the rest stays background
+        m = Image.new("L", (W, H), 0); r = np.random.default_rng(ci)
+        y0 = H * r.uniform(0.22, 0.4); hgt = H * r.uniform(0.32, 0.45); sl = H * r.uniform(-0.12, 0.12)
+        ImageDraw.Draw(m).polygon([(0, y0), (W, y0 + sl), (W, y0 + sl + hgt), (0, y0 + hgt)], fill=255)
+        a = ImageChops.multiply(acc.getchannel("A"), m); acc.putalpha(a)
+        d = ImageDraw.Draw(acc)
+        for yy in (y0 - S(10), y0 + hgt + S(10)):
+            d.line((0, yy, W, yy + sl), fill=GRAY_M + (220,), width=max(1, S(2)))
+    return acc, eyes
+
+
+def _image_single(ci, c, t):
     src, inv, fwd = cut_transform(ci, c, t)
-    neg = c["scene"] in (8, 9) and c["crop"] == "silhouette"
+    neg = (c["scene"] in (8, 9) and c["crop"] == "silhouette") or c.get("variant") == "negative"
     im = art(src, negative=neg)
     samples = [0.0]
     if Q.post:  # 180-degree shutter motion blur
@@ -189,7 +219,8 @@ def image_layer(ci, c, t):
     if src == "upper":
         for ex, ey in EYES_SRC:
             px, py = fwd(ex, ey)
-            r = 70 / (CROPS[c["crop"]][2] or 2000) * Q.W
+            bw = (c.get("_box") or c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000
+            r = 70 / bw * Q.W
             eyes.append((px - r, py - r * 0.7, px + r, py + r * 0.7))
     if c["scene"] == 16:  # grayscale photo-ish: lower contrast, slight blur
         acc = Image.blend(acc, acc.filter(ImageFilter.GaussianBlur(S(2))), 0.5)
@@ -218,6 +249,35 @@ def chunks(i):
             res.append(p[:cut]); p = p[cut:]
         res.append(p)
     return tuple(res)
+
+
+try:
+    _AC = {int(k): v for k, v in json.load(open(ROOT / "plan/align_chars.json")).items()}
+except FileNotFoundError:
+    _AC = {}
+sys.path.insert(0, str(ROOT / "tools"))
+
+
+@lru_cache(None)
+def chunk_starts(i):
+    """Start time of each chunk of line i: from Whisper character matches when available, else spread over the line."""
+    from align_lyrics_kana import kana
+    ch = chunks(i)
+    t0 = LINE_T[i]; t1 = LINE_T.get(i + 1, LT["end_sec"])
+    m = _AC.get(i, [])
+    # only trust whisper chars for lines whose start came from whisper
+    src = next((s for k, _, s in LT["lines"] if k == i), "")
+    out, pos = [], 0
+    total = max(1, len(kana(line_text(i))))
+    for j, piece in enumerate(ch):
+        if j == 0:
+            out.append(t0)
+        else:
+            cand = [tt for kp, tt in m if kp >= pos] if src.startswith("whisper") else []
+            ts = cand[0] if cand else t0 + (t1 - t0) * 0.85 * pos / total
+            out.append(max(out[-1] + 0.12, min(ts, t1 - 0.1)))
+        pos += len(kana(piece))
+    return tuple(out)
 
 
 def active_line(t):
@@ -297,7 +357,7 @@ def overlaps(box, boxes):
 
 
 # ------------------------------------------------------------------ text levels
-def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=3):
+def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=2):
     """Small vertical lyric boxes; chunks of the current line appear one by one, older lines stay (2~3 deep)."""
     li = active_line(t)
     if li is None:
@@ -308,7 +368,7 @@ def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=3):
             break
         ch = chunks(i)
         span = (LINE_T.get(i + 1, LT["end_sec"]) - LINE_T[i])
-        n_vis = len(ch) if k > 0 else max(1, min(len(ch), 1 + int((t - LINE_T[i]) / max(span, 0.3) * len(ch) * 1.6)))
+        n_vis = len(ch) if k > 0 else max(1, sum(1 for st in chunk_starts(i) if st <= t + 0.03))
         cols.append((k, ch[:n_vis]))
     size = S(stack_size)
     gap = int(size * 0.35)
@@ -329,7 +389,7 @@ def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=3):
     for k, ch in cols:
         for j, piece in enumerate(ch):
             box = vbox(piece, size)
-            age_alpha = [1.0, 0.82, 0.6][min(k, 2)]
+            age_alpha = [1.0, 0.55, 0.35][min(k, 2)]
             yy = y0 + (j % 2) * S(54) + k * S(36)
             if side == "right":
                 xs -= box.size[0] + gap; px = xs + gap
@@ -387,13 +447,13 @@ def caption(img, t):
     li = active_line(t)
     if li is None:
         return
-    a = PRON[li - 1].strip(); b = KO[li - 1].strip()
+    b = KO[li - 1].strip()
     region = img.crop((Q.W // 4, Q.H - S(120), Q.W * 3 // 4, Q.H - S(20))).convert("L")
     dark = np.asarray(region).mean() < 128
     col = PAPER_L if dark else INK
-    f1, f2 = font(F_L, S(25), 1), font(F_L, S(21), 1)
+    f2 = font(F_L, S(26), 1)
     d = ImageDraw.Draw(img)
-    for txt, f, y, al in ((a, f1, Q.H - S(86), 235), (b, f2, Q.H - S(50), 205)):
+    for txt, f, y, al in ((b, f2, Q.H - S(70), 235),):
         w = d.textlength(txt, font=f)
         d.text((Q.W / 2 - w / 2, y), txt, font=f, fill=col + (al,))
 
@@ -733,7 +793,7 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
         text_A(L, t, c, 60, side="right", mirror=True, max_lines=2)
         return
     if nc == "paper_type":
-        text_A(L, t, c, 64, side="right", max_lines=3)
+        text_A(L, t, c, 64, side="right", max_lines=2)
         return
     if nc == "empty_room":
         text_B(L, t, c, [], PAPER_L, size_h=0.32, slide=0.06)
@@ -751,7 +811,7 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
             a = min(1, t / 3)
             im = htext("神っぽいな", S(54), PAPER_L + (int(220 * a),), F_XL)
             paste(L, im, Q.W / 2 - im.size[0] / 2, Q.H / 2 - S(60))
-            im2 = htext("cover  /  25時、ナイトコードで。", S(18), GRAY_M + (int(220 * a),), F_L)
+            im2 = htext("cover  /  暁山 瑞希", S(18), GRAY_M + (int(220 * a),), F_L)
             paste(L, im2, Q.W / 2 - im2.size[0] / 2, Q.H / 2 + S(30))
         return
     if sc in (2, 12):

@@ -2,8 +2,8 @@
  "density": [
   {
    "window": "0-10",
-   "cuts": 6,
-   "per10s": 6.0,
+   "cuts": 5,
+   "per10s": 5.0,
    "scenes": [
     1,
     2
@@ -12,27 +12,27 @@
   },
   {
    "window": "10-20",
-   "cuts": 7,
-   "per10s": 7.0,
+   "cuts": 8,
+   "per10s": 8.0,
    "scenes": [
     2
    ],
    "target": "7~9"
   }
  ],
- "fast_zone_per10s": 7.9,
+ "fast_zone_per10s": 8.2,
  "motion": {
-  "mean_diff": 2.56,
+  "mean_diff": 2.5,
   "min_diff": 0.113,
-  "static_frames_pct": 6.0
+  "static_frames_pct": 6.2
  },
  "beat_err_ms": {
-  "mean": 9.9,
-  "max": 14.3,
+  "mean": 8.7,
+  "max": 16.0,
   "n": 12
  },
  "colour": {
-  "red_pct": 0.03,
+  "red_pct": 0.1,
   "other_pct": 0.0,
   "worst_frame_other_pct": 0.0
  },

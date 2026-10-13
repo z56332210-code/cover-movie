@@ -4,12 +4,14 @@ Every cut boundary snaps to a tracked beat. Lyric line starts inside a scene are
 the gaps between them are filled with a beat pattern (fast scenes ~3 beats/cut, relaxed ~10 beats/cut).
 """
 import json
+import numpy as np
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 beats = json.load(open(ROOT / "plan/audio_analysis.json"))["beats"]
 LT = json.load(open(ROOT / "lyrics/line_times.json"))
 lines = {i: t for i, t, _ in LT["lines"]}
+L = lines
 ja = (ROOT / "lyrics/lyrics.txt").read_text(encoding="utf-8").splitlines()
 DUR = 146.84
 JUMP = LT["jump_sec"]
@@ -41,6 +43,17 @@ CROPS = {
     "ribbon_L":    ("upper", (420, 1190), 560),
     "skirt":       ("upper", (1100, 1650), 1000),
     "bust":        ("upper", (965, 760), 1400),
+    "lolly":       ("upper", (300, 690), 320),
+    "nails":       ("upper", (430, 800), 400),
+    "cuff_L":      ("upper", (470, 960), 440),
+    "cuff_R":      ("upper", (1450, 660), 440),
+    "hood_top":    ("upper", (930, 260), 760),
+    "hair_L":      ("upper", (720, 720), 520),
+    "cross_close": ("upper", (760, 1100), 280),
+    "tongue":      ("upper", (960, 595), 260),
+    "finger_eye":  ("upper", (1070, 500), 340),
+    "wide_upper":  ("upper", (1000, 950), 1900),
+    "sleeve_R":    ("upper", (1500, 1100), 700),
     "silhouette":  ("full", (562, 1000), None),   # whole figure fit to height (band scenes)
     "legs":        ("full", (560, 1500), 900),
     "shoes":       ("full", (560, 1780), 760),
@@ -49,69 +62,74 @@ CROPS = {
 # ---- scenes (audio sec), aligned to lyric lines; mirrors scene_plan_nightcord_v3.json ids ----
 # pool entries: (crop, rotation_deg, flip_v)
 S = [
-    dict(id=1, start=0.0, end=6.6, type="title_card_hud", mode="hold", text="UI", color="black",
-         ov=["hud_frame_ornate", "roman_clock_ring:faint"], pool=[(None, 0, False)], cuts_at=[5.8]),
-    dict(id=2, start=6.6, end=20.2, type="black_crop_vertical", mode="fast", text="A", color="mono",
+    dict(id=1, start=0.0, end=L[2], type="title_card_hud", mode="hold", text="UI", color="black",
+         ov=["hud_frame_ornate", "roman_clock_ring:faint"], pool=[(None, 0, False)], cuts_at=[L[1]]),
+    dict(id=2, start=L[2], end=L[6], type="black_crop_vertical", mode="fast", text="A", color="mono",
          ov=["hud_frame_ornate", "code_text_block"],
-         pool=[("mouth", -18, False), ("lolly_hand", 24, False), ("neck_frill", 0, False), ("point_hand", -30, False),
-               ("collar_L", 12, False), ("eye_r", -8, False), ("ribbon_R", 35, False), ("buttons", -20, False)]),
-    dict(id=3, start=20.2, end=33.4, type="repeat_band_clock", mode="fast", text="D", color="paper+ink",
+         pool=[("mouth", -18, False), ("lolly", 24, False), ("hood_top", 8, False), ("finger_eye", -30, False),
+               ("collar_L", 12, False), ("eye_r", -8, False), ("cuff_L", 35, False), ("buttons", -20, False),
+               ("nails", -12, False), ("hair_L", 18, False), ("cross_close", -25, False), ("wide_upper", 4, False)]),
+    dict(id=3, start=L[6], end=L[14], type="repeat_band_clock", mode="fast", text="D", color="paper+ink",
          ov=["roman_clock_ring", "hud_frame_ornate"],
          pool=[("silhouette", 0, False), ("halo", 0, False), ("silhouette", 0, False), ("shoes", 0, False)],
          special={13: dict(text="B", note="giant 神っぽいな + mono radial lines (B t033)")}),
-    dict(id=4, start=33.4, end=43.9, type="paper_crop_vertical", mode="relaxed", text="A", color="paper+ink",
+    dict(id=4, start=L[14], end=L[19], type="paper_crop_vertical", mode="relaxed", text="A", color="paper+ink",
          ov=["circle_guides", "mini_icon", "hud_frame_ornate"], zone="relaxed",
-         pool=[("collar_R", -6, False), ("neck_frill", 4, False), ("buttons", -3, False)]),
-    dict(id=5, start=43.9, end=50.3, type="giant_type_mirror", mode="fast", text="B+A(mirror)", color="paper+ink",
+         pool=[("collar_R", -6, False), ("neck_frill", 4, False), ("sleeve_R", -3, False), ("wide_upper", 0, False)]),
+    dict(id=5, start=L[19], end=L[22], type="giant_type_mirror", mode="fast", text="B+A(mirror)", color="paper+ink",
          ov=["mirror_symmetry", "hud_frame_ornate:dim"],
-         pool=[("face", 0, False), ("eyes", 0, False), ("mouth", 0, False), ("bust", 0, False)],
+         pool=[("face", 0, False), ("eyes", 0, False), ("mouth", 0, False), ("bust", 0, False), ("halo", 0, False), ("nails", 0, False)],
          special={21: dict(type="black_card", text="small", note='"Gott ist tot" tiny on black (B t048)')}),
-    dict(id=6, start=50.3, end=67.3, type="inverted_crop_box_text", mode="fast", text="A(stack)", color="mono",
+    dict(id=6, start=L[22], end=L[30], type="inverted_crop_box_text", mode="fast", text="A(stack)", color="mono",
          ov=["roman_clock_ring:pass", "circle_guides", "hud_frame_ornate"],
          pool=[("point_hand", 180, True), ("face", 160, False), ("lolly_hand", 0, True), ("collar_L", -32, False),
                ("eye_l", 180, True), ("ribbon_L", 28, False), ("mouth", 0, True), ("halo", 200, False),
-               ("neck_frill", -25, False)],
+               ("neck_frill", -25, False), ("tongue", 170, False), ("cuff_R", 0, True), ("hood_top", 190, False),
+               ("nails", 150, True), ("wide_upper", 180, True)],
          special={23: dict(type="black_card", text="small", note='"My God" tiny'),
                   26: dict(type="black_card", text="small", note='"My God" tiny')}),
-    dict(id=7, start=67.3, end=77.6, type="red_starburst_slash", mode="fast", text="A→C(red)", color="mono→RED#1",
-         ov=["hud_frame_ornate"], red=(74.1, 77.6),
+    dict(id=7, start=L[30], end=L[35], type="red_starburst_slash", mode="fast", text="A→C(red)", color="mono→RED#1",
+         ov=["hud_frame_ornate"], red=(L[33], L[35]),
          red_ov=["starburst_red", "checker_strip", "red_slash"],
          pool=[("eye_r", -12, False), ("point_hand", -10, False), ("face", 6, False), ("eye_l", 15, False),
                ("eyes", 0, False), ("mouth", 6, False)]),
-    dict(id=8, start=77.6, end=87.9, type="repeat_band_silhouette", mode="fast", text="D", color="ink+gray",
+    dict(id=8, start=L[35], end=L[41], type="repeat_band_silhouette", mode="fast", text="D", color="ink+gray",
          ov=["checker_floor", "halftone", "hud_frame_ornate"],
          pool=[("silhouette", 0, False), ("legs", 0, False), ("silhouette", 0, False), ("shoes", 0, False)]),
-    dict(id=9, start=87.9, end=JUMP, type="checker_blur_transition", mode="fast", text="B(神っぽいな)", color="mono+gray smear",
+    dict(id=9, start=L[41], end=JUMP, type="checker_blur_transition", mode="fast", text="B(神っぽいな)", color="mono+gray smear",
          ov=["checker_blur", "whip_blur"],
          pool=[("silhouette", 0, False), ("silhouette", 0, False)]),
     dict(id=10, start=JUMP, end=JUMP + 0.36, type="audio_edit_mask", mode="hold", text="-", color="white+mosaic",
          ov=["white_flash", "glitch_mosaic"], pool=[(None, 0, False)]),
-    dict(id=11, start=JUMP + 0.36, end=97.4, type="red_starburst_slash", mode="fast", text="C(red)+A", color="RED#2→mono",
-         ov=["hud_frame_ornate"], red=(JUMP + 0.36, 93.8), red_ov=["starburst_red", "red_slash"],
-         pool=[("eyes", 0, False), ("eye_l", -14, False), ("face", 10, False), ("eye_r", 6, False), ("point_hand", -20, False)],
+    dict(id=11, start=JUMP + 0.36, end=L[46], type="red_starburst_slash", mode="fast", text="C(red)+A", color="RED#2→mono",
+         ov=["hud_frame_ornate"], red=(JUMP + 0.36, L[44]), red_ov=["starburst_red", "red_slash"],
+         pool=[("eyes", 0, False), ("eye_l", -14, False), ("face", 10, False), ("eye_r", 6, False), ("point_hand", -20, False),
+               ("finger_eye", 12, False), ("tongue", -8, False)],
          special={44: dict(type="black_card", text="small", note='"My God" tiny')}),
-    dict(id=12, start=97.4, end=106.1, type="black_crop_vertical", mode="fast", text="A", color="mono",
+    dict(id=12, start=L[46], end=L[50], type="black_crop_vertical", mode="fast", text="A", color="mono",
          ov=["glitch_mosaic", "code_text_block", "hud_frame_ornate"],
          pool=[("collar_R", 20, False), ("ribbon_L", -30, False), ("lolly_hand", -15, False), ("buttons", 25, False),
-               ("neck_frill", -12, False), ("point_hand", 30, False), ("ribbon_R", -22, False)],
+               ("neck_frill", -12, False), ("point_hand", 30, False), ("ribbon_R", -22, False), ("sleeve_R", 14, False),
+               ("finger_eye", -20, False), ("cross_close", 30, False), ("hair_L", -10, False)],
          special={47: dict(type="black_card", text="small", note='"My God" tiny')}),
-    dict(id=13, start=106.1, end=107.8, type="white_flash", mode="hold", text="small", color="white",
+    dict(id=13, start=L[50], end=L[51], type="white_flash", mode="hold", text="small", color="white",
          ov=[], pool=[(None, 0, False)]),
-    dict(id=14, start=107.8, end=123.3, type="repeat_band_red", mode="fast", text="D+C(red)", color="paper→RED#3",
-         ov=["torn_paper_strips", "hud_frame_ornate:dim"], red=(116.3, 119.9),
+    dict(id=14, start=L[51], end=L[59], type="repeat_band_red", mode="fast", text="D+C(red)", color="paper→RED#3",
+         ov=["torn_paper_strips", "hud_frame_ornate:dim"], red=(L[55], L[57] + 1.4),
          red_ov=["starburst_red", "checker_strip"],
          pool=[("silhouette", 0, False), ("halo", 0, False), ("silhouette", 0, False), ("skirt", 0, False),
                ("silhouette", 0, False), ("shoes", 0, False)]),
-    dict(id=15, start=123.3, end=131.6, type="inverted_crop_box_text", mode="fast", text="A", color="mono",
+    dict(id=15, start=L[59], end=L[64], type="inverted_crop_box_text", mode="fast", text="A", color="mono",
          ov=["roman_clock_ring", "mirror_symmetry", "hud_frame_ornate"],
          pool=[("face", 180, True), ("lolly_hand", 160, False), ("collar_R", 0, True), ("eye_r", 190, False),
-               ("ribbon_R", -28, False), ("halo", 0, True)],
+               ("ribbon_R", -28, False), ("halo", 0, True), ("tongue", 0, True), ("cuff_L", 200, False),
+               ("hood_top", 0, True), ("finger_eye", 170, False)],
          special={63: dict(text="B", note="giant 神っぽいな thin serif, cropped off-frame")}),
-    dict(id=16, start=131.6, end=141.7, type="giant_type_window_light", mode="relaxed", text="B", color="grayscale+window light",
+    dict(id=16, start=L[64], end=L[67], type="giant_type_window_light", mode="relaxed", text="B", color="grayscale+window light",
          ov=["window_light", "hud_frame_ornate:dim"], zone="relaxed",
-         pool=[("face", 0, False), ("bust", 0, False), ("eyes", 0, False)]),
-    dict(id=17, start=141.7, end=145.3, type="black_word", mode="hold", text="small→人生", color="black",
-         ov=[], pool=[(None, 0, False)], cuts_at=[143.6]),
+         pool=[("face", 0, False), ("wide_upper", 0, False), ("eyes", 0, False)]),
+    dict(id=17, start=L[67], end=145.3, type="black_word", mode="hold", text="small→人生", color="black",
+         ov=[], pool=[(None, 0, False)], cuts_at=[L[68]]),
     dict(id=18, start=145.3, end=DUR, type="white_bar_end", mode="hold", text="-", color="paper",
          ov=[], pool=[(None, 0, False)]),
 ]
@@ -158,25 +176,49 @@ def scene_points(sc):
 
 
 TRANS_ALT = ["cut_shake", "flip", "whip", "cut_shake", "black", "cut_shake"]
-GLITCH_AT = [20.2, 50.3, 63.9, JUMP, 100.9, 104.4, 129.9]  # 7 glitches incl. the mandatory edit mask
+GLITCH_AT = [L[6], L[22], L[28], JUMP, L[48], L[49], L[63]]  # 7 glitches incl. the mandatory edit mask
 glitch_beats = {snap(t) for t in GLITCH_AT}
 
-cuts, prev_tr, alt_i, run = [], None, 0, 0
+cuts, prev_tr, alt_i, run, recent = [], None, 0, 0, []
 for sc in S:
     pts, s1 = scene_points(sc)
     for j, t0 in enumerate(pts):
         t1 = pts[j + 1] if j + 1 < len(pts) else s1
         if t1 - t0 < 0.05:
             continue
-        crop, rot, flip = sc["pool"][(j + sc["id"]) % len(sc["pool"])]
+        pool = sc["pool"]; st = (j + sc["id"]) % len(pool)
+        crop, rot, flip = pool[st]
+        for q in range(len(pool)):            # no preset reused within the last 5 cuts (silhouette scenes excepted)
+            cand = pool[(st + q) % len(pool)]
+            if cand[0] in (None, "silhouette") or cand[0] not in recent[-5:]:
+                crop, rot, flip = cand; break
         active = [i for i in lines if lines[i] < t1 and (lines.get(i + 1, LT["end_sec"]) > t0)]
         start_line = next((i for i in lines if abs(snap(lines[i]) - t0) < 0.01), None)
         c = dict(start=round(t0, 3), dur=round(t1 - t0, 3), scene=sc["id"], type=sc["type"], text_level=sc["text"],
                  lyric_lines=active, crop=crop, rot=rot, flip_v=flip, overlays=list(sc["ov"]))
         if crop:
             src, (cx, cy), w = CROPS[crop]
+            jr = np.random.default_rng(len(cuts) * 101 + 7)
+            if w is not None:                 # every cut gets its own framing
+                w = int(w * jr.uniform(0.82, 1.28)); cx = int(cx + jr.uniform(-0.12, 0.12) * w); cy = int(cy + jr.uniform(-0.10, 0.10) * w)
+                c["rot"] = round(rot + float(jr.uniform(-7, 7)), 1)
             c["crop_src"] = f"art/char_{src}.webp"
             c["crop_box"] = dict(cx=cx, cy=cy, w=w)
+            if w is not None and sc["id"] in (2, 4, 5, 6, 12, 15, 16):
+                v = jr.choice(["single", "negative", "split", "strip"], p=[0.6, 0.12, 0.16, 0.12])
+                if sc["id"] in (4, 16) and v != "single":
+                    v = "strip" if v == "strip" else "single"
+                c["variant"] = str(v)
+                if v == "split":
+                    other = [p_ for p_ in pool if p_[0] not in (crop, None, "silhouette")]
+                    if other:
+                        o = other[int(jr.integers(len(other)))]
+                        s2, (ox, oy), ow = CROPS[o[0]]
+                        c["split"] = dict(crop=o[0], cx=ox, cy=oy, w=int(ow * jr.uniform(0.85, 1.2)), rot=o[1], flip_v=o[2],
+                                          angle=float(jr.uniform(55, 80)) * (1 if jr.random() < 0.5 else -1))
+                    else:
+                        c["variant"] = "single"
+            recent.append(crop)
         if start_line and start_line in sc.get("special", {}):
             c.update({k: v for k, v in sc["special"][start_line].items() if k != "note"})
             c["note"] = sc["special"][start_line]["note"]

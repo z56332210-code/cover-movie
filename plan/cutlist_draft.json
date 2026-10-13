@@ -7,14 +7,14 @@
   "jump_note": "원곡(=레퍼런스 B 음원) 91.63초 → 147.50초로 점프. scene_plan의 88.0~89.3초 추정을 90.80초로 보정."
  },
  "stats": {
-  "total_cuts": 104,
+  "total_cuts": 105,
   "nochar_cuts": 27,
   "mean_beat_err_ms": 0.0,
   "red_windows": [
    [
-    74.27,
+    73.85,
     77.65,
-    3.38
+    3.8
    ],
    [
     91.16,
@@ -22,9 +22,9 @@
     2.54
    ],
    [
-    116.1,
-    119.9,
-    3.8
+    117.36,
+    121.17,
+    3.81
    ]
   ],
   "glitches": [
@@ -34,7 +34,7 @@
    90.755,
    100.879,
    104.269,
-   130.032
+   129.614
   ],
   "clock_scenes": [
    1,
@@ -46,7 +46,7 @@
  "density": [
   {
    "window": "0-10",
-   "cuts": 6,
+   "cuts": 5,
    "scenes": [
     1,
     2
@@ -54,7 +54,7 @@
   },
   {
    "window": "10-20",
-   "cuts": 7,
+   "cuts": 8,
    "scenes": [
     2
    ]
@@ -76,7 +76,7 @@
   },
   {
    "window": "40-50",
-   "cuts": 6,
+   "cuts": 7,
    "scenes": [
     4,
     5
@@ -99,7 +99,7 @@
   },
   {
    "window": "70-80",
-   "cuts": 7,
+   "cuts": 8,
    "scenes": [
     7,
     8
@@ -148,9 +148,8 @@
   },
   {
    "window": "130-140",
-   "cuts": 4,
+   "cuts": 3,
    "scenes": [
-    15,
     16
    ]
   },
@@ -167,13 +166,13 @@
   {
    "id": 1,
    "start": 0.0,
-   "end": 6.6,
+   "end": 6.85,
    "type": "title_card_hud",
    "color": "black"
   },
   {
    "id": 2,
-   "start": 6.6,
+   "start": 6.85,
    "end": 20.2,
    "type": "black_crop_vertical",
    "color": "mono"
@@ -181,48 +180,48 @@
   {
    "id": 3,
    "start": 20.2,
-   "end": 33.4,
+   "end": 33.52,
    "type": "repeat_band_clock",
    "color": "paper+ink"
   },
   {
    "id": 4,
-   "start": 33.4,
-   "end": 43.9,
+   "start": 33.52,
+   "end": 43.28,
    "type": "paper_crop_vertical",
    "color": "paper+ink"
   },
   {
    "id": 5,
-   "start": 43.9,
-   "end": 50.3,
+   "start": 43.28,
+   "end": 50.18,
    "type": "giant_type_mirror",
    "color": "paper+ink"
   },
   {
    "id": 6,
-   "start": 50.3,
-   "end": 67.3,
+   "start": 50.18,
+   "end": 67.18,
    "type": "inverted_crop_box_text",
    "color": "mono"
   },
   {
    "id": 7,
-   "start": 67.3,
-   "end": 77.6,
+   "start": 67.18,
+   "end": 77.58,
    "type": "red_starburst_slash",
    "color": "mono→RED#1"
   },
   {
    "id": 8,
-   "start": 77.6,
-   "end": 87.9,
+   "start": 77.58,
+   "end": 87.64,
    "type": "repeat_band_silhouette",
    "color": "ink+gray"
   },
   {
    "id": 9,
-   "start": 87.9,
+   "start": 87.64,
    "end": 90.8,
    "type": "checker_blur_transition",
    "color": "mono+gray smear"
@@ -237,48 +236,48 @@
   {
    "id": 11,
    "start": 91.16,
-   "end": 97.4,
+   "end": 97.62,
    "type": "red_starburst_slash",
    "color": "RED#2→mono"
   },
   {
    "id": 12,
-   "start": 97.4,
-   "end": 106.1,
+   "start": 97.62,
+   "end": 106.2,
    "type": "black_crop_vertical",
    "color": "mono"
   },
   {
    "id": 13,
-   "start": 106.1,
-   "end": 107.8,
+   "start": 106.2,
+   "end": 107.94,
    "type": "white_flash",
    "color": "white"
   },
   {
    "id": 14,
-   "start": 107.8,
-   "end": 123.3,
+   "start": 107.94,
+   "end": 122.82,
    "type": "repeat_band_red",
    "color": "paper→RED#3"
   },
   {
    "id": 15,
-   "start": 123.3,
-   "end": 131.6,
+   "start": 122.82,
+   "end": 131.46,
    "type": "inverted_crop_box_text",
    "color": "mono"
   },
   {
    "id": 16,
-   "start": 131.6,
-   "end": 141.7,
+   "start": 131.46,
+   "end": 140.76,
    "type": "giant_type_window_light",
    "color": "grayscale+window light"
   },
   {
    "id": 17,
-   "start": 141.7,
+   "start": 140.76,
    "end": 145.3,
    "type": "black_word",
    "color": "black"
@@ -311,12 +310,13 @@
   },
   {
    "start": 5.619,
-   "dur": 0.825,
+   "dur": 1.254,
    "scene": 1,
    "type": "title_card_hud",
    "text_level": "UI",
    "lyric_lines": [
-    1
+    1,
+    2
    ],
    "crop": null,
    "rot": 0,
@@ -329,17 +329,16 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 6.444,
-   "dur": 1.265,
+   "start": 6.873,
+   "dur": 1.266,
    "scene": 2,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
-    1,
     2
    ],
-   "crop": "neck_frill",
-   "rot": 0,
+   "crop": "hood_top",
+   "rot": 1.2,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -347,24 +346,25 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 935,
-    "cy": 700,
-    "w": 420
+    "cx": 944,
+    "cy": 286,
+    "w": 722
    },
+   "variant": "single",
    "red": false,
    "transition_in": "cut_shake"
   },
   {
-   "start": 7.709,
-   "dur": 0.859,
+   "start": 8.139,
+   "dur": 1.277,
    "scene": 2,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
     2
    ],
-   "crop": "point_hand",
-   "rot": -30,
+   "crop": "finger_eye",
+   "rot": -27.4,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -372,15 +372,16 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 1109,
+    "cy": 512,
+    "w": 359
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 8.568,
+   "start": 9.416,
    "dur": 1.254,
    "scene": 2,
    "type": "black_crop_vertical",
@@ -390,7 +391,7 @@
     3
    ],
    "crop": "collar_L",
-   "rot": 12,
+   "rot": 15.5,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -398,16 +399,17 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 760,
-    "cy": 1090,
-    "w": 460
+    "cx": 798,
+    "cy": 1129,
+    "w": 401
    },
+   "variant": "strip",
    "red": false,
    "transition_in": "flip"
   },
   {
-   "start": 9.822,
-   "dur": 1.266,
+   "start": 10.67,
+   "dur": 1.277,
    "scene": 2,
    "type": "black_crop_vertical",
    "text_level": "A",
@@ -421,34 +423,10 @@
     "hud_frame_ornate",
     "code_text_block"
    ],
+   "variant": "single",
    "nochar": "ink_type",
    "red": false,
    "transition_in": "lightleak_8f"
-  },
-  {
-   "start": 11.088,
-   "dur": 0.859,
-   "scene": 2,
-   "type": "black_crop_vertical",
-   "text_level": "A",
-   "lyric_lines": [
-    3
-   ],
-   "crop": "ribbon_R",
-   "rot": 35,
-   "flip_v": false,
-   "overlays": [
-    "hud_frame_ornate",
-    "code_text_block"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1540,
-    "cy": 780,
-    "w": 560
-   },
-   "red": false,
-   "transition_in": "whip"
   },
   {
    "start": 11.947,
@@ -460,8 +438,8 @@
     3,
     4
    ],
-   "crop": "buttons",
-   "rot": -20,
+   "crop": "cuff_L",
+   "rot": 34.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -469,24 +447,25 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1000,
-    "cy": 1010,
-    "w": 520
+    "cx": 507,
+    "cy": 987,
+    "w": 529
    },
+   "variant": "negative",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "whip"
   },
   {
    "start": 13.212,
-   "dur": 1.684,
+   "dur": 1.254,
    "scene": 2,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
     4
    ],
-   "crop": "mouth",
-   "rot": -18,
+   "crop": "buttons",
+   "rot": -15.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -494,24 +473,61 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 585,
-    "w": 440
+    "cx": 945,
+    "cy": 977,
+    "w": 559
+   },
+   "variant": "single",
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 14.466,
+   "dur": 0.836,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    4
+   ],
+   "crop": "nails",
+   "rot": -7.1,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 481,
+    "cy": 823,
+    "w": 445
+   },
+   "variant": "split",
+   "split": {
+    "crop": "eye_r",
+    "cx": 925,
+    "cy": 425,
+    "w": 313,
+    "rot": -8,
+    "flip_v": false,
+    "angle": -64.13822477292318
    },
    "red": false,
    "transition_in": "cut_shake"
   },
   {
-   "start": 14.896,
-   "dur": 1.695,
+   "start": 15.302,
+   "dur": 1.289,
    "scene": 2,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
-    4
+    4,
+    5
    ],
-   "crop": "lolly_hand",
-   "rot": 24,
+   "crop": "hair_L",
+   "rot": 24.2,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -519,10 +535,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 330,
-    "cy": 760,
-    "w": 560
+    "cx": 725,
+    "cy": 746,
+    "w": 470
    },
+   "variant": "strip",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -533,7 +550,6 @@
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
-    4,
     5
    ],
    "crop": null,
@@ -543,6 +559,7 @@
     "hud_frame_ornate",
     "code_text_block"
    ],
+   "variant": "single",
    "nochar": "ink_type",
    "red": false,
    "transition_in": "black"
@@ -556,8 +573,8 @@
    "lyric_lines": [
     5
    ],
-   "crop": "point_hand",
-   "rot": -30,
+   "crop": "wide_upper",
+   "rot": -2.9,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -565,10 +582,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 1163,
+    "cy": 764,
+    "w": 1888
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -582,8 +600,8 @@
     5,
     6
    ],
-   "crop": "collar_L",
-   "rot": 12,
+   "crop": "mouth",
+   "rot": -20.8,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -591,10 +609,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 760,
-    "cy": 1090,
-    "w": 460
+    "cx": 958,
+    "cy": 586,
+    "w": 488
    },
+   "variant": "single",
    "red": false,
    "transition_in": "cut_shake"
   },
@@ -608,7 +627,7 @@
     6
    ],
    "crop": "shoes",
-   "rot": 0,
+   "rot": 4.0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
@@ -616,9 +635,9 @@
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
+    "cx": 586,
+    "cy": 1822,
+    "w": 716
    },
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
@@ -659,7 +678,7 @@
     7
    ],
    "crop": "halo",
-   "rot": 0,
+   "rot": -5.9,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
@@ -667,9 +686,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 1089,
+    "cy": 131,
+    "w": 504
    },
    "red": false,
    "transition_in": "cut_shake"
@@ -705,7 +724,7 @@
     8,
     9
    ],
-   "crop": "shoes",
+   "crop": "silhouette",
    "rot": 0,
    "flip_v": false,
    "overlays": [
@@ -714,21 +733,22 @@
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
+    "cx": 562,
+    "cy": 1000,
+    "w": null
    },
    "red": false,
    "transition_in": "flip"
   },
   {
    "start": 26.099,
-   "dur": 0.848,
+   "dur": 1.266,
    "scene": 3,
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    9
+    9,
+    10
    ],
    "crop": "silhouette",
    "rot": 0,
@@ -747,27 +767,27 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 26.947,
-   "dur": 1.683,
+   "start": 27.365,
+   "dur": 1.265,
    "scene": 3,
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    9,
-    10
+    10,
+    11
    ],
-   "crop": "halo",
+   "crop": "silhouette",
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
+   "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 562,
+    "cy": 1000,
+    "w": null
    },
    "red": false,
    "transition_in": "whip"
@@ -779,8 +799,8 @@
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    10,
-    11
+    11,
+    12
    ],
    "crop": "silhouette",
    "rot": 0,
@@ -805,7 +825,6 @@
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    11,
     12
    ],
    "crop": null,
@@ -826,7 +845,8 @@
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    12
+    12,
+    13
    ],
    "crop": "silhouette",
    "rot": 0,
@@ -851,12 +871,10 @@
    "type": "repeat_band_clock",
    "text_level": "D",
    "lyric_lines": [
-    12,
-    13,
-    14
+    13
    ],
    "crop": "halo",
-   "rot": 0,
+   "rot": 6.8,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
@@ -864,9 +882,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 1116,
+    "cy": 125,
+    "w": 480
    },
    "text": "B",
    "note": "giant 神っぽいな + mono radial lines (B t033)",
@@ -875,16 +893,17 @@
   },
   {
    "start": 33.495,
-   "dur": 3.367,
+   "dur": 2.96,
    "scene": 4,
    "type": "paper_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
+    13,
     14,
     15
    ],
-   "crop": "neck_frill",
-   "rot": 4,
+   "crop": "collar_R",
+   "rot": -10.0,
    "flip_v": false,
    "overlays": [
     "circle_guides",
@@ -893,16 +912,17 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 935,
-    "cy": 700,
-    "w": 420
+    "cx": 1188,
+    "cy": 959,
+    "w": 508
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 36.862,
-   "dur": 3.39,
+   "start": 36.455,
+   "dur": 3.797,
    "scene": 4,
    "type": "paper_crop_vertical",
    "text_level": "A",
@@ -918,24 +938,24 @@
     "mini_icon",
     "hud_frame_ornate"
    ],
+   "variant": "single",
    "nochar": "paper_type",
    "red": false,
    "transition_in": "cut_shake"
   },
   {
    "start": 40.252,
-   "dur": 3.785,
+   "dur": 2.972,
    "scene": 4,
    "type": "paper_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
     16,
     17,
-    18,
-    19
+    18
    ],
-   "crop": "collar_R",
-   "rot": -6,
+   "crop": "sleeve_R",
+   "rot": -3.2,
    "flip_v": false,
    "overlays": [
     "circle_guides",
@@ -944,15 +964,52 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1190,
-    "cy": 1000,
-    "w": 460
+    "cx": 1481,
+    "cy": 1073,
+    "w": 607
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 44.037,
+   "start": 43.224,
+   "dur": 1.672,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    18,
+    19
+   ],
+   "crop": "nails",
+   "rot": 3.6,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 384,
+    "cy": 804,
+    "w": 411
+   },
+   "variant": "split",
+   "split": {
+    "crop": "eyes",
+    "cx": 985,
+    "cy": 440,
+    "w": 607,
+    "rot": 0,
+    "flip_v": false,
+    "angle": -79.07198937943119
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 44.896,
    "dur": 1.277,
    "scene": 5,
    "type": "giant_type_mirror",
@@ -960,8 +1017,8 @@
    "lyric_lines": [
     19
    ],
-   "crop": "eyes",
-   "rot": 0,
+   "crop": "face",
+   "rot": -6.1,
    "flip_v": false,
    "overlays": [
     "mirror_symmetry",
@@ -969,16 +1026,17 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
+    "cx": 1058,
+    "cy": 500,
+    "w": 951
    },
+   "variant": "single",
    "red": false,
-   "transition_in": "cut_shake"
+   "transition_in": "lightleak_8f"
   },
   {
-   "start": 45.314,
-   "dur": 1.277,
+   "start": 46.173,
+   "dur": 1.254,
    "scene": 5,
    "type": "giant_type_mirror",
    "text_level": "B+A(mirror)",
@@ -986,8 +1044,8 @@
     19,
     20
    ],
-   "crop": "mouth",
-   "rot": 0,
+   "crop": "eyes",
+   "rot": 1.5,
    "flip_v": false,
    "overlays": [
     "mirror_symmetry",
@@ -995,35 +1053,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 585,
-    "w": 440
+    "cx": 1021,
+    "cy": 387,
+    "w": 532
    },
-   "red": false,
-   "transition_in": "lightleak_8f"
-  },
-  {
-   "start": 46.591,
-   "dur": 0.836,
-   "scene": 5,
-   "type": "giant_type_mirror",
-   "text_level": "B+A(mirror)",
-   "lyric_lines": [
-    20
-   ],
-   "crop": "bust",
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "mirror_symmetry",
-    "hud_frame_ornate:dim"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 760,
-    "w": 1400
-   },
+   "variant": "single",
    "red": false,
    "transition_in": "flip"
   },
@@ -1043,13 +1077,14 @@
     "mirror_symmetry",
     "hud_frame_ornate:dim"
    ],
+   "variant": "strip",
    "nochar": "paper_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 48.576,
-   "dur": 1.602,
+   "dur": 0.766,
    "scene": 5,
    "type": "black_card",
    "text_level": "B+A(mirror)",
@@ -1064,10 +1099,37 @@
     "mirror_symmetry",
     "hud_frame_ornate:dim"
    ],
+   "variant": "strip",
    "text": "small",
    "note": "\"Gott ist tot\" tiny on black (B t048)",
    "red": false,
    "transition_in": "whip"
+  },
+  {
+   "start": 49.342,
+   "dur": 0.836,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    21
+   ],
+   "crop": "halo",
+   "rot": -5.1,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1118,
+    "cy": 101,
+    "w": 525
+   },
+   "variant": "single",
+   "red": false,
+   "transition_in": "lightleak_8f"
   },
   {
    "start": 50.178,
@@ -1079,9 +1141,9 @@
     21,
     22
    ],
-   "crop": "mouth",
-   "rot": 0,
-   "flip_v": true,
+   "crop": "neck_frill",
+   "rot": -20.4,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
@@ -1089,10 +1151,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 585,
-    "w": 440
+    "cx": 921,
+    "cy": 689,
+    "w": 401
    },
+   "variant": "single",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
   },
@@ -1105,8 +1168,8 @@
    "lyric_lines": [
     22
    ],
-   "crop": "halo",
-   "rot": 200,
+   "crop": "tongue",
+   "rot": 163.1,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
@@ -1115,21 +1178,54 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 987,
+    "cy": 621,
+    "w": 324
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 53.139,
-   "dur": 0.836,
+   "dur": 0.418,
    "scene": 6,
    "type": "black_card",
    "text_level": "A(stack)",
    "lyric_lines": [
     22,
+    23
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "variant": "split",
+   "split": {
+    "crop": "mouth",
+    "cx": 965,
+    "cy": 585,
+    "w": 424,
+    "rot": 0,
+    "flip_v": true,
+    "angle": 61.264486649965555
+   },
+   "text": "small",
+   "note": "\"My God\" tiny",
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 53.557,
+   "dur": 1.265,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
     23,
     24
    ],
@@ -1141,70 +1237,22 @@
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "text": "small",
-   "note": "\"My God\" tiny",
-   "red": false,
-   "transition_in": "cut_shake"
-  },
-  {
-   "start": 53.975,
-   "dur": 0.847,
-   "scene": 6,
-   "type": "inverted_crop_box_text",
-   "text_level": "A(stack)",
-   "lyric_lines": [
-    24
-   ],
-   "crop": null,
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring:pass",
-    "circle_guides",
-    "hud_frame_ornate"
-   ],
+   "variant": "single",
    "nochar": "clock_type",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 54.822,
-   "dur": 1.277,
+   "dur": 0.848,
    "scene": 6,
    "type": "inverted_crop_box_text",
    "text_level": "A(stack)",
    "lyric_lines": [
     24
    ],
-   "crop": "face",
-   "rot": 160,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring:pass",
-    "circle_guides",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
-   },
-   "red": false,
-   "transition_in": "black"
-  },
-  {
-   "start": 56.099,
-   "dur": 0.848,
-   "scene": 6,
-   "type": "inverted_crop_box_text",
-   "text_level": "A(stack)",
-   "lyric_lines": [
-    24,
-    25
-   ],
-   "crop": "lolly_hand",
-   "rot": 0,
+   "crop": "nails",
+   "rot": 143.8,
    "flip_v": true,
    "overlays": [
     "roman_clock_ring:pass",
@@ -1213,10 +1261,47 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 330,
-    "cy": 760,
-    "w": 560
+    "cx": 415,
+    "cy": 828,
+    "w": 410
    },
+   "variant": "split",
+   "split": {
+    "crop": "tongue",
+    "cx": 960,
+    "cy": 595,
+    "w": 222,
+    "rot": 170,
+    "flip_v": false,
+    "angle": -57.40889929423893
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 55.67,
+   "dur": 1.277,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    24
+   ],
+   "crop": "wide_upper",
+   "rot": 177.0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 923,
+    "cy": 1089,
+    "w": 1708
+   },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -1227,9 +1312,10 @@
    "type": "black_crop_vertical",
    "text_level": "A(stack)",
    "lyric_lines": [
+    24,
     25
    ],
-   "crop": "collar_L",
+   "crop": "point_hand",
    "rot": -12,
    "flip_v": false,
    "overlays": [
@@ -1239,10 +1325,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 760,
-    "cy": 1090,
-    "w": 460
+    "cx": 1162,
+    "cy": 526,
+    "w": 476
    },
+   "variant": "single",
    "red": false,
    "transition_in": "cut_shake"
   },
@@ -1256,9 +1343,9 @@
     25,
     26
    ],
-   "crop": "eye_l",
-   "rot": 180,
-   "flip_v": true,
+   "crop": "face",
+   "rot": 156.7,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
@@ -1266,10 +1353,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1030,
-    "cy": 455,
-    "w": 360
+    "cx": 919,
+    "cy": 376,
+    "w": 784
    },
+   "variant": "strip",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -1280,7 +1368,8 @@
    "type": "black_card",
    "text_level": "A(stack)",
    "lyric_lines": [
-    26
+    26,
+    27
    ],
    "crop": null,
    "rot": 0,
@@ -1290,6 +1379,7 @@
     "circle_guides",
     "hud_frame_ornate"
    ],
+   "variant": "strip",
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
@@ -1302,12 +1392,11 @@
    "type": "inverted_crop_box_text",
    "text_level": "A(stack)",
    "lyric_lines": [
-    26,
     27
    ],
-   "crop": "mouth",
-   "rot": 0,
-   "flip_v": true,
+   "crop": "collar_L",
+   "rot": -38.4,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
@@ -1315,10 +1404,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 585,
-    "w": 440
+    "cx": 818,
+    "cy": 1109,
+    "w": 567
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -1331,9 +1421,9 @@
    "lyric_lines": [
     27
    ],
-   "crop": "halo",
-   "rot": 200,
-   "flip_v": false,
+   "crop": "eye_l",
+   "rot": 178.0,
+   "flip_v": true,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
@@ -1341,10 +1431,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 1051,
+    "cy": 439,
+    "w": 407
    },
+   "variant": "single",
    "red": false,
    "transition_in": "flip"
   },
@@ -1358,8 +1449,8 @@
     27,
     28
    ],
-   "crop": "neck_frill",
-   "rot": -25,
+   "crop": "ribbon_L",
+   "rot": 22.2,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
@@ -1368,10 +1459,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 935,
-    "cy": 700,
-    "w": 420
+    "cx": 363,
+    "cy": 1211,
+    "w": 670
    },
+   "variant": "single",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
   },
@@ -1385,7 +1477,7 @@
     28,
     29
    ],
-   "crop": "point_hand",
+   "crop": "mouth",
    "rot": -12,
    "flip_v": false,
    "overlays": [
@@ -1395,22 +1487,22 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 1023,
+    "cy": 546,
+    "w": 516
    },
+   "variant": "negative",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 66.235,
-   "dur": 1.265,
+   "dur": 0.847,
    "scene": 6,
    "type": "inverted_crop_box_text",
    "text_level": "A(stack)",
    "lyric_lines": [
-    29,
-    30
+    29
    ],
    "crop": null,
    "rot": 0,
@@ -1420,37 +1512,39 @@
     "circle_guides",
     "hud_frame_ornate"
    ],
+   "variant": "negative",
    "nochar": "clock_type",
    "red": false,
    "transition_in": "whip"
   },
   {
-   "start": 67.5,
-   "dur": 1.278,
+   "start": 67.082,
+   "dur": 1.266,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
    "lyric_lines": [
+    29,
     30
    ],
    "crop": "point_hand",
-   "rot": -10,
+   "rot": -13.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 1136,
+    "cy": 588,
+    "w": 562
    },
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 68.778,
-   "dur": 0.835,
+   "start": 68.348,
+   "dur": 0.847,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
@@ -1458,23 +1552,23 @@
     30
    ],
    "crop": "face",
-   "rot": 6,
+   "rot": 2.4,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 993,
+    "cy": 513,
+    "w": 786
    },
    "red": false,
    "transition_in": "cut_shake"
   },
   {
-   "start": 69.613,
-   "dur": 1.278,
+   "start": 69.195,
+   "dur": 1.266,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
@@ -1482,29 +1576,30 @@
     30
    ],
    "crop": "eye_l",
-   "rot": 15,
+   "rot": 12.4,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1030,
-    "cy": 455,
-    "w": 360
+    "cx": 1046,
+    "cy": 427,
+    "w": 362
    },
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 70.891,
-   "dur": 1.683,
+   "start": 70.461,
+   "dur": 2.113,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
    "lyric_lines": [
     30,
-    31
+    31,
+    32
    ],
    "crop": null,
    "rot": 0,
@@ -1523,27 +1618,50 @@
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
    "lyric_lines": [
-    31,
     32
    ],
    "crop": "mouth",
-   "rot": 6,
+   "rot": 7.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 585,
-    "w": 440
+    "cx": 1000,
+    "cy": 632,
+    "w": 528
    },
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 73.421,
-   "dur": 0.848,
+   "dur": 0.43,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    32
+   ],
+   "crop": "eye_r",
+   "rot": -6.6,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 884,
+    "cy": 419,
+    "w": 358
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 73.851,
+   "dur": 1.684,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
@@ -1551,33 +1669,8 @@
     32,
     33
    ],
-   "crop": "eye_r",
-   "rot": -12,
-   "flip_v": false,
-   "overlays": [
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 925,
-    "cy": 425,
-    "w": 360
-   },
-   "red": false,
-   "transition_in": "cut_shake"
-  },
-  {
-   "start": 74.269,
-   "dur": 1.683,
-   "scene": 7,
-   "type": "red_starburst_slash",
-   "text_level": "A→C(red)",
-   "lyric_lines": [
-    33,
-    34
-   ],
    "crop": "point_hand",
-   "rot": -10,
+   "rot": -7.0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1587,25 +1680,24 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 1143,
+    "cy": 603,
+    "w": 567
    },
    "red": true,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 75.952,
-   "dur": 1.696,
+   "start": 75.535,
+   "dur": 1.265,
    "scene": 7,
    "type": "red_starburst_slash",
    "text_level": "A→C(red)",
    "lyric_lines": [
-    34,
-    35
+    33
    ],
    "crop": "face",
-   "rot": 6,
+   "rot": -0.9,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1615,12 +1707,41 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 914,
+    "cy": 360,
+    "w": 948
    },
    "red": true,
    "transition_in": "cut_shake"
+  },
+  {
+   "start": 76.8,
+   "dur": 0.848,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    33,
+    34,
+    35
+   ],
+   "crop": "eye_l",
+   "rot": 19.2,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "starburst_red",
+    "checker_strip",
+    "red_slash"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1024,
+    "cy": 424,
+    "w": 354
+   },
+   "red": true,
+   "transition_in": "lightleak_8f"
   },
   {
    "start": 77.648,
@@ -1647,7 +1768,7 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "flip"
   },
   {
    "start": 79.331,
@@ -1659,7 +1780,7 @@
     36
    ],
    "crop": "legs",
-   "rot": 0,
+   "rot": -3.2,
    "flip_v": false,
    "overlays": [
     "checker_floor",
@@ -1668,12 +1789,12 @@
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 560,
-    "cy": 1500,
-    "w": 900
+    "cx": 609,
+    "cy": 1475,
+    "w": 798
    },
    "red": false,
-   "transition_in": "flip"
+   "transition_in": "lightleak_8f"
   },
   {
    "start": 80.179,
@@ -1700,7 +1821,7 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "whip"
   },
   {
    "start": 81.026,
@@ -1709,7 +1830,8 @@
    "type": "repeat_band_silhouette",
    "text_level": "D",
    "lyric_lines": [
-    37
+    37,
+    38
    ],
    "crop": null,
    "rot": 0,
@@ -1721,7 +1843,7 @@
    ],
    "nochar": "band_only",
    "red": false,
-   "transition_in": "whip"
+   "transition_in": "lightleak_8f"
   },
   {
    "start": 82.709,
@@ -1730,7 +1852,6 @@
    "type": "repeat_band_silhouette",
    "text_level": "D",
    "lyric_lines": [
-    37,
     38
    ],
    "crop": "silhouette",
@@ -1748,37 +1869,11 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "cut_shake"
   },
   {
    "start": 83.569,
    "dur": 0.836,
-   "scene": 8,
-   "type": "repeat_band_silhouette",
-   "text_level": "D",
-   "lyric_lines": [
-    38
-   ],
-   "crop": "legs",
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "checker_floor",
-    "halftone",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 560,
-    "cy": 1500,
-    "w": 900
-   },
-   "red": false,
-   "transition_in": "cut_shake"
-  },
-  {
-   "start": 84.405,
-   "dur": 1.683,
    "scene": 8,
    "type": "repeat_band_silhouette",
    "text_level": "D",
@@ -1804,8 +1899,8 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 86.088,
-   "dur": 1.695,
+   "start": 84.405,
+   "dur": 2.113,
    "scene": 8,
    "type": "repeat_band_silhouette",
    "text_level": "D",
@@ -1813,7 +1908,7 @@
     39,
     40
    ],
-   "crop": "shoes",
+   "crop": "silhouette",
    "rot": 0,
    "flip_v": false,
    "overlays": [
@@ -1823,21 +1918,47 @@
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
+    "cx": 562,
+    "cy": 1000,
+    "w": null
    },
    "red": false,
    "transition_in": "black"
   },
   {
+   "start": 86.518,
+   "dur": 1.265,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    40,
+    41
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
    "start": 87.783,
-   "dur": 1.683,
+   "dur": 1.266,
    "scene": 9,
    "type": "checker_blur_transition",
    "text_level": "B(神っぽいな)",
    "lyric_lines": [
-    40,
     41
    ],
    "crop": "silhouette",
@@ -1854,11 +1975,11 @@
     "w": null
    },
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "cut_shake"
   },
   {
-   "start": 89.466,
-   "dur": 1.289,
+   "start": 89.049,
+   "dur": 1.706,
    "scene": 9,
    "type": "checker_blur_transition",
    "text_level": "B(神っぽいな)",
@@ -1880,7 +2001,7 @@
     "w": null
    },
    "red": false,
-   "transition_in": "cut_shake"
+   "transition_in": "lightleak_8f"
   },
   {
    "start": 90.755,
@@ -1911,8 +2032,8 @@
    "lyric_lines": [
     43
    ],
-   "crop": "eye_l",
-   "rot": -14,
+   "crop": "point_hand",
+   "rot": -22.5,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1921,9 +2042,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1030,
-    "cy": 455,
-    "w": 360
+    "cx": 1139,
+    "cy": 601,
+    "w": 589
    },
    "red": true,
    "transition_in": "lightleak_8f"
@@ -1937,8 +2058,8 @@
    "lyric_lines": [
     43
    ],
-   "crop": "face",
-   "rot": 10,
+   "crop": "finger_eye",
+   "rot": 7.0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1947,9 +2068,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 1091,
+    "cy": 534,
+    "w": 411
    },
    "red": true,
    "transition_in": "cut_shake"
@@ -2002,35 +2123,35 @@
    "type": "red_starburst_slash",
    "text_level": "C(red)+A",
    "lyric_lines": [
-    45,
-    46
+    45
    ],
-   "crop": "eyes",
-   "rot": 0,
+   "crop": "eye_l",
+   "rot": -19.2,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
+    "cx": 1056,
+    "cy": 469,
+    "w": 452
    },
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
    "start": 97.512,
-   "dur": 1.254,
+   "dur": 1.684,
    "scene": 12,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
+    45,
     46
    ],
-   "crop": "point_hand",
-   "rot": 30,
+   "crop": "ribbon_L",
+   "rot": -30.6,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
@@ -2039,24 +2160,25 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 401,
+    "cy": 1169,
+    "w": 668
    },
+   "variant": "single",
    "red": false,
    "transition_in": "whip"
   },
   {
-   "start": 98.766,
-   "dur": 1.266,
+   "start": 99.196,
+   "dur": 1.265,
    "scene": 12,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
     46
    ],
-   "crop": "ribbon_R",
-   "rot": -22,
+   "crop": "lolly_hand",
+   "rot": -12.5,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
@@ -2065,16 +2187,17 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1540,
-    "cy": 780,
-    "w": 560
+    "cx": 388,
+    "cy": 752,
+    "w": 676
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 100.032,
-   "dur": 0.847,
+   "start": 100.461,
+   "dur": 0.418,
    "scene": 12,
    "type": "black_card",
    "text_level": "A",
@@ -2090,6 +2213,7 @@
     "code_text_block",
     "hud_frame_ornate"
    ],
+   "variant": "strip",
    "text": "small",
    "note": "\"My God\" tiny",
    "red": false,
@@ -2113,6 +2237,7 @@
     "code_text_block",
     "hud_frame_ornate"
    ],
+   "variant": "negative",
    "nochar": "ink_type",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
@@ -2126,8 +2251,8 @@
    "lyric_lines": [
     48
    ],
-   "crop": "lolly_hand",
-   "rot": -15,
+   "crop": "point_hand",
+   "rot": 29.2,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
@@ -2136,10 +2261,11 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 330,
-    "cy": 760,
-    "w": 560
+    "cx": 1106,
+    "cy": 578,
+    "w": 498
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
@@ -2152,8 +2278,8 @@
    "lyric_lines": [
     48
    ],
-   "crop": "buttons",
-   "rot": 25,
+   "crop": "ribbon_R",
+   "rot": -26.5,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
@@ -2162,25 +2288,27 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1000,
-    "cy": 1010,
-    "w": 520
+    "cx": 1496,
+    "cy": 733,
+    "w": 511
    },
+   "variant": "single",
    "red": false,
    "transition_in": "black"
   },
   {
    "start": 104.269,
-   "dur": 1.684,
+   "dur": 2.113,
    "scene": 12,
    "type": "black_crop_vertical",
    "text_level": "A",
    "lyric_lines": [
     48,
-    49
+    49,
+    50
    ],
-   "crop": "neck_frill",
-   "rot": -12,
+   "crop": "sleeve_R",
+   "rot": 17.8,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
@@ -2189,22 +2317,23 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 935,
-    "cy": 700,
-    "w": 420
+    "cx": 1517,
+    "cy": 1093,
+    "w": 600
    },
+   "variant": "single",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
   },
   {
-   "start": 105.953,
-   "dur": 1.695,
+   "start": 106.382,
+   "dur": 1.684,
    "scene": 13,
    "type": "white_flash",
    "text_level": "small",
    "lyric_lines": [
-    49,
-    50
+    50,
+    51
    ],
    "crop": null,
    "rot": 0,
@@ -2214,13 +2343,12 @@
    "transition_in": "white_blowout"
   },
   {
-   "start": 107.648,
-   "dur": 1.265,
+   "start": 108.066,
+   "dur": 1.695,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
    "lyric_lines": [
-    50,
     51
    ],
    "crop": "silhouette",
@@ -2240,8 +2368,8 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 108.913,
-   "dur": 1.266,
+   "start": 109.761,
+   "dur": 1.265,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2249,7 +2377,7 @@
     51
    ],
    "crop": "skirt",
-   "rot": 0,
+   "rot": -3.5,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
@@ -2257,16 +2385,16 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1100,
-    "cy": 1650,
-    "w": 1000
+    "cx": 990,
+    "cy": 1638,
+    "w": 1163
    },
    "red": false,
    "transition_in": "cut_shake"
   },
   {
-   "start": 110.179,
-   "dur": 1.277,
+   "start": 111.026,
+   "dur": 0.848,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2291,8 +2419,8 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 111.456,
-   "dur": 1.683,
+   "start": 111.874,
+   "dur": 1.265,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2313,7 +2441,7 @@
   },
   {
    "start": 113.139,
-   "dur": 0.848,
+   "dur": 1.266,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
@@ -2337,16 +2465,17 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 113.987,
-   "dur": 0.418,
+   "start": 114.405,
+   "dur": 0.847,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
    "lyric_lines": [
-    53
+    53,
+    54
    ],
    "crop": "halo",
-   "rot": 0,
+   "rot": 3.7,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
@@ -2354,21 +2483,20 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 1052,
+    "cy": 81,
+    "w": 370
    },
    "red": false,
    "transition_in": "flip"
   },
   {
-   "start": 114.405,
-   "dur": 1.695,
+   "start": 115.252,
+   "dur": 1.266,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
    "lyric_lines": [
-    53,
     54
    ],
    "crop": "silhouette",
@@ -2388,40 +2516,38 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 116.1,
-   "dur": 0.836,
+   "start": 116.518,
+   "dur": 0.847,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    54
+   ],
+   "crop": "skirt",
+   "rot": 0.3,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1208,
+    "cy": 1717,
+    "w": 1025
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 117.365,
+   "dur": 0.43,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
    "lyric_lines": [
     54,
-    55
-   ],
-   "crop": "skirt",
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "torn_paper_strips",
-    "hud_frame_ornate:dim",
-    "starburst_red",
-    "checker_strip"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1100,
-    "cy": 1650,
-    "w": 1000
-   },
-   "red": true,
-   "transition_in": "whip"
-  },
-  {
-   "start": 116.936,
-   "dur": 1.277,
-   "scene": 14,
-   "type": "repeat_band_red",
-   "text_level": "D+C(red)",
-   "lyric_lines": [
     55
    ],
    "crop": "silhouette",
@@ -2443,7 +2569,7 @@
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 118.213,
+   "start": 117.795,
    "dur": 1.683,
    "scene": 14,
    "type": "repeat_band_red",
@@ -2453,7 +2579,7 @@
     56
    ],
    "crop": "shoes",
-   "rot": 0,
+   "rot": -1.4,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
@@ -2463,15 +2589,15 @@
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
-    "cx": 560,
-    "cy": 1780,
-    "w": 760
+    "cx": 554,
+    "cy": 1763,
+    "w": 656
    },
    "red": true,
    "transition_in": "cut_shake"
   },
   {
-   "start": 119.896,
+   "start": 119.478,
    "dur": 1.695,
    "scene": 14,
    "type": "repeat_band_red",
@@ -2485,7 +2611,9 @@
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
-    "hud_frame_ornate:dim"
+    "hud_frame_ornate:dim",
+    "starburst_red",
+    "checker_strip"
    ],
    "crop_src": "art/char_full.webp",
    "crop_box": {
@@ -2493,21 +2621,22 @@
     "cy": 1000,
     "w": null
    },
-   "red": false,
+   "red": true,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 121.591,
-   "dur": 0.848,
+   "start": 121.173,
+   "dur": 1.684,
    "scene": 14,
    "type": "repeat_band_red",
    "text_level": "D+C(red)",
    "lyric_lines": [
     57,
-    58
+    58,
+    59
    ],
    "crop": "halo",
-   "rot": 0,
+   "rot": -4.3,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
@@ -2515,103 +2644,24 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 1055,
+    "cy": 83,
+    "w": 468
    },
    "red": false,
    "transition_in": "black"
   },
   {
-   "start": 122.439,
-   "dur": 0.836,
-   "scene": 14,
-   "type": "repeat_band_red",
-   "text_level": "D+C(red)",
-   "lyric_lines": [
-    58
-   ],
-   "crop": "silhouette",
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "torn_paper_strips",
-    "hud_frame_ornate:dim"
-   ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 562,
-    "cy": 1000,
-    "w": null
-   },
-   "red": false,
-   "transition_in": "lightleak_8f"
-  },
-  {
-   "start": 123.275,
-   "dur": 1.695,
+   "start": 122.857,
+   "dur": 1.683,
    "scene": 15,
    "type": "inverted_crop_box_text",
    "text_level": "A",
    "lyric_lines": [
-    58,
     59
    ],
-   "crop": "eye_r",
-   "rot": 190,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring",
-    "mirror_symmetry",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 925,
-    "cy": 425,
-    "w": 360
-   },
-   "red": false,
-   "transition_in": "cut_shake"
-  },
-  {
-   "start": 124.97,
-   "dur": 0.847,
-   "scene": 15,
-   "type": "inverted_crop_box_text",
-   "text_level": "A",
-   "lyric_lines": [
-    59,
-    60
-   ],
-   "crop": "ribbon_R",
-   "rot": -28,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring",
-    "mirror_symmetry",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1540,
-    "cy": 780,
-    "w": 560
-   },
-   "red": false,
-   "transition_in": "lightleak_8f"
-  },
-  {
-   "start": 125.817,
-   "dur": 0.836,
-   "scene": 15,
-   "type": "inverted_crop_box_text",
-   "text_level": "A",
-   "lyric_lines": [
-    60
-   ],
-   "crop": "halo",
-   "rot": 0,
+   "crop": "tongue",
+   "rot": 1.0,
    "flip_v": true,
    "overlays": [
     "roman_clock_ring",
@@ -2620,15 +2670,80 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1090,
-    "cy": 110,
-    "w": 440
+    "cx": 992,
+    "cy": 575,
+    "w": 324
    },
+   "variant": "single",
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 124.54,
+   "dur": 0.848,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    59,
+    60
+   ],
+   "crop": "cuff_L",
+   "rot": 198.6,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 498,
+    "cy": 994,
+    "w": 379
+   },
+   "variant": "single",
    "red": false,
    "transition_in": "cut_shake"
   },
   {
-   "start": 126.653,
+   "start": 125.388,
+   "dur": 0.847,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    60
+   ],
+   "crop": "hood_top",
+   "rot": -1.4,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 840,
+    "cy": 280,
+    "w": 813
+   },
+   "variant": "split",
+   "split": {
+    "crop": "lolly_hand",
+    "cx": 330,
+    "cy": 760,
+    "w": 573,
+    "rot": 160,
+    "flip_v": false,
+    "angle": -58.997069053090854
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 126.235,
    "dur": 1.695,
    "scene": 15,
    "type": "black_crop_vertical",
@@ -2645,49 +2760,22 @@
     "mirror_symmetry",
     "hud_frame_ornate"
    ],
+   "variant": "single",
    "nochar": "clock_type",
    "red": false,
-   "transition_in": "lightleak_8f"
+   "transition_in": "cut_shake"
   },
   {
-   "start": 128.348,
-   "dur": 0.848,
-   "scene": 15,
-   "type": "inverted_crop_box_text",
-   "text_level": "A",
-   "lyric_lines": [
-    61,
-    62
-   ],
-   "crop": "lolly_hand",
-   "rot": 160,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring",
-    "mirror_symmetry",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 330,
-    "cy": 760,
-    "w": 560
-   },
-   "red": false,
-   "transition_in": "flip"
-  },
-  {
-   "start": 129.196,
+   "start": 127.93,
    "dur": 0.836,
    "scene": 15,
    "type": "inverted_crop_box_text",
    "text_level": "A",
    "lyric_lines": [
-    62,
-    63
+    62
    ],
-   "crop": "collar_R",
-   "rot": 0,
+   "crop": "face",
+   "rot": 183.0,
    "flip_v": true,
    "overlays": [
     "roman_clock_ring",
@@ -2696,25 +2784,35 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
+    "cx": 1042,
+    "cy": 506,
+    "w": 967
+   },
+   "variant": "split",
+   "split": {
+    "crop": "collar_R",
     "cx": 1190,
     "cy": 1000,
-    "w": 460
+    "w": 401,
+    "rot": 0,
+    "flip_v": true,
+    "angle": -68.89008041177362
    },
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 130.032,
-   "dur": 1.741,
+   "start": 128.766,
+   "dur": 0.848,
    "scene": 15,
    "type": "inverted_crop_box_text",
    "text_level": "A",
    "lyric_lines": [
-    63,
-    64
+    62,
+    63
    ],
-   "crop": "eye_r",
-   "rot": 190,
+   "crop": "lolly_hand",
+   "rot": 156.9,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
@@ -2723,23 +2821,53 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 925,
-    "cy": 425,
-    "w": 360
+    "cx": 290,
+    "cy": 759,
+    "w": 550
    },
+   "variant": "single",
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 129.614,
+   "dur": 1.706,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    63
+   ],
+   "crop": "collar_R",
+   "rot": 6.0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1187,
+    "cy": 1032,
+    "w": 494
+   },
+   "variant": "single",
    "text": "B",
    "note": "giant 神っぽいな thin serif, cropped off-frame",
    "red": false,
    "transition_in": "glitch_mosaic_0.2s"
   },
   {
-   "start": 131.773,
-   "dur": 3.123,
+   "start": 131.32,
+   "dur": 3.576,
    "scene": 16,
    "type": "giant_type_window_light",
    "text_level": "B",
    "lyric_lines": [
-    64
+    63,
+    64,
+    65
    ],
    "crop": null,
    "rot": 0,
@@ -2748,6 +2876,7 @@
     "window_light",
     "hud_frame_ornate:dim"
    ],
+   "variant": "single",
    "nochar": "empty_room",
    "red": false,
    "transition_in": "lightleak_8f"
@@ -2759,12 +2888,11 @@
    "type": "giant_type_window_light",
    "text_level": "B",
    "lyric_lines": [
-    64,
     65,
     66
    ],
    "crop": "eyes",
-   "rot": 0,
+   "rot": 1.5,
    "flip_v": false,
    "overlays": [
     "window_light",
@@ -2772,24 +2900,26 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
+    "cx": 1007,
+    "cy": 382,
+    "w": 606
    },
+   "variant": "single",
    "red": false,
    "transition_in": "whip"
   },
   {
    "start": 138.275,
-   "dur": 3.39,
+   "dur": 2.542,
    "scene": 16,
    "type": "giant_type_window_light",
    "text_level": "B",
    "lyric_lines": [
-    66
+    66,
+    67
    ],
    "crop": "face",
-   "rot": 0,
+   "rot": -0.7,
    "flip_v": false,
    "overlays": [
     "window_light",
@@ -2797,23 +2927,22 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 1026,
+    "cy": 472,
+    "w": 631
    },
+   "variant": "single",
    "red": false,
    "transition_in": "lightleak_8f"
   },
   {
-   "start": 141.665,
-   "dur": 2.101,
+   "start": 140.817,
+   "dur": 3.379,
    "scene": 17,
    "type": "black_word",
    "text_level": "small→人生",
    "lyric_lines": [
-    66,
-    67,
-    68
+    67
    ],
    "crop": null,
    "rot": 0,
@@ -2823,12 +2952,13 @@
    "transition_in": "cut_to_black"
   },
   {
-   "start": 143.766,
-   "dur": 1.289,
+   "start": 144.196,
+   "dur": 0.859,
    "scene": 17,
    "type": "black_word",
    "text_level": "small→人生",
    "lyric_lines": [
+    67,
     68
    ],
    "crop": null,
