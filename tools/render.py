@@ -238,6 +238,20 @@ def vbox(text, size, fg=PAPER_L, bg=INK, pad=0.32, fontpath=F_L):
     return im
 
 
+_SH = {}
+
+
+def box_shadow(box):
+    if id(box) in _SH:
+        return _SH[id(box)]
+    _SH[id(box)] = _box_shadow(box); return _SH[id(box)]
+
+
+def _box_shadow(box):
+    a = box.getchannel("A").filter(ImageFilter.GaussianBlur(max(1, S(6))))
+    im = Image.new("RGBA", box.size, INK + (0,)); im.putalpha(a); return im
+
+
 @lru_cache(512)
 def htext(text, size, fill, fontpath=F_XL, stroke=0):
     f = font(fontpath, size)
@@ -293,7 +307,7 @@ def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=3):
         cols.append((k, ch[:n_vis]))
     size = S(stack_size)
     gap = int(size * 0.35)
-    x = Q.W - S(170) if side == "right" else S(170)
+    x = Q.W - S(120) if side == "right" else S(120)
     order = []
     for k, ch in cols:
         for j, piece in enumerate(ch):
@@ -306,18 +320,21 @@ def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=3):
     cols = kept
     # right-to-left columns (vertical writing): newest line at the outer edge
     xs = x
-    y0 = S(120)
+    y0 = S(90)
     for k, ch in cols:
         for j, piece in enumerate(ch):
             box = vbox(piece, size)
             age_alpha = [1.0, 0.82, 0.6][min(k, 2)]
-            yy = y0 + (j % 2) * S(46) + k * S(28)
+            yy = y0 + (j % 2) * S(54) + k * S(36)
             if side == "right":
                 xs -= box.size[0] + gap; px = xs + gap
             else:
                 px = xs; xs += box.size[0] + gap
+            sh = box_shadow(box)
             if mirror:  # mirror-symmetric twin on the other side
+                paste(L, sh, Q.W - px - box.size[0] + S(7), yy + S(9), age_alpha * 0.45)
                 paste(L, box, Q.W - px - box.size[0], yy, age_alpha * 0.9)
+            paste(L, sh, px + S(7), yy + S(9), age_alpha * 0.45)
             paste(L, box, px, yy, age_alpha)
 
 
@@ -481,7 +498,7 @@ def vignette():
     W, H = Q.W, Q.H
     y, x = np.mgrid[0:H, 0:W]
     d = np.sqrt(((x - W / 2) / (W / 2)) ** 2 + ((y - H / 2) / (H / 2)) ** 2)
-    v = 1 - 0.22 * np.clip(d - 0.55, 0, 1) ** 1.5
+    v = 1 - 0.42 * np.clip(d - 0.45, 0, 1) ** 1.3
     return Image.fromarray((v * 255).astype(np.uint8), "L")
 
 
@@ -718,25 +735,25 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
             paste(L, im2, Q.W / 2 - im2.size[0] / 2, Q.H / 2 + S(30))
         return
     if sc in (2, 12):
-        text_A(L, t, c, 40 if sc == 2 else 46, side="right" if (ci % 2) else "left")
+        text_A(L, t, c, 58 if sc == 2 else 62, side="right" if (ci % 2) else "left")
     elif sc == 3:
         if li == 13:
             text_B(L, t, c, img_layer_eyes, tc, text="神っぽいな", size_h=0.5)
     elif sc == 4:
-        text_A(L, t, c, 30, side="right")
+        text_A(L, t, c, 44, side="right")
     elif sc == 5:
-        text_A(L, t, c, 30, side="right", mirror=True, max_lines=2)
+        text_A(L, t, c, 44, side="right", mirror=True, max_lines=2)
         text_B(L, t, c, img_layer_eyes, tc, size_h=0.36)
     elif sc in (6, 15):
         if li in (63,):
             text_B(L, t, c, img_layer_eyes, tc, text="神っぽいな", size_h=0.55, slide=0.25)
-        text_A(L, t, c, 52 if sc == 6 else 60, side="right", mirror=(sc == 15))
+        text_A(L, t, c, 70 if sc == 6 else 76, side="right", mirror=(sc == 15))
     elif sc == 7:
         if red:
             word = "憧れちゃう！" if li == 34 else "神っぽいな"
             text_C(L, t, c, word, img_layer_eyes, horizontal=(li == 34))
         else:
-            text_A(L, t, c, 66, side="right", max_lines=2)
+            text_A(L, t, c, 86, side="right", max_lines=2)
     elif sc == 9:
         if li == 42:
             text_B(L, t, c, [], PAPER_L, text="神っぽいな", size_h=0.5, slide=0.4)
@@ -746,9 +763,9 @@ def scene_text(L, img_layer_eyes, t, c, ci, bg):
         if red:
             text_C(L, t, c, "神っぽいな", img_layer_eyes, horizontal=False)
         else:
-            text_A(L, t, c, 48, side="left")
+            text_A(L, t, c, 64, side="left")
     elif sc == 13:
-        text_A(L, t, c, 30, side="right", max_lines=1)
+        text_A(L, t, c, 44, side="right", max_lines=1)
     elif sc == 14:
         if red:
             text_C(L, t, c, "憧" if li == 55 else "風", [], horizontal=True, center=True)
@@ -778,20 +795,126 @@ def band_text(L, t, c, bg):
 def text_C(L, t, c, word, eyes, horizontal=False, center=False):
     """Red keyword, half the screen, thin serif."""
     if horizontal:
-        size = int(Q.H * (0.62 if center else 0.30))
+        size = int(Q.H * (0.66 if center else 0.34))
         im = htext(word, size, RED + (245,), F_R if center else F_L)
         u = (t - c["start"]) / max(c["dur"], 0.3)
-        x = Q.W / 2 - im.size[0] / 2 + (0.5 - u) * Q.W * 0.08
+        x = Q.W / 2 - im.size[0] / 2 + (0.5 - u) * Q.W * 0.05
         y = Q.H / 2 - im.size[1] / 2
         if not center:
-            x, y = best_pos([(x, Q.H * f - im.size[1] / 2) for f in (0.74, 0.52, 0.26, 0.84, 0.16)], im.size[0], im.size[1], eyes)
-        paste(L, im, x, y)
+            x, y = best_pos([(x, Q.H * f - im.size[1] / 2) for f in (0.68, 0.50, 0.30, 0.76, 0.20)], im.size[0], im.size[1], eyes)
+        paste(L, im, x + S(26), y + S(14), 0.28)       # offset echo (ref B doubles its big type)
+        paste(L, im, x, y, 0.93)
     else:
-        size = int(Q.H * 0.26)
+        size = int(Q.H * 0.34)
         im = vtext(word, size, RED + (245,), F_L)
-        y = -size * 0.15 + (t - c["start"]) * S(40)
-        x, _ = best_pos([(Q.W * f, y) for f in (0.06, 0.82, 0.03, 0.88, 0.40)], im.size[0], im.size[1], eyes)
-        paste(L, im, x, y)
+        y = -size * 0.2 + (t - c["start"]) * S(60)
+        x, _ = best_pos([(Q.W * f, y) for f in (0.05, 0.80, 0.02, 0.86, 0.40)], im.size[0], im.size[1], eyes)
+        paste(L, im, x + S(22), y + S(30), 0.28)
+        paste(L, im, x, y, 0.93)
+
+
+CROP_SCENES = (2, 6, 7, 11, 12, 15)
+
+
+def ghost_echo(img, ci, t):
+    """Enlarged, blurred, faint double of the image layer behind it (ref B's after-image look)."""
+    W, H = Q.W, Q.H
+    k = 1.07 + 0.01 * math.sin(t * 1.3 + ci)
+    g = img.resize((int(W * k), int(H * k)), Image.BILINEAR)
+    g = g.crop(((g.size[0] - W) // 2 + S(18), (g.size[1] - H) // 2 - S(10), (g.size[0] - W) // 2 + S(18) + W, (g.size[1] - H) // 2 - S(10) + H))
+    g = g.filter(ImageFilter.GaussianBlur(max(1, S(5))))
+    g.putalpha(g.getchannel("A").point(lambda v: int(v * 0.30)))
+    return g
+
+
+def black_wedge(L, ci, t, c):
+    """Large black shape with a torn edge that cuts across the frame (ref B crops are half swallowed by black)."""
+    if ci % 4 == 3:
+        return
+    r = np.random.default_rng(ci * 31)
+    W, H = Q.W, Q.H
+    side = int(r.integers(0, 4))
+    cover = r.uniform(0.22, 0.38)
+    u = min(1, (t - c["start"]) * FPS / 6)
+    slide = (1 - u) ** 2 * 0.08
+    n = 60
+    tear = lambda k: r.uniform(-1, 1) * S(10) + math.sin(k * 0.7) * S(6)
+    if side in (0, 1):  # diagonal from left / right edge
+        x_top = W * (cover + 0.12 - slide); x_bot = W * (cover - 0.12 - slide)
+        edge = [(x_top + (x_bot - x_top) * k / n + tear(k), H * k / n) for k in range(n + 1)]
+        poly = [(0, 0)] + edge + [(0, H)]
+        if side == 1:
+            poly = [(W - x, y) for x, y in poly]
+    else:  # from top / bottom
+        y_l = H * (cover + 0.1 - slide); y_r = H * (cover - 0.12 - slide)
+        edge = [(W * k / n, y_l + (y_r - y_l) * k / n + tear(k)) for k in range(n + 1)]
+        poly = [(0, 0)] + edge + [(W, 0)]
+        if side == 3:
+            poly = [(x, H - y) for x, y in poly]
+    d = ImageDraw.Draw(L)
+    d.polygon(poly, fill=INK + (255,))
+    d.line(edge if side in (0, 2) else [(W - x, y) if side == 1 else (x, H - y) for x, y in edge], fill=GRAY_M + (150,), width=max(1, S(2)))
+
+
+def slice_bars(L, ci, t, color, cx=None, cy=None):
+    """Short horizontal glitch bars around the figure (ref B t024 / t081)."""
+    r = np.random.default_rng(ci * 17 + int(t * 6))
+    W, H = Q.W, Q.H
+    cx = W / 2 if cx is None else cx; cy = H / 2 if cy is None else cy
+    d = ImageDraw.Draw(L)
+    for k in range(int(r.integers(3, 7))):
+        w = r.uniform(0.04, 0.16) * W; h = r.uniform(0.008, 0.03) * H
+        x = cx + r.uniform(-0.22, 0.14) * W; y = cy + r.uniform(-0.38, 0.38) * H
+        d.rectangle((x, y, x + w, y + h), fill=color + (235,))
+
+
+def speed_lines(L, t, ci, color, alpha=0.55, cx=None, cy=None):
+    """Radial concentration lines (ref B t033)."""
+    r = np.random.default_rng(ci * 7 + int(t * 10))
+    W, H = Q.W, Q.H
+    cx = W / 2 if cx is None else cx; cy = H * 0.45 if cy is None else cy
+    d = ImageDraw.Draw(L)
+    for k in range(70):
+        a = r.uniform(0, 2 * math.pi)
+        r0 = r.uniform(0.22, 0.34) * H; r1 = r0 + r.uniform(0.15, 0.55) * H
+        d.line((cx + r0 * math.cos(a), cy + r0 * math.sin(a), cx + r1 * math.cos(a), cy + r1 * math.sin(a)),
+               fill=color + (int(255 * alpha * r.uniform(0.4, 1)),), width=max(1, S(r.uniform(1, 2.5))))
+
+
+def smoke_wisps(L, t, ci, color=PAPER_L):
+    """Curling ink-smoke strokes drifting upward (ref B cigarette smoke, here as an overlay)."""
+    r = np.random.default_rng(ci * 53)
+    W, H = Q.W, Q.H
+    tmp = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(tmp)
+    for k in range(3):
+        x0 = r.uniform(0.15, 0.85) * W; y0 = r.uniform(0.6, 1.0) * H
+        ph = r.uniform(0, 6.28); amp = r.uniform(0.03, 0.08) * W
+        pts = []
+        for j in range(40):
+            v = j / 39
+            y = y0 - v * H * 0.75 - (t * S(40)) % S(120)
+            x = x0 + amp * math.sin(v * 7 + ph + t * 1.2) * (0.3 + v)
+            pts.append((x, y))
+        for j in range(len(pts) - 1):
+            wdt = max(1, int(S(12) * (1 - j / 40) + S(2)))
+            d.line(pts[j] + pts[j + 1], fill=color + (int(150 * (1 - j / 45)),), width=wdt)
+    tmp = tmp.filter(ImageFilter.GaussianBlur(max(1, S(4))))
+    L.alpha_composite(tmp)
+
+
+def shade(frame, ci, dark):
+    """Directional shading + soft highlight so flat line art gets depth (ref B gray mid-tones)."""
+    W, H = Q.W, Q.H
+    r = np.random.default_rng(ci * 3)
+    ang = r.uniform(0, 2 * math.pi)
+    y, x = np.mgrid[0:H:4, 0:W:4].astype(np.float32)
+    g = ((x / W - 0.5) * math.cos(ang) + (y / H - 0.5) * math.sin(ang)) + 0.5
+    m = 1 - 0.38 * np.clip(g, 0, 1) ** 1.4
+    mi = Image.fromarray((m * 255).astype(np.uint8), "L").resize((W, H), Image.BILINEAR)
+    rgb = ImageChops.multiply(frame.convert("RGB"), Image.merge("RGB", [mi] * 3))
+    hl = Image.fromarray(((1 - np.clip(g, 0, 1)) ** 3 * (40 if not dark else 26)).astype(np.uint8), "L").resize((W, H), Image.BILINEAR)
+    rgb = ImageChops.add(rgb, Image.merge("RGB", [hl] * 3))
+    out = rgb.convert("RGBA"); return out
 
 
 def motifs(L, t, c, ci, eyes, bg, layer):
@@ -880,10 +1003,26 @@ def render_frame(t):
             img = dir_blur(ImageChops.offset(img, off, 0), S(90 * (1 - abs(ph) / 3)))
         elif kind == "black" and 0 <= ph < 2:
             img = None
+    sc = c["scene"]
     if img is not None:
-        if c["scene"] in (8,) and "halftone" in c.get("overlays", []):
-            pass
+        if sc in CROP_SCENES + (4, 5, 16):
+            frame.alpha_composite(ghost_echo(img, ci, t))
         frame.alpha_composite(img)
+    rich = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    if img is not None and sc in CROP_SCENES and c.get("type") != "black_card":
+        black_wedge(rich, ci, t, c)
+    if sc in (3, 8, 9, 14) and img is not None:
+        slice_bars(rich, ci, t, INK if sum(bg) > 380 else PAPER_L)
+    if (sc in (3, 15) and active_line(t) in (13, 63)) or sc == 9 or (c.get("red") and sc == 14):
+        speed_lines(rich, t, ci, INK if sum(bg) > 380 else PAPER_L)
+    if img is not None and sc in (2, 4, 7, 12, 16):
+        smoke_wisps(rich, t, ci, PAPER_L if sc != 4 else GRAY_M)
+    frame.alpha_composite(rich)
+    if img is not None and sc not in (10, 13, 17, 18):
+        frame = shade(frame, ci, sum(bg) <= 380)
+    if sc in (3, 8, 14):  # cinema letterbox like ref B's band scenes
+        d = ImageDraw.Draw(frame); lb = int(H * 0.115)
+        d.rectangle((0, 0, W, lb), fill=INK + (255,)); d.rectangle((0, H - lb, W, H), fill=INK + (255,))
 
     # front motifs
     front = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -946,7 +1085,7 @@ def render_frame(t):
         hi = out.convert("L").point(lambda v: max(0, v - 200) * 4)
         bl = hi.filter(ImageFilter.GaussianBlur(S(18)))
         out = ImageChops.screen(out, Image.merge("RGB", [bl.point(lambda v: int(v * 0.18))] * 3))
-        n = np.random.default_rng(fr + 1).normal(0, 7.5, (H, W)).astype(np.float32)
+        n = np.random.default_rng(fr + 1).normal(0, 9.0, (H, W)).astype(np.float32)
         a = np.asarray(out).astype(np.float32) + n[..., None]
         out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     return out

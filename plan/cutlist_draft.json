@@ -1472,17 +1472,17 @@
    "lyric_lines": [
     30
    ],
-   "crop": "face",
-   "rot": 8,
+   "crop": "point_hand",
+   "rot": -10,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
    },
    "red": false,
    "transition_in": "lightleak_8f"
@@ -1496,17 +1496,17 @@
    "lyric_lines": [
     30
    ],
-   "crop": "eyes",
-   "rot": 0,
+   "crop": "face",
+   "rot": 6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
+    "cx": 965,
+    "cy": 450,
+    "w": 760
    },
    "red": false,
    "transition_in": "cut_shake"
@@ -1545,17 +1545,17 @@
     30,
     31
    ],
-   "crop": "point_hand",
-   "rot": -10,
+   "crop": "eyes",
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1160,
-    "cy": 560,
-    "w": 560
+    "cx": 985,
+    "cy": 440,
+    "w": 540
    },
    "red": false,
    "transition_in": "black"
@@ -1620,8 +1620,8 @@
     33,
     34
    ],
-   "crop": "face",
-   "rot": 8,
+   "crop": "point_hand",
+   "rot": -10,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1631,9 +1631,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 965,
-    "cy": 450,
-    "w": 760
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
    },
    "red": true,
    "transition_in": "lightleak_8f"
@@ -1648,8 +1648,8 @@
     34,
     35
    ],
-   "crop": "eyes",
-   "rot": 0,
+   "crop": "face",
+   "rot": 6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1659,9 +1659,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 985,
-    "cy": 440,
-    "w": 540
+    "cx": 965,
+    "cy": 450,
+    "w": 760
    },
    "red": true,
    "transition_in": "cut_shake"
