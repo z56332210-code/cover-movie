@@ -377,12 +377,9 @@ def text_A(L, t, c, stack_size, side="right", mirror=False, max_lines=2):
     for k, ch in cols:
         for j, piece in enumerate(ch):
             order.append((k, j, piece))
-    total, kept = 0, []
-    for k, ch in cols:                       # at most ~6 columns on screen
-        if total + len(ch) > 6 and kept:
-            break
-        kept.append((k, ch)); total += len(ch)
-    cols = kept
+    # only the line being sung (finished lines are not kept), at most 3 boxes on screen at once
+    cols = [(0, cols[0][1][-3:])] if cols else []
+    mirror = False
     # right-to-left columns (vertical writing): newest line at the outer edge
     xs = x
     y0 = S(90)
