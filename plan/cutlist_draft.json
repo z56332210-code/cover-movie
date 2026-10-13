@@ -1,0 +1,2932 @@
+{
+ "_readme": "장면 목록 초안. start/dur=음원 초. lyric_lines=lyrics.txt 행 번호(1부터). crop_box=원본 픽셀 중심/폭(16:9 창). transition_in=이 컷으로 들어오는 전환. red=빨강 구간 여부.",
+ "audio": {
+  "duration": 146.84,
+  "bpm": 142.4,
+  "jump_sec": 90.8,
+  "jump_note": "원곡(=레퍼런스 B 음원) 91.63초 → 147.50초로 점프. scene_plan의 88.0~89.3초 추정을 90.80초로 보정."
+ },
+ "stats": {
+  "total_cuts": 104,
+  "mean_beat_err_ms": 0.0,
+  "red_windows": [
+   [
+    74.27,
+    77.65,
+    3.38
+   ],
+   [
+    91.16,
+    93.7,
+    2.54
+   ],
+   [
+    116.1,
+    119.9,
+    3.8
+   ]
+  ],
+  "glitches": [
+   20.341,
+   50.178,
+   63.716,
+   90.755,
+   100.879,
+   104.269,
+   130.032
+  ],
+  "clock_scenes": [
+   1,
+   3,
+   6,
+   15
+  ]
+ },
+ "density": [
+  {
+   "window": "0-10",
+   "cuts": 6,
+   "scenes": [
+    1,
+    2
+   ]
+  },
+  {
+   "window": "10-20",
+   "cuts": 7,
+   "scenes": [
+    2
+   ]
+  },
+  {
+   "window": "20-30",
+   "cuts": 8,
+   "scenes": [
+    3
+   ]
+  },
+  {
+   "window": "30-40",
+   "cuts": 5,
+   "scenes": [
+    3,
+    4
+   ]
+  },
+  {
+   "window": "40-50",
+   "cuts": 6,
+   "scenes": [
+    4,
+    5
+   ]
+  },
+  {
+   "window": "50-60",
+   "cuts": 9,
+   "scenes": [
+    6
+   ]
+  },
+  {
+   "window": "60-70",
+   "cuts": 8,
+   "scenes": [
+    6,
+    7
+   ]
+  },
+  {
+   "window": "70-80",
+   "cuts": 7,
+   "scenes": [
+    7,
+    8
+   ]
+  },
+  {
+   "window": "80-90",
+   "cuts": 8,
+   "scenes": [
+    8,
+    9
+   ]
+  },
+  {
+   "window": "90-100",
+   "cuts": 8,
+   "scenes": [
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "window": "100-110",
+   "cuts": 8,
+   "scenes": [
+    12,
+    13,
+    14
+   ]
+  },
+  {
+   "window": "110-120",
+   "cuts": 9,
+   "scenes": [
+    14
+   ]
+  },
+  {
+   "window": "120-130",
+   "cuts": 8,
+   "scenes": [
+    14,
+    15
+   ]
+  },
+  {
+   "window": "130-140",
+   "cuts": 4,
+   "scenes": [
+    15,
+    16
+   ]
+  },
+  {
+   "window": "140-146.8",
+   "cuts": 3,
+   "scenes": [
+    17,
+    18
+   ]
+  }
+ ],
+ "scenes": [
+  {
+   "id": 1,
+   "start": 0.0,
+   "end": 6.6,
+   "type": "title_card_hud",
+   "color": "black"
+  },
+  {
+   "id": 2,
+   "start": 6.6,
+   "end": 20.2,
+   "type": "black_crop_vertical",
+   "color": "mono"
+  },
+  {
+   "id": 3,
+   "start": 20.2,
+   "end": 33.4,
+   "type": "repeat_band_clock",
+   "color": "paper+ink"
+  },
+  {
+   "id": 4,
+   "start": 33.4,
+   "end": 43.9,
+   "type": "paper_crop_vertical",
+   "color": "paper+ink"
+  },
+  {
+   "id": 5,
+   "start": 43.9,
+   "end": 50.3,
+   "type": "giant_type_mirror",
+   "color": "paper+ink"
+  },
+  {
+   "id": 6,
+   "start": 50.3,
+   "end": 67.3,
+   "type": "inverted_crop_box_text",
+   "color": "mono"
+  },
+  {
+   "id": 7,
+   "start": 67.3,
+   "end": 77.6,
+   "type": "red_starburst_slash",
+   "color": "mono→RED#1"
+  },
+  {
+   "id": 8,
+   "start": 77.6,
+   "end": 87.9,
+   "type": "repeat_band_silhouette",
+   "color": "ink+gray"
+  },
+  {
+   "id": 9,
+   "start": 87.9,
+   "end": 90.8,
+   "type": "checker_blur_transition",
+   "color": "mono+gray smear"
+  },
+  {
+   "id": 10,
+   "start": 90.8,
+   "end": 91.16,
+   "type": "audio_edit_mask",
+   "color": "white+mosaic"
+  },
+  {
+   "id": 11,
+   "start": 91.16,
+   "end": 97.4,
+   "type": "red_starburst_slash",
+   "color": "RED#2→mono"
+  },
+  {
+   "id": 12,
+   "start": 97.4,
+   "end": 106.1,
+   "type": "black_crop_vertical",
+   "color": "mono"
+  },
+  {
+   "id": 13,
+   "start": 106.1,
+   "end": 107.8,
+   "type": "white_flash",
+   "color": "white"
+  },
+  {
+   "id": 14,
+   "start": 107.8,
+   "end": 123.3,
+   "type": "repeat_band_red",
+   "color": "paper→RED#3"
+  },
+  {
+   "id": 15,
+   "start": 123.3,
+   "end": 131.6,
+   "type": "inverted_crop_box_text",
+   "color": "mono"
+  },
+  {
+   "id": 16,
+   "start": 131.6,
+   "end": 141.7,
+   "type": "giant_type_window_light",
+   "color": "grayscale+window light"
+  },
+  {
+   "id": 17,
+   "start": 141.7,
+   "end": 145.3,
+   "type": "black_word",
+   "color": "black"
+  },
+  {
+   "id": 18,
+   "start": 145.3,
+   "end": 146.84,
+   "type": "white_bar_end",
+   "color": "paper"
+  }
+ ],
+ "cuts": [
+  {
+   "start": 0.0,
+   "dur": 5.619,
+   "scene": 1,
+   "type": "title_card_hud",
+   "text_level": "UI",
+   "lyric_lines": [],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "roman_clock_ring:faint"
+   ],
+   "red": false,
+   "transition_in": "fade_in"
+  },
+  {
+   "start": 5.619,
+   "dur": 0.825,
+   "scene": 1,
+   "type": "title_card_hud",
+   "text_level": "UI",
+   "lyric_lines": [
+    1
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "roman_clock_ring:faint"
+   ],
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 6.444,
+   "dur": 1.265,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    1,
+    2
+   ],
+   "crop": "neck_frill",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 935,
+    "cy": 700,
+    "w": 420
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 7.709,
+   "dur": 0.859,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    2
+   ],
+   "crop": "point_hand",
+   "rot": -30,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 8.568,
+   "dur": 1.254,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    2,
+    3
+   ],
+   "crop": "collar_L",
+   "rot": 12,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 760,
+    "cy": 1090,
+    "w": 460
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 9.822,
+   "dur": 1.266,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    3
+   ],
+   "crop": "eye_r",
+   "rot": -8,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 915,
+    "cy": 420,
+    "w": 240
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 11.088,
+   "dur": 0.859,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    3
+   ],
+   "crop": "ribbon_R",
+   "rot": 35,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1540,
+    "cy": 780,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 11.947,
+   "dur": 1.265,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    3,
+    4
+   ],
+   "crop": "buttons",
+   "rot": -20,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1000,
+    "cy": 1010,
+    "w": 520
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 13.212,
+   "dur": 1.684,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    4
+   ],
+   "crop": "mouth",
+   "rot": -18,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 585,
+    "w": 340
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 14.896,
+   "dur": 1.695,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    4
+   ],
+   "crop": "lolly_hand",
+   "rot": 24,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 330,
+    "cy": 760,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 16.591,
+   "dur": 1.265,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    4,
+    5
+   ],
+   "crop": "neck_frill",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 935,
+    "cy": 700,
+    "w": 420
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 17.856,
+   "dur": 1.266,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    5
+   ],
+   "crop": "point_hand",
+   "rot": -30,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 19.122,
+   "dur": 1.219,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    5,
+    6
+   ],
+   "crop": "collar_L",
+   "rot": 12,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 760,
+    "cy": 1090,
+    "w": 460
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 20.341,
+   "dur": 1.532,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    6
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 21.873,
+   "dur": 0.848,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    6,
+    7
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 22.721,
+   "dur": 0.836,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    7
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 23.557,
+   "dur": 1.695,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    7,
+    8
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 25.252,
+   "dur": 0.847,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    8,
+    9
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 26.099,
+   "dur": 0.848,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    9
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 26.947,
+   "dur": 1.683,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    9,
+    10
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 28.63,
+   "dur": 1.684,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    10,
+    11
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 30.314,
+   "dur": 0.859,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    11,
+    12
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 31.173,
+   "dur": 0.824,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    12
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 31.997,
+   "dur": 1.498,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    12,
+    13,
+    14
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "text": "B",
+   "note": "giant 神っぽいな + mono radial lines (B t033)",
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 33.495,
+   "dur": 3.367,
+   "scene": 4,
+   "type": "paper_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    14,
+    15
+   ],
+   "crop": "neck_frill",
+   "rot": 4,
+   "flip_v": false,
+   "overlays": [
+    "circle_guides",
+    "mini_icon",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 935,
+    "cy": 700,
+    "w": 420
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 36.862,
+   "dur": 3.39,
+   "scene": 4,
+   "type": "paper_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    15,
+    16
+   ],
+   "crop": "buttons",
+   "rot": -3,
+   "flip_v": false,
+   "overlays": [
+    "circle_guides",
+    "mini_icon",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1000,
+    "cy": 1010,
+    "w": 520
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 40.252,
+   "dur": 3.785,
+   "scene": 4,
+   "type": "paper_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    16,
+    17,
+    18,
+    19
+   ],
+   "crop": "collar_R",
+   "rot": -6,
+   "flip_v": false,
+   "overlays": [
+    "circle_guides",
+    "mini_icon",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1190,
+    "cy": 1000,
+    "w": 460
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 44.037,
+   "dur": 1.277,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    19
+   ],
+   "crop": "eyes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 985,
+    "cy": 440,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 45.314,
+   "dur": 1.277,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    19,
+    20
+   ],
+   "crop": "mouth",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 585,
+    "w": 340
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 46.591,
+   "dur": 0.836,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    20
+   ],
+   "crop": "bust",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 760,
+    "w": 1400
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 47.427,
+   "dur": 1.149,
+   "scene": 5,
+   "type": "giant_type_mirror",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    20
+   ],
+   "crop": "face",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 48.576,
+   "dur": 1.602,
+   "scene": 5,
+   "type": "black_card",
+   "text_level": "B+A(mirror)",
+   "lyric_lines": [
+    20,
+    21
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "mirror_symmetry",
+    "hud_frame_ornate:dim"
+   ],
+   "text": "small",
+   "note": "\"Gott ist tot\" tiny on black (B t048)",
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 50.178,
+   "dur": 1.695,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    21,
+    22
+   ],
+   "crop": "mouth",
+   "rot": 0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 585,
+    "w": 340
+   },
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 51.873,
+   "dur": 1.266,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    22
+   ],
+   "crop": "halo",
+   "rot": 200,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 53.139,
+   "dur": 0.836,
+   "scene": 6,
+   "type": "black_card",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    22,
+    23,
+    24
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "text": "small",
+   "note": "\"My God\" tiny",
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 53.975,
+   "dur": 0.847,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    24
+   ],
+   "crop": "point_hand",
+   "rot": 180,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 54.822,
+   "dur": 1.277,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    24
+   ],
+   "crop": "face",
+   "rot": 160,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 56.099,
+   "dur": 0.848,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    24,
+    25
+   ],
+   "crop": "lolly_hand",
+   "rot": 0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 330,
+    "cy": 760,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 56.947,
+   "dur": 1.683,
+   "scene": 6,
+   "type": "black_crop_vertical",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    25
+   ],
+   "crop": "collar_L",
+   "rot": -12,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 760,
+    "cy": 1090,
+    "w": 460
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 58.63,
+   "dur": 1.266,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    25,
+    26
+   ],
+   "crop": "eye_l",
+   "rot": 180,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1035,
+    "cy": 455,
+    "w": 240
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 59.896,
+   "dur": 0.418,
+   "scene": 6,
+   "type": "black_card",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    26
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "text": "small",
+   "note": "\"My God\" tiny",
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 60.314,
+   "dur": 1.695,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    26,
+    27
+   ],
+   "crop": "mouth",
+   "rot": 0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 585,
+    "w": 340
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 62.009,
+   "dur": 1.707,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    27
+   ],
+   "crop": "halo",
+   "rot": 200,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 63.716,
+   "dur": 1.683,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    27,
+    28
+   ],
+   "crop": "neck_frill",
+   "rot": -25,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 935,
+    "cy": 700,
+    "w": 420
+   },
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 65.399,
+   "dur": 0.836,
+   "scene": 6,
+   "type": "black_crop_vertical",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    28,
+    29
+   ],
+   "crop": "point_hand",
+   "rot": -12,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 66.235,
+   "dur": 1.265,
+   "scene": 6,
+   "type": "inverted_crop_box_text",
+   "text_level": "A(stack)",
+   "lyric_lines": [
+    29,
+    30
+   ],
+   "crop": "face",
+   "rot": 160,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring:pass",
+    "circle_guides",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 67.5,
+   "dur": 1.278,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    30
+   ],
+   "crop": "face",
+   "rot": 8,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 68.778,
+   "dur": 0.835,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    30
+   ],
+   "crop": "eyes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 985,
+    "cy": 440,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 69.613,
+   "dur": 1.278,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    30
+   ],
+   "crop": "eye_l",
+   "rot": 15,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1035,
+    "cy": 455,
+    "w": 240
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 70.891,
+   "dur": 1.683,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    30,
+    31
+   ],
+   "crop": "point_hand",
+   "rot": -10,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 72.574,
+   "dur": 0.847,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    31,
+    32
+   ],
+   "crop": "mouth",
+   "rot": 6,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 585,
+    "w": 340
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 73.421,
+   "dur": 0.848,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    32,
+    33
+   ],
+   "crop": "eye_r",
+   "rot": -12,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 915,
+    "cy": 420,
+    "w": 240
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 74.269,
+   "dur": 1.683,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    33,
+    34
+   ],
+   "crop": "face",
+   "rot": 8,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "starburst_red",
+    "checker_strip",
+    "red_slash"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": true,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 75.952,
+   "dur": 1.696,
+   "scene": 7,
+   "type": "red_starburst_slash",
+   "text_level": "A→C(red)",
+   "lyric_lines": [
+    34,
+    35
+   ],
+   "crop": "eyes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "starburst_red",
+    "checker_strip",
+    "red_slash"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 985,
+    "cy": 440,
+    "w": 440
+   },
+   "red": true,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 77.648,
+   "dur": 1.683,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    35,
+    36
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 79.331,
+   "dur": 0.848,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    36
+   ],
+   "crop": "legs",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1500,
+    "w": 900
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 80.179,
+   "dur": 0.847,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    36,
+    37
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 81.026,
+   "dur": 1.683,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    37
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 82.709,
+   "dur": 0.86,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    37,
+    38
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 83.569,
+   "dur": 0.836,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    38
+   ],
+   "crop": "legs",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1500,
+    "w": 900
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 84.405,
+   "dur": 1.683,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    38,
+    39
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 86.088,
+   "dur": 1.695,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    39,
+    40
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 87.783,
+   "dur": 1.683,
+   "scene": 9,
+   "type": "checker_blur_transition",
+   "text_level": "B(神っぽいな)",
+   "lyric_lines": [
+    40,
+    41
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_blur",
+    "whip_blur"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 89.466,
+   "dur": 1.289,
+   "scene": 9,
+   "type": "checker_blur_transition",
+   "text_level": "B(神っぽいな)",
+   "lyric_lines": [
+    41,
+    42
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "checker_blur",
+    "whip_blur"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 90.755,
+   "dur": 0.407,
+   "scene": 10,
+   "type": "audio_edit_mask",
+   "text_level": "-",
+   "lyric_lines": [
+    42,
+    43
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "white_flash",
+    "glitch_mosaic"
+   ],
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 91.162,
+   "dur": 1.277,
+   "scene": 11,
+   "type": "red_starburst_slash",
+   "text_level": "C(red)+A",
+   "lyric_lines": [
+    43
+   ],
+   "crop": "eye_l",
+   "rot": -14,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "starburst_red",
+    "red_slash"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1035,
+    "cy": 455,
+    "w": 240
+   },
+   "red": true,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 92.439,
+   "dur": 1.265,
+   "scene": 11,
+   "type": "red_starburst_slash",
+   "text_level": "C(red)+A",
+   "lyric_lines": [
+    43
+   ],
+   "crop": "face",
+   "rot": 10,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "starburst_red",
+    "red_slash"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": true,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 93.704,
+   "dur": 0.418,
+   "scene": 11,
+   "type": "black_card",
+   "text_level": "C(red)+A",
+   "lyric_lines": [
+    43,
+    44
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "text": "small",
+   "note": "\"My God\" tiny",
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 94.122,
+   "dur": 1.695,
+   "scene": 11,
+   "type": "red_starburst_slash",
+   "text_level": "C(red)+A",
+   "lyric_lines": [
+    44,
+    45
+   ],
+   "crop": "point_hand",
+   "rot": -20,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 95.817,
+   "dur": 1.695,
+   "scene": 11,
+   "type": "red_starburst_slash",
+   "text_level": "C(red)+A",
+   "lyric_lines": [
+    45,
+    46
+   ],
+   "crop": "eyes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 985,
+    "cy": 440,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 97.512,
+   "dur": 1.254,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    46
+   ],
+   "crop": "point_hand",
+   "rot": 30,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1160,
+    "cy": 560,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 98.766,
+   "dur": 1.266,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    46
+   ],
+   "crop": "ribbon_R",
+   "rot": -22,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1540,
+    "cy": 780,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 100.032,
+   "dur": 0.847,
+   "scene": 12,
+   "type": "black_card",
+   "text_level": "A",
+   "lyric_lines": [
+    46,
+    47
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "text": "small",
+   "note": "\"My God\" tiny",
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 100.879,
+   "dur": 1.277,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    47,
+    48
+   ],
+   "crop": "ribbon_L",
+   "rot": -30,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 420,
+    "cy": 1190,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 102.156,
+   "dur": 0.836,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    48
+   ],
+   "crop": "lolly_hand",
+   "rot": -15,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 330,
+    "cy": 760,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 102.992,
+   "dur": 1.277,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    48
+   ],
+   "crop": "buttons",
+   "rot": 25,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1000,
+    "cy": 1010,
+    "w": 520
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 104.269,
+   "dur": 1.684,
+   "scene": 12,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    48,
+    49
+   ],
+   "crop": "neck_frill",
+   "rot": -12,
+   "flip_v": false,
+   "overlays": [
+    "glitch_mosaic",
+    "code_text_block",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 935,
+    "cy": 700,
+    "w": 420
+   },
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 105.953,
+   "dur": 1.695,
+   "scene": 13,
+   "type": "white_flash",
+   "text_level": "small",
+   "lyric_lines": [
+    49,
+    50
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [],
+   "red": false,
+   "transition_in": "white_blowout"
+  },
+  {
+   "start": 107.648,
+   "dur": 1.265,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    50,
+    51
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 108.913,
+   "dur": 1.266,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    51
+   ],
+   "crop": "skirt",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1100,
+    "cy": 1650,
+    "w": 1000
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 110.179,
+   "dur": 1.277,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    51,
+    52
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 111.456,
+   "dur": 1.683,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    52,
+    53
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 113.139,
+   "dur": 0.848,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    53
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 113.987,
+   "dur": 0.418,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    53
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 114.405,
+   "dur": 1.695,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    53,
+    54
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 116.1,
+   "dur": 0.836,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    54,
+    55
+   ],
+   "crop": "skirt",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim",
+    "starburst_red",
+    "checker_strip"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1100,
+    "cy": 1650,
+    "w": 1000
+   },
+   "red": true,
+   "transition_in": "whip"
+  },
+  {
+   "start": 116.936,
+   "dur": 1.277,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    55
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim",
+    "starburst_red",
+    "checker_strip"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": true,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 118.213,
+   "dur": 1.683,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    55,
+    56
+   ],
+   "crop": "shoes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim",
+    "starburst_red",
+    "checker_strip"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 560,
+    "cy": 1780,
+    "w": 760
+   },
+   "red": true,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 119.896,
+   "dur": 1.695,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    56,
+    57
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 121.591,
+   "dur": 0.848,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    57,
+    58
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "black"
+  },
+  {
+   "start": 122.439,
+   "dur": 0.836,
+   "scene": 14,
+   "type": "repeat_band_red",
+   "text_level": "D+C(red)",
+   "lyric_lines": [
+    58
+   ],
+   "crop": "silhouette",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "torn_paper_strips",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 562,
+    "cy": 1000,
+    "w": null
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 123.275,
+   "dur": 1.695,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    58,
+    59
+   ],
+   "crop": "eye_r",
+   "rot": 190,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 915,
+    "cy": 420,
+    "w": 240
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 124.97,
+   "dur": 0.847,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    59,
+    60
+   ],
+   "crop": "ribbon_R",
+   "rot": -28,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1540,
+    "cy": 780,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 125.817,
+   "dur": 0.836,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    60
+   ],
+   "crop": "halo",
+   "rot": 0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1090,
+    "cy": 110,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "cut_shake"
+  },
+  {
+   "start": 126.653,
+   "dur": 1.695,
+   "scene": 15,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    60,
+    61
+   ],
+   "crop": "face",
+   "rot": -12,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 128.348,
+   "dur": 0.848,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    61,
+    62
+   ],
+   "crop": "lolly_hand",
+   "rot": 160,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 330,
+    "cy": 760,
+    "w": 560
+   },
+   "red": false,
+   "transition_in": "flip"
+  },
+  {
+   "start": 129.196,
+   "dur": 0.836,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    62,
+    63
+   ],
+   "crop": "collar_R",
+   "rot": 0,
+   "flip_v": true,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1190,
+    "cy": 1000,
+    "w": 460
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 130.032,
+   "dur": 1.741,
+   "scene": 15,
+   "type": "inverted_crop_box_text",
+   "text_level": "A",
+   "lyric_lines": [
+    63,
+    64
+   ],
+   "crop": "eye_r",
+   "rot": 190,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "mirror_symmetry",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 915,
+    "cy": 420,
+    "w": 240
+   },
+   "text": "B",
+   "note": "giant 神っぽいな thin serif, cropped off-frame",
+   "red": false,
+   "transition_in": "glitch_mosaic_0.2s"
+  },
+  {
+   "start": 131.773,
+   "dur": 3.123,
+   "scene": 16,
+   "type": "giant_type_window_light",
+   "text_level": "B",
+   "lyric_lines": [
+    64
+   ],
+   "crop": "bust",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "window_light",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 760,
+    "w": 1400
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 134.896,
+   "dur": 3.379,
+   "scene": 16,
+   "type": "giant_type_window_light",
+   "text_level": "B",
+   "lyric_lines": [
+    64,
+    65,
+    66
+   ],
+   "crop": "eyes",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "window_light",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 985,
+    "cy": 440,
+    "w": 440
+   },
+   "red": false,
+   "transition_in": "whip"
+  },
+  {
+   "start": 138.275,
+   "dur": 3.39,
+   "scene": 16,
+   "type": "giant_type_window_light",
+   "text_level": "B",
+   "lyric_lines": [
+    66
+   ],
+   "crop": "face",
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "window_light",
+    "hud_frame_ornate:dim"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 965,
+    "cy": 450,
+    "w": 760
+   },
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 141.665,
+   "dur": 2.101,
+   "scene": 17,
+   "type": "black_word",
+   "text_level": "small→人生",
+   "lyric_lines": [
+    66,
+    67,
+    68
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [],
+   "red": false,
+   "transition_in": "cut_to_black"
+  },
+  {
+   "start": 143.766,
+   "dur": 1.289,
+   "scene": 17,
+   "type": "black_word",
+   "text_level": "small→人生",
+   "lyric_lines": [
+    68
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [],
+   "red": false,
+   "transition_in": "lightleak_8f"
+  },
+  {
+   "start": 145.055,
+   "dur": 1.785,
+   "scene": 18,
+   "type": "white_bar_end",
+   "text_level": "-",
+   "lyric_lines": [
+    68
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [],
+   "red": false,
+   "transition_in": "hard_cut"
+  }
+ ]
+}
