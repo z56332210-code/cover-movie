@@ -745,7 +745,9 @@ def _plate_for(img_rgb, bbox, text_rgb, target=5.0):
     cr = contrast(lt, worst)
     if cr >= target:
         return None, 0.0, cr
-    plate = PAPER_L if lt < 0.2 else INK
+    if lt < 0.2:                                            # dark / red text: no white glow behind letters, ever
+        return None, 0.0, cr
+    plate = INK                                             # light text: dark shadow only
     lp = rel_lum(plate)
     for a in np.arange(0.5, 1.0001, 0.05):
         if contrast(lt, a * lp + (1 - a) * worst) >= target:
@@ -767,11 +769,15 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
     if giant:
         bb = [item_bbox(it) for it in giant]
         ub = (min(b[0] for b in bb) - S(20), min(b[1] for b in bb) - S(16), max(b[2] for b in bb) + S(20), max(b[3] for b in bb) + S(16))
-        reg = np.asarray(out.crop(tuple(int(v) for v in (max(0, ub[0]), max(0, ub[1]), min(Q.W, ub[2]), min(Q.H, ub[3]))))).reshape(-1, 3)
-        dark = reg.mean() < 128
-        col = RED if giant[0]["red"] else (PAPER_L if dark else INK)
-        plate, pa, cr = _plate_for(out, ub, col)
         amax = max(it["alpha"] for it in giant)
+        if giant[0]["red"]:                          # red keywords: drawn as they are (contrast rule exempted by the user)
+            col, plate, pa, cr = RED, None, 0.0, _plate_for(out, ub, RED)[2]
+        else:                                        # pick the tone that reads best; if still weak, white text + dark shadow
+            cd = _plate_for(out, ub, INK)[2]; cl = _plate_for(out, ub, PAPER_L)
+            if cd >= max(4.5, cl[2]):
+                col, plate, pa, cr = INK, None, 0.0, cd
+            else:
+                col = PAPER_L; plate, pa, cr = cl
         if plate:                                    # soft halo around the glyphs (no box)
             hm = Image.new("L", out.size, 0)
             for it in giant:
@@ -783,7 +789,7 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         for it in giant:
             g = htext(it["text"], it["size"], col + (255,), it["font"])
             paste(L, g, it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
-        crs.append(cr)
+        crs.append(("red" if giant[0]["red"] else "giant", cr))
     for it in items:
         if it["kind"] == "box":
             paste(L, box_shadow(it["img"]), it["x"] + hx + S(7), it["y"] + hy + it["dy"] + S(9), it["alpha"] * 0.45)
@@ -791,18 +797,12 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
             bf = beat_flash(t_now[0])
             if bf > 0 and not it.get("dim"):
                 paste(L, it.get("bright") or it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"] * 0.7 * bf)
-            crs.append(contrast(rel_lum(PAPER_L), rel_lum(INK)))
-        elif it["kind"] == "red":
+            crs.append(("box", contrast(rel_lum(PAPER_L), rel_lum(INK))))
+        elif it["kind"] == "red":                    # red keyword: no backing of any kind
             bb = item_bbox(it)
-            plate, pa, cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)
-            if plate:                                # soft halo around the glyphs (no box)
-                hm = Image.new("L", out.size, 0)
-                hm.paste(it["img"].getchannel("A"), (int(it["x"] + hx), int(it["y"] + hy + it["dy"])), it["img"].getchannel("A"))
-                hm = hm.filter(ImageFilter.MaxFilter(max(3, S(9) | 1))).filter(ImageFilter.GaussianBlur(S(7)))
-                halo = Image.new("RGBA", out.size, plate + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * it["alpha"])))
-                L.alpha_composite(halo)
+            cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)[2]
             paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
-            crs.append(cr)
+            crs.append(("red", cr))
     if cap and cap["alpha"] > 0.01:
         x0, y0, x1, y1 = caption_rect(cap)
         reg = np.asarray(out.crop((int(x0), int(y0), int(x1), int(y1))).resize((40, 4))).reshape(-1, 3)
@@ -818,9 +818,9 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         ImageDraw.Draw(L).text((Q.W / 2 - (bb[2] - bb[0]) / 2 - bb[0], (y0 + y1) / 2 - (bb[1] + bb[3]) / 2 + cap["dy"] * 0.3), cap["text"],
                                font=f, fill=PAPER_L + (int(255 * cap["alpha"]),))
         worst = bgw * (1 - ba) + rel_lum(INK) * ba
-        crs.append(contrast(rel_lum(PAPER_L), worst))
+        crs.append(("caption", contrast(rel_lum(PAPER_L), worst)))
     out = out.convert("RGBA"); out.alpha_composite(L)
-    dbg["contrast"] = [round(float(x), 2) for x in crs]
+    dbg["contrast"] = [(k, round(float(x), 2)) for k, x in crs]
     return out.convert("RGB")
 
 def text_D(L, t, c, color, rows=1, size_h=0.14, echo=True):

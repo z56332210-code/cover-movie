@@ -352,9 +352,11 @@ def new_checks():
             bad("2-1", cj, f"밝은 줄 {D['lines_bright']}개")
         if D.get("order_ok") is False:
             bad("2-2", cj, "세로 박스 순서 위반")
-        for cr in D.get("contrast", []):
+        for kind, cr in D.get("contrast", []):
+            if kind == "red":                       # red keywords: exempted by the user (no backing allowed)
+                continue
             if cr < 4.5:
-                bad("2-7", cj, f"대비 {cr:.2f}:1")
+                bad("2-7", cj, f"{kind} 대비 {cr:.2f}:1")
 
 
 if A.legacy:
