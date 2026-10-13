@@ -40,7 +40,8 @@
    1,
    3,
    6,
-   15
+   15,
+   17
   ]
  },
  "density": [
@@ -2947,7 +2948,9 @@
    "crop": null,
    "rot": 0,
    "flip_v": false,
-   "overlays": [],
+   "overlays": [
+    "roman_clock_ring:faint"
+   ],
    "red": false,
    "transition_in": "cut_to_black"
   },
@@ -2964,7 +2967,9 @@
    "crop": null,
    "rot": 0,
    "flip_v": false,
-   "overlays": [],
+   "overlays": [
+    "roman_clock_ring:faint"
+   ],
    "red": false,
    "transition_in": "lightleak_8f"
   },

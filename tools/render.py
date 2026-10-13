@@ -1019,7 +1019,7 @@ def motifs(L, t, c, ci, eyes, bg, layer):
                 cx = Q.W * (0.2 + ((t - c["start"]) / max(c["dur"], 0.4)) * 0.6)
                 draw_clock(L, t, cx, Q.H * 0.5, GRAY_M, 0.45, 1.25)
             else:
-                draw_clock(L, t, Q.W / 2, Q.H / 2, GRAY_M if faint else col, 0.22 if faint else 0.55)
+                draw_clock(L, t * (4 if faint else 1), Q.W / 2, Q.H / 2, GRAY_M if faint else col, 0.34 if faint else 0.55)
         if "checker_floor" in ov:
             checker_floor(L, t)
         if "checker_blur" in ov:
@@ -1076,8 +1076,8 @@ def render_frame(t):
     band_text(band, t, c, bg)
     frame.alpha_composite(band)
 
-    # image layer + transition
-    img, eyes = image_layer(ci, c, t)
+    # image layer + transition (the edit mask borrows the incoming cut so the mosaic has something to chew on)
+    img, eyes = image_layer(ci + 1, CUTS[ci + 1], t) if c["scene"] == 10 else image_layer(ci, c, t)
     kind, ph, inc = transition_state(t)
     if kind and img is not None or kind in ("lightleak_8f", "white_blowout"):
         if kind == "lightleak_8f":
@@ -1131,6 +1131,8 @@ def render_frame(t):
     scene_text(T, eyes, t, c, ci, bg)
     hx = snoise(t, ci * 7919 + 14) * 0.001 * W * 0.4
     hy = snoise(t, ci * 7919 + 15) * 0.001 * W * 0.4
+    if c["scene"] in (1, 17) or c.get("type") == "black_card":   # slow drift so cards never freeze
+        hx += math.sin(t * 0.9) * S(14); hy += (t - c["start"]) * S(10)
     T = ImageChops.offset(T, int(round(hx)), int(round(hy)))
     out = out.convert("RGBA"); out.alpha_composite(T)
 
@@ -1152,8 +1154,10 @@ def render_frame(t):
             out = glitch(out, t, int(c2["start"] * 100), 1.6 if c2["scene"] == 10 else 1.0)
     if c["scene"] == 10:
         u = (t - c["start"]) * FPS
-        wa = 0.95 if u < 2 else max(0, 0.95 - (u - 2) * 0.12)
+        wa = 0.92 if u < 1.5 else max(0, 0.75 - (u - 1.5) * 0.25)
         out = Image.blend(out, Image.new("RGB", (W, H), (250, 250, 250)), wa)
+        if 1.5 <= u < 7.5:
+            out = glitch(out, t, 9090, 2.2)
     if c["scene"] == 18:
         u = (t - c["start"]) / max(c["dur"], 0.1)
         d = ImageDraw.Draw(out)
@@ -1163,6 +1167,15 @@ def render_frame(t):
         fade = min(1, max(0, (t - (DUR - 0.8)) / 0.8))
         out = Image.blend(out, Image.new("RGB", (W, H), (0, 0, 0)), fade)
 
+    if c["scene"] in (1, 17) or c.get("type") == "black_card":
+        band = Image.new("L", (W, H), 0); d = ImageDraw.Draw(band)
+        y = (t * S(140)) % (H + S(200)) - S(100)
+        d.rectangle((0, y, W, y + S(60)), fill=34)
+        for k in range(6):
+            yy = (y * 0.37 + k * H / 6) % H
+            d.line((0, yy, W, yy), fill=22, width=1)
+        band = band.filter(ImageFilter.GaussianBlur(S(18)))
+        out = ImageChops.screen(out, Image.merge("RGB", [band] * 3))
     # breathing +-3%, per-frame flicker +-1.5%, vignette
     fr = int(t * FPS)
     k = 1 + 0.03 * math.sin(2 * math.pi * 0.22 * t) + 0.015 * (np.random.default_rng(fr).random() * 2 - 1)

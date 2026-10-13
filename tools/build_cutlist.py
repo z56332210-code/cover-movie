@@ -129,7 +129,7 @@ S = [
          ov=["window_light", "hud_frame_ornate:dim"], zone="relaxed",
          pool=[("face", 0, False), ("wide_upper", 0, False), ("eyes", 0, False)]),
     dict(id=17, start=L[67], end=145.3, type="black_word", mode="hold", text="small→人生", color="black",
-         ov=[], pool=[(None, 0, False)], cuts_at=[L[68]]),
+         ov=["roman_clock_ring:faint"], pool=[(None, 0, False)], cuts_at=[L[68]]),
     dict(id=18, start=145.3, end=DUR, type="white_bar_end", mode="hold", text="-", color="paper",
          ov=[], pool=[(None, 0, False)]),
 ]
