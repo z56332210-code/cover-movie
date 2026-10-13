@@ -1,0 +1,370 @@
+{
+  "_readme": "음원(fc0beb7c, 146.8초 편집본)의 시간(audio_*)에 맞춰 만든 장면표. 편집 문법은 레퍼런스 B(흑백+빨강, 파츠 크롭, 키네틱 타이포)를 따르고, 장식 요소(HUD 테두리, 시계, 체커, 스타버스트, 찢어진 종이, 모자이크 글리치)는 세 번째 레퍼런스(MV)에서 가져온다. audio_*는 ±2초 오차의 추정치이므로 실제 컷은 음원의 비트와 가사 줄 전환 시점(lyrics/line_times_auto.json)에 맞춰 조정할 것.",
+  "audio_map": {
+    "note": "음원은 mp3 파일이다(원곡을 잘라 붙인 편집본, 약 146.8초). 가운데 약 56초(원곡 약 90~146초, 차분한 interlude 포함)가 빠져 있어 레퍼런스의 느린 구간은 쓸 수 없다. 만약 mp3 길이가 146.8초와 다르면 음원 점프 지점을 소리로 다시 찾을 것.",
+    "audio_to_B": "audio 0~88초 → B = audio + 0.8초 / audio 90초 이후 → B = audio + 56.7초",
+    "audio_to_MV": "audio 0~88초 → MV = audio + 1.7초 / audio 90초 이후 → MV = audio + 57.6초",
+    "edit_point_audio_sec": [
+      88.0,
+      89.3
+    ]
+  },
+  "tokens": {
+    "canvas": [
+      1920,
+      1080
+    ],
+    "fps": 30,
+    "palette": {
+      "ink_black": "#0a0a0b",
+      "gray_dark": "#3a3839",
+      "gray_mid": "#8a8688",
+      "paper": "#d8d6d6",
+      "paper_light": "#ecebeb",
+      "accent_red": "#c0161f"
+    },
+    "color_rule": "모노크롬(검정/회색/종이색)이 기본이고 포인트 컬러는 빨강 하나뿐이다. 노랑, 주황, 분홍, 청록 등 다른 색은 쓰지 않는다. 빨강은 곡 전체 3~4회, 각 2~5초(키워드 한 글자/슬래시/스타버스트). 일러스트는 완전 흑백+대비 처리.",
+    "illustration_treatment": "파츠 크롭(눈, 입/소품, 손, 옷깃, 목 장식), 상하 반전, 대각선 회전, 찢어진 종이 마스크. 전신 컷은 거의 없음.",
+    "mv_motif_vocabulary": {
+      "hud_frame_ornate": "얇은 이중선 테두리 + 모서리 장식 + 작은 원형 아이콘 + 아주 작은 텍스트. 곡 내내 상시 표시(불투명도 50~70%).",
+      "roman_clock_ring": "로마 숫자(I~XII) 링이 천천히 회전, 시계바늘이 가끔 튐. 곡 제목의 '25時' 모티프. 장면의 20~30%에만 사용.",
+      "checker_floor": "하프톤 체커 무늬 바닥/띠(검정/회색/흰색). 원근을 주거나 흐리게 번질 수 있음.",
+      "starburst_red": "스파이크 원 모양 도형(빨강). 크기 다양하게 2~3개, 화면 가장자리에서 튀어나옴. 빨강 구간에서만.",
+      "torn_paper_strips": "찢어진 종이 띠가 대각선으로 지나감(흰색/회색).",
+      "glitch_mosaic": "모자이크 픽셀 블록 글리치. 한 번에 0.2초 이하.",
+      "code_text_block": "읽히지 않는 작은 코드/로그 텍스트 블록. 가장자리에 흐리게.",
+      "circle_guides": "가는 원형 가이드 라인과 조준선.",
+      "mirror_symmetry": "좌우 대칭 가사 박스 배치, 중앙을 비움.",
+      "window_light": "회색조 배경에 창문 빛이 길게 비스듬히 들어옴 (차분한 장면용).",
+      "mini_icon": "마네킹/시계 같은 작은 아이콘을 모서리에 하나씩."
+    },
+    "fonts": {
+      "type_giant": "가는 세리프(명조) ExtraLight~Regular",
+      "type_vertical": "검은 박스 + 흰 세로쓰기 명조",
+      "forbidden": [
+        "굵은 고딕",
+        "만화체",
+        "붓글씨"
+      ]
+    },
+    "text_levels": {
+      "A": "작은 세로쓰기(검은 박스 안 흰 글자), 2~3줄 겹침 가능",
+      "B": "큰 가사, 가는 세리프, 회전/크롭",
+      "C": "키워드 한 글자/단어 화면 절반, 빨강 가능",
+      "D": "반복 띠(의성어를 가로 전체에 나열)"
+    },
+    "caption_ko": "화면 맨 아래 중앙에 작고 얇게 2줄(윗줄 한국어 발음, 아랫줄 번역). 박스/장식 없음. 큰 타이포 장면에서는 생략 가능."
+  },
+  "pacing": {
+    "overall": "전체가 빠른 편. 10초당 컷 7~9개가 기본.",
+    "relaxed_zones": "장면 4(27~37초)와 장면 16(135~141초)은 10초당 컷 1~3개로 숨 쉬게 한다. 이 음원에는 차분한 interlude가 없으니, 이 두 곳이 대비를 만든다.",
+    "beat_snap": "모든 컷은 음원 비트에 스냅(오차 50ms 이내). 가사 줄 전환 시점은 lyrics/line_times_auto.json 참고."
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "audio_start": 0,
+      "audio_end": 9.8,
+      "section": "intro",
+      "type": "title_card_hud",
+      "composition": "검은 화면, 얇고 장식적인 HUD 테두리(모서리 장식, 작은 원형 아이콘). 곡명/제작 정보를 아주 작은 글씨로 나열.",
+      "text": "UI 작게",
+      "camera": "거의 정지, 아주 느린 페이드 인",
+      "transition_out": "cut",
+      "color": "black",
+      "mv_overlays": [
+        "hud_frame_ornate"
+      ],
+      "source_ref": "0.8~10.6 (B scene1) / MV 0~10"
+    },
+    {
+      "id": 2,
+      "audio_start": 9.8,
+      "audio_end": 18.2,
+      "section": "verse_a",
+      "type": "black_crop_vertical",
+      "composition": "검은 배경에 입/손/소품 파츠를 대각선으로 크롭. 한쪽에 검은 박스 세로 가사.",
+      "text": "A",
+      "camera": "느린 이동 + 약한 떨림",
+      "transition_out": "flash_cut",
+      "color": "mono",
+      "mv_overlays": [
+        "hud_frame_ornate",
+        "code_text_block"
+      ],
+      "source_ref": "B scene2"
+    },
+    {
+      "id": 3,
+      "audio_start": 18.2,
+      "audio_end": 27.2,
+      "section": "verse_a",
+      "type": "repeat_band_clock",
+      "composition": "흰 종이 배경에 의성어 반복 띠가 가로 전체를 흐르고, 중앙 실루엣 뒤에 로마 숫자 시계 링이 천천히 회전(25時 모티프).",
+      "text": "D",
+      "camera": "띠 가로 스크롤 + 시계 링 회전",
+      "transition_out": "cut",
+      "color": "paper + ink",
+      "mv_overlays": [
+        "roman_clock_ring",
+        "hud_frame_ornate"
+      ],
+      "source_ref": "B scene3 + MV 시계 모티프"
+    },
+    {
+      "id": 4,
+      "audio_start": 27.2,
+      "audio_end": 37.2,
+      "section": "verse_a",
+      "type": "paper_crop_vertical",
+      "composition": "흰 종이 배경에 가슴/옷깃 크롭, 가는 세로 가사 박스. 얇은 원형 가이드 라인과 작은 아이콘.",
+      "text": "A",
+      "camera": "느린 푸시인(릴렉스 구간: 컷 2~3개/10초)",
+      "transition_out": "cut",
+      "color": "paper + ink",
+      "mv_overlays": [
+        "circle_guides",
+        "mini_icon"
+      ],
+      "source_ref": "B scene4",
+      "zone": "relaxed"
+    },
+    {
+      "id": 5,
+      "audio_start": 37.2,
+      "audio_end": 47.2,
+      "section": "pre_chorus",
+      "type": "giant_type_mirror",
+      "composition": "좌우 대칭 레이아웃: 양쪽 가장자리에 세로 가사 박스가 거울처럼 서고, 가운데는 비워뒀다가 한 번 번쩍. 큰 글자는 가는 세리프로 일부 잘림.",
+      "text": "B + A(대칭)",
+      "camera": "푸시인 + 글자 슬라이드",
+      "transition_out": "cut",
+      "color": "paper + ink",
+      "mv_overlays": [
+        "mirror_symmetry",
+        "hud_frame_ornate"
+      ],
+      "source_ref": "B scene5 + MV 대칭 레이아웃"
+    },
+    {
+      "id": 6,
+      "audio_start": 47.2,
+      "audio_end": 65.2,
+      "section": "chorus_a",
+      "type": "inverted_crop_box_text",
+      "composition": "상하 반전/대각선 회전 크롭 연타(컷 1초 안팎). 박스 세로 가사 2~3줄 겹침. 배경에 로마 숫자와 시계바늘이 스쳐 지나감.",
+      "text": "A (겹침)",
+      "camera": "컷마다 짧은 떨림",
+      "transition_out": "flash_cut",
+      "color": "mono",
+      "mv_overlays": [
+        "roman_clock_ring",
+        "circle_guides"
+      ],
+      "source_ref": "B scene6 + MV"
+    },
+    {
+      "id": 7,
+      "audio_start": 65.2,
+      "audio_end": 75.2,
+      "section": "chorus_a",
+      "type": "red_starburst_slash",
+      "composition": "붉은 눈/얼굴 일부 클로즈업. 빨간 스파이크 원(스타버스트)과 붉은 슬래시가 화면을 베듯 지나가고 큰 빨간 한자가 세로로.",
+      "text": "C(빨강)",
+      "camera": "빠른 줌 + 충격 떨림",
+      "transition_out": "cut",
+      "color": "ACCENT red (1회차)",
+      "mv_overlays": [
+        "starburst_red",
+        "checker_strip"
+      ],
+      "source_ref": "B scene7 + MV 스타버스트"
+    },
+    {
+      "id": 8,
+      "audio_start": 75.2,
+      "audio_end": 85.2,
+      "section": "verse_b",
+      "type": "repeat_band_silhouette",
+      "composition": "검은 배경에 흰 실루엣, 회색 반복 띠가 가로로 길게 흐름. 체커 무늬 바닥(하프톤)이 원근감 있게 깔림.",
+      "text": "D",
+      "camera": "가로 스크롤",
+      "transition_out": "cut",
+      "color": "ink + gray",
+      "mv_overlays": [
+        "checker_floor",
+        "halftone"
+      ],
+      "source_ref": "B scene8 + MV 체커"
+    },
+    {
+      "id": 9,
+      "audio_start": 85.2,
+      "audio_end": 88.0,
+      "section": "verse_b",
+      "type": "checker_blur_transition",
+      "composition": "체커 패턴이 흐려지며 회색 번짐으로 휩 블러. 곧 이어질 음원 편집점을 향해 속도를 올림.",
+      "text": "없음",
+      "camera": "휩 블러 가속",
+      "transition_out": "audio_edit_mask",
+      "color": "mono + gray smear",
+      "mv_overlays": [
+        "checker_blur"
+      ],
+      "source_ref": "B scene9 + MV 전환"
+    },
+    {
+      "id": 10,
+      "audio_start": 88.0,
+      "audio_end": 89.3,
+      "section": "audio_edit",
+      "type": "audio_edit_mask",
+      "composition": "음원이 중간을 건너뛰는 지점(원곡 약 90~146초 생략). 흰 번쩍임 + 모자이크 글리치 0.2초로 가린다.",
+      "text": "없음",
+      "camera": "충격 떨림",
+      "transition_out": "cut",
+      "color": "white + mosaic",
+      "mv_overlays": [
+        "glitch_mosaic"
+      ],
+      "source_ref": "음원 편집점"
+    },
+    {
+      "id": 11,
+      "audio_start": 89.3,
+      "audio_end": 97.3,
+      "section": "chorus_b",
+      "type": "red_starburst_slash",
+      "composition": "붉은 눈 클로즈업과 빨간 슬래시/글리치 한자. 가사 박스가 흔들림.",
+      "text": "C(빨강)",
+      "camera": "충격 떨림",
+      "transition_out": "cut",
+      "color": "ACCENT red (2회차)",
+      "mv_overlays": [
+        "starburst_red"
+      ],
+      "source_ref": "B scene15"
+    },
+    {
+      "id": 12,
+      "audio_start": 97.3,
+      "audio_end": 106.3,
+      "section": "chorus_b",
+      "type": "black_crop_vertical",
+      "composition": "검은 코트/옷깃/손 크롭 연타. 박스 가사 겹침. 모자이크 글리치 한두 번.",
+      "text": "A",
+      "camera": "빠른 이동",
+      "transition_out": "flash_cut",
+      "color": "mono",
+      "mv_overlays": [
+        "glitch_mosaic",
+        "code_text_block"
+      ],
+      "source_ref": "B scene16"
+    },
+    {
+      "id": 13,
+      "audio_start": 106.3,
+      "audio_end": 108.3,
+      "section": "chorus_b",
+      "type": "white_flash",
+      "composition": "하얗게 날아간 빈 화면",
+      "text": "없음",
+      "camera": "-",
+      "transition_out": "cut",
+      "color": "white",
+      "mv_overlays": [],
+      "source_ref": "B scene17"
+    },
+    {
+      "id": 14,
+      "audio_start": 108.3,
+      "audio_end": 123.3,
+      "section": "last_chorus",
+      "type": "repeat_band_red",
+      "composition": "흰 종이에 가는 세리프 반복 띠가 가로 전체. 중앙에 빨간 큰 키워드 한 글자가 실루엣 위에 서 있음. 이 장면에서는 빨강 스타버스트와 찢어진 종이 띠(흰색/회색)를 함께 사용.",
+      "text": "D + C(빨강)",
+      "camera": "글자 스크롤 + 줌",
+      "transition_out": "cut",
+      "color": "paper + red (3회차)",
+      "mv_overlays": [
+        "starburst_red",
+        "torn_paper_strips",
+        "checker_strip"
+      ],
+      "source_ref": "B scene18 + MV 찢어진 종이 장면(흑백으로)"
+    },
+    {
+      "id": 15,
+      "audio_start": 123.3,
+      "audio_end": 135.3,
+      "section": "last_chorus",
+      "type": "inverted_crop_box_text",
+      "composition": "상하 반전 크롭과 박스 가사 연타. 시계 링과 로마 숫자가 인물 뒤에서 돎.",
+      "text": "A",
+      "camera": "빠른 떨림",
+      "transition_out": "flash_cut",
+      "color": "mono",
+      "mv_overlays": [
+        "roman_clock_ring",
+        "mirror_symmetry"
+      ],
+      "source_ref": "B scene19 + MV"
+    },
+    {
+      "id": 16,
+      "audio_start": 135.3,
+      "audio_end": 141.3,
+      "section": "ending",
+      "type": "giant_type_window_light",
+      "composition": "회색조 사진/3D 같은 배경에 창문 빛이 길게 들어옴. 큰 흰 세리프 글자가 겹쳐 지나감. 이 영상에서 가장 차분한 장면.",
+      "text": "B",
+      "camera": "느린 푸시인 (릴렉스: 컷 1~2개)",
+      "transition_out": "cut_to_black",
+      "color": "grayscale + window light",
+      "mv_overlays": [
+        "window_light",
+        "hud_frame_ornate"
+      ],
+      "source_ref": "B scene20 + MV 후반 회색조 장면",
+      "zone": "relaxed"
+    },
+    {
+      "id": 17,
+      "audio_start": 141.3,
+      "audio_end": 145.3,
+      "section": "ending",
+      "type": "black_word",
+      "composition": "검은 화면 정적.",
+      "text": "없음",
+      "camera": "-",
+      "transition_out": "cut",
+      "color": "black",
+      "mv_overlays": [],
+      "source_ref": "B scene21"
+    },
+    {
+      "id": 18,
+      "audio_start": 145.3,
+      "audio_end": 146.8,
+      "section": "ending",
+      "type": "white_bar_end",
+      "composition": "흰 종이 화면에 세로 회색 막대가 천천히 사라지며 종료.",
+      "text": "없음",
+      "camera": "-",
+      "transition_out": "fade",
+      "color": "paper",
+      "mv_overlays": [],
+      "source_ref": "B scene22"
+    }
+  ],
+  "rules": [
+    "같은 type을 연속으로 쓰지 말 것 (inverted_crop_box_text는 최대 3컷까지 연속)",
+    "색은 모노크롬 + 빨강뿐. 빨강은 곡 전체 3~4회, 다른 색(노랑/주황/분홍/청록 등)은 절대 쓰지 말 것",
+    "HUD 테두리는 거의 상시 표시하되 큰 타이포 장면에서는 흐리게",
+    "시계 모티프(roman_clock_ring)는 장면의 20~30%에만. 매 장면에 넣지 말 것",
+    "글리치는 한 번에 0.2초 이하, 전체 6~8회 이내. 장면 10(음원 편집점)에서는 반드시 1회 사용",
+    "글자는 이미지 컷이 바뀌어도 끊기지 않게 별도 레이어",
+    "큰 글자는 눈/표정을 완전히 가리지 말 것"
+  ]
+}
