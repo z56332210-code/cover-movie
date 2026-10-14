@@ -84,8 +84,22 @@ PRESETS = {
 SECTION = {1: "intro", 2: "verse_a", 3: "verse_a", 4: "verse_a", 5: "pre_chorus", 6: "chorus_a", 7: "chorus_a",
            8: "verse_b", 9: "verse_b", 10: "audio_edit", 11: "chorus_b", 12: "chorus_b", 13: "chorus_b",
            14: "last_chorus", 15: "last_chorus", 16: "ending", 17: "ending", 18: "ending"}
-SECTION_PRESET = {"intro": "P5", "verse_a": "P1", "pre_chorus": "P3", "chorus_a": "P4", "verse_b": "P2",
-                  "audio_edit": "P5", "chorus_b": "P2", "last_chorus": "P3", "ending": "P3"}
+SECTION_PRESET = {"intro": "P5", "verse_a": "P1", "pre_chorus": "P1", "chorus_a": "P3", "verse_b": "P2",
+                  "audio_edit": "P5", "chorus_b": "P3", "last_chorus": "P3", "ending": "P3"}
+# ---- one editing grammar per kind of passage (verse / chorus / bridge / relax), shared by every section of that kind ----
+SECTION_TYPE = {"intro": "relax", "verse_a": "verse", "pre_chorus": "verse", "chorus_a": "chorus", "chorus_b": "chorus",
+                "last_chorus": "chorus", "verse_b": "bridge", "audio_edit": None, "ending": "relax"}
+GRAMMAR = {
+    "verse":  dict(deco=[["torn_edge"], ["code"]], nochar_every=4, nochar="ink_type",   trans=["T3", "T5"], cam="push_in"),
+    "chorus": dict(deco=[["torn_strip", "clock"]], nochar_every=4, nochar="clock_type", trans=["T1", "T4"], cam="pan"),
+    "bridge": dict(deco=[["checker"]],             nochar_every=3, nochar="band_only",  trans=["T5", "T3"], cam="static"),
+    "relax":  dict(deco=[["guides"]],              nochar_every=0, nochar="paper_type", trans=["T3", "T5"], cam="push_in"),
+}
+FACE_CROPS = {"eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye", "point_hand", "wide_upper", "bust"}
+
+
+def zone_type(scene_id):
+    return "relax" if scene_id in (1, 4, 16, 17, 18) else SECTION_TYPE[SECTION[scene_id]]
 CHORUS = {"chorus_a", "chorus_b", "last_chorus"}
 # one decoration kind per cut, each with a reason (clock behind the subject, starburst only in red, torn edge cuts the art)
 DECO = {1: ["clock"], 2: ["torn_edge", "code"], 3: ["band"], 4: ["guides"], 5: ["torn_edge"], 6: ["clock"], 7: ["torn_edge"],
@@ -223,10 +237,16 @@ for sc in S:
             continue
         pool = sc["pool"]; st = (j + sc["id"]) % len(pool)
         crop, rot, flip = pool[st]
-        for q in range(len(pool)):            # no preset reused within the last 5 cuts (silhouette scenes excepted)
+        prev_face = bool(cuts) and cuts[-1].get("crop") in FACE_CROPS
+        for q in range(len(pool)):            # no preset reused within the last 5 cuts; never two face close-ups in a row
             cand = pool[(st + q) % len(pool)]
+            if prev_face and cand[0] in FACE_CROPS:
+                continue
             if cand[0] in (None, "silhouette") or cand[0] not in recent[-5:]:
                 crop, rot, flip = cand; break
+        else:
+            alt = [p_ for p_ in pool if p_[0] not in FACE_CROPS] or [("halo", 0, False), ("lolly", 0, False), ("collar_R", 0, False)]
+            crop, rot, flip = alt[j % len(alt)]
         active = [i for i in lines if lines[i] < t1 and (lines.get(i + 1, LT["end_sec"]) > t0)]
         start_line = next((i for i in lines if abs(snap(lines[i]) - t0) < 0.01), None)
         c = dict(start=round(t0, 3), dur=round(t1 - t0, 3), scene=sc["id"], type=sc["type"], text_level=sc["text"],
@@ -265,14 +285,15 @@ for sc in S:
             if run > 3:
                 c.update(type="black_crop_vertical", rot=-12, flip_v=False); run = 0
         # character-less cuts: every ~5th cut in fast scenes, one per relaxed zone (no wall-to-wall character)
-        NOCHAR = {2: "ink_type", 12: "ink_type", 11: "ink_type", 3: "band_only", 8: "band_only", 14: "band_only",
-                  6: "clock_type", 15: "clock_type", 7: "ink_type", 4: "paper_type", 16: "empty_room", 5: "paper_type"}
         is_red = bool(sc.get("red") and snap(sc["red"][0]) - 0.01 <= t0 < snap(sc["red"][1]) - 0.01)
-        if sc["id"] in NOCHAR and c.get("type") != "black_card" and not is_red and not c.get("note"):
-            relaxed_pick = sc.get("zone") == "relaxed" and j == (1 if sc["id"] == 4 else 0)
-            fast_pick = sc.get("zone") != "relaxed" and j % 5 == 3
+        zt = zone_type(sc["id"]); gm = GRAMMAR.get(zt)
+        k_sec = sum(1 for q in cuts if q["section"] == SECTION[sc["id"]])
+        if gm and sc["id"] not in (1, 10, 13, 17, 18) and c.get("type") != "black_card" and not is_red and not c.get("note"):
+            relaxed_pick = zt == "relax" and j == (1 if sc["id"] == 4 else 0)
+            fast_pick = gm["nochar_every"] and k_sec % gm["nochar_every"] == gm["nochar_every"] - 1
             if relaxed_pick or fast_pick:
-                c.update(nochar=NOCHAR[sc["id"]], crop=None, rot=0, flip_v=False)
+                kind = "empty_room" if sc["id"] == 16 else gm["nochar"]
+                c.update(nochar=kind, crop=None, rot=0, flip_v=False)
                 c.pop("crop_src", None); c.pop("crop_box", None)
         red = sc.get("red")
         c["red"] = bool(red and snap(red[0]) - 0.01 <= t0 < snap(red[1]) - 0.01)
@@ -294,7 +315,14 @@ for sc in S:
         elif c.get("type") == "black_card":
             c["deco"] = []
         else:
-            opts = DECO[sc["id"]]; c["deco"] = [opts[j % len(opts)]] if opts else []
+            zt = zone_type(sc["id"])
+            if sc["id"] in (1, 17):
+                opts = [["clock"]]
+            elif sc["id"] in (10, 13, 16, 18) or not zt:
+                opts = [[]]
+            else:
+                opts = GRAMMAR[zt]["deco"]
+            c["deco"] = list(opts[k_sec % len(opts)])
         if "clock" in c["deco"]:
             c["clock_at"] = "focus"
         # ---- transition library T1..T6 (never twice in a row), specials for title / edit / white / black ----
@@ -341,13 +369,17 @@ for idx, c in enumerate(cuts):
     if dur > 1.0 and c["scene"] not in (10, 18) and c.get("crop") != "silhouette":   # full figure: camera stays still
         if last and prev_cam != "pull_out" and _zoom_amount(dur) >= 0.02:
             cam = "pull_out"                                  # breathe out once at the end of a section
-        elif sec in VERSE_LIKE:
-            cam = "push_in" if push_run < 3 and _zoom_amount(dur) >= 0.02 else "static"
-        elif sec in CHORUS:
-            k = sum(1 for q in cuts[:idx] if q["section"] == sec)
-            cam = ("pan_x", "static", "pan_y", "static")[k % 4]
+        else:
+            g = GRAMMAR.get(zone_type(c["scene"]), {}).get("cam", "static")
+            if g == "push_in":
+                cam = "push_in" if push_run < 3 and _zoom_amount(dur) >= 0.02 else "static"
+            elif g == "pan":
+                k = sum(1 for q in cuts[:idx] if q["section"] == sec)
+                cam = ("pan_x", "static", "pan_y", "static")[k % 4]
     if cam in ("push_in", "pull_out"):
         amt = _zoom_amount(dur)
+        if zone_type(c["scene"]) == "relax":
+            amt = max(0.02, min(amt, 0.025))                  # relax: the slowest push
     elif cam in ("pan_x", "pan_y"):
         amt = 0.025
     push_run = push_run + 1 if cam == "push_in" else 0
@@ -370,7 +402,7 @@ for idx, c in enumerate(cuts):
         tr = "T6"
     else:
         c["impact"] = False
-        allowed = ["T1", "T4"] if c["section"] in CHORUS else ["T3", "T5"]
+        allowed = GRAMMAR.get(zone_type(c["scene"]) or "verse", GRAMMAR["verse"])["trans"]
         cand = [x for x in allowed if x != prev_tr]
         tr = min(cand, key=lambda x: (tr_used.get(x, 0), allowed.index(x)))
     tr_used[tr] = tr_used.get(tr, 0) + 1
@@ -382,6 +414,13 @@ for idx, c in enumerate(cuts):
         c["focus_target"] = list(cuts[idx - 1]["focus_target"])     # flash match: same screen position
     if c.get("crop") == "silhouette":
         c["focus_target"][1] = TH[0]; c["flip_h"] = False
+    # other upper-body crops: mirror so the eyes (if in frame) fall on the side away from the lyric column
+    if c.get("crop") and CROPS[c["crop"]][0] == "upper" and c["crop"] not in ("eyes", "face", "hood_top", "wide_upper", "bust", "eye_r", "eye_l", "finger_eye", "point_hand") \
+            and c["layout"] in ("P1", "P2", "P3"):
+        upside = abs(((c.get("rot", 0) + 180) % 360) - 180) > 90
+        eye_right = (982 - c["focus_src"][0] > 0) != upside          # eyes sit right of the focus on screen (before mirroring)?
+        lyr_right = c["layout"] in ("P1", "P3")
+        c["flip_h"] = bool(eye_right == lyr_right)
     # face crops: pin the eye nearest the lyric column, so the other eye moves away from the lyrics
     if c.get("crop") in ("eyes", "face", "hood_top", "wide_upper", "bust", "eye_r", "eye_l", "finger_eye", "point_hand"):
         lyr_left = c["layout"] == "P2" or (c["layout"] == "P4" and c["focus_target"][0] < 0.5)   # nearest lyric column
@@ -395,12 +434,13 @@ CUT_POOL = [k for k in FOCUS if k not in ("silhouette", "legs", "shoes", "skirt"
 for idx, c in enumerate(cuts):
     sc = c["scene"]
     kd = None if sc in (10, 13) else "relax" if sc in (1, 4, 16, 17, 18) else ("chorus" if c["section"] in CHORUS else "verse")
+    nochar = bool(c.get("nochar"))
     c["density"] = kd
     if kd is None:
         c.update(cutouts=[], echo_rows=0, keyword_pop=False, ring_text=False, micro_text=False, recipes=[])
         continue
     rng = np.random.default_rng(idx * 313 + 11)
-    n_cut = {"verse": 1, "chorus": 3, "relax": 0}[kd] + (1 if not c.get("crop") and kd != "relax" else 0)
+    n_cut = 0 if nochar else {"verse": 1, "chorus": 3, "relax": 0}[kd]      # character-less cuts carry no character at all
     # cluster mix: different kinds of crop each time (face / hands / halo / props / costume), at most one face close-up
     CATS = {"face": ["eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye"],
             "hands": ["point_hand", "lolly_hand", "nails", "cuff_L", "cuff_R"],
@@ -435,11 +475,13 @@ for idx, c in enumerate(cuts):
                 break
     c["cutouts"] = [dict(crop=str(k), w=round(float(rng.uniform(0.17, 0.30)), 3), rot=round(float(rng.uniform(-25, 25)), 1),
                          flip=bool(rng.random() < 0.4), alpha=float(rng.choice([1.0, 0.85, 0.6])), slot=int(j)) for j, k in enumerate(picks)]
-    c["echo_rows"] = {"verse": 4, "chorus": 6, "relax": 1}[kd]
+    c["echo_rows"] = {"verse": 4, "chorus": 6, "relax": 1}[kd] + (2 if nochar and kd != "relax" else 0)
     deco = [d for d in (c.get("deco") or []) if d != "band"]          # the repeat band now lives in the echo layer
     if kd == "chorus":
         extra = ["checker_strip"] if c["red"] else [k for k in ("torn_strip", "clock", "checker_strip") if k not in deco]
         deco += extra[:1] if c["red"] else extra[:max(1, 2 - len(deco))]
+    elif nochar and kd == "verse":                         # filled by elements: cropped clock + checker strip / checker floor
+        deco += [k for k in (["checker"] if zone_type(sc) == "bridge" else ["checker_strip"]) if k not in deco]
     c["deco"] = deco
     if "clock" in deco:
         c["clock_at"] = "focus"

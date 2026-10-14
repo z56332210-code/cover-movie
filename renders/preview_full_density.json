@@ -1,29 +1,29 @@
 {
  "relax": {
   "frames": 278,
-  "filled_pct": 35.5,
+  "filled_pct": 34.7,
   "filled_min": 0.0,
-  "filled_max": 70.8,
-  "edge_pct": 4.07,
+  "filled_max": 71.5,
+  "edge_pct": 3.85,
   "edge_min": 0.01,
-  "edge_max": 8.47
+  "edge_max": 7.9
  },
  "verse": {
   "frames": 314,
-  "filled_pct": 72.4,
-  "filled_min": 47.9,
-  "filled_max": 98.3,
-  "edge_pct": 12.86,
-  "edge_min": 6.09,
-  "edge_max": 26.47
+  "filled_pct": 75.0,
+  "filled_min": 42.4,
+  "filled_max": 91.0,
+  "edge_pct": 13.58,
+  "edge_min": 5.16,
+  "edge_max": 20.97
  },
  "chorus": {
   "frames": 445,
-  "filled_pct": 75.3,
-  "filled_min": 53.8,
-  "filled_max": 89.2,
-  "edge_pct": 9.71,
-  "edge_min": 6.53,
-  "edge_max": 13.98
+  "filled_pct": 73.2,
+  "filled_min": 42.0,
+  "filled_max": 88.2,
+  "edge_pct": 9.69,
+  "edge_min": 4.25,
+  "edge_max": 12.78
  }
 }

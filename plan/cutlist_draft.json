@@ -8,7 +8,7 @@
  },
  "stats": {
   "total_cuts": 105,
-  "nochar_cuts": 27,
+  "nochar_cuts": 34,
   "mean_beat_err_ms": 0.0,
   "red_windows": [
    [
@@ -37,6 +37,7 @@
   "clock_scenes": [
    1,
    6,
+   7,
    11,
    12,
    14,
@@ -53,20 +54,20 @@
   "section_preset": {
    "intro": "P5",
    "verse_a": "P1",
-   "pre_chorus": "P3",
-   "chorus_a": "P4",
+   "pre_chorus": "P1",
+   "chorus_a": "P3",
    "verse_b": "P2",
    "audio_edit": "P5",
-   "chorus_b": "P2",
+   "chorus_b": "P3",
    "last_chorus": "P3",
    "ending": "P3"
   },
   "camera": {
-   "push_in": 21,
+   "push_in": 19,
    "pull_out": 4,
    "pan_x": 7,
    "pan_y": 5,
-   "static": 68
+   "static": 70
   },
   "impacts": [
    6.873,
@@ -357,7 +358,7 @@
    "clock_at": "focus",
    "transition_in": "fade_in",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": -1,
    "impact": false,
    "density": "relax",
@@ -404,7 +405,7 @@
    "clock_at": "focus",
    "transition_in": "T3",
    "cam": "pull_out",
-   "cam_amount": 0.0334,
+   "cam_amount": 0.025,
    "pan_dir": 1,
    "impact": false,
    "density": "relax",
@@ -498,8 +499,8 @@
    "lyric_lines": [
     2
    ],
-   "crop": "finger_eye",
-   "rot": -27.4,
+   "crop": "collar_L",
+   "rot": 14.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -507,9 +508,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1109,
-    "cy": 512,
-    "w": 359
+    "cx": 813,
+    "cy": 1106,
+    "w": 486
    },
    "variant": "single",
    "red": false,
@@ -528,8 +529,8 @@
    ],
    "flip_h": true,
    "focus_src": [
-    935,
-    415
+    730,
+    1050
    ],
    "deco": [
     "code"
@@ -570,8 +571,8 @@
     2,
     3
    ],
-   "crop": "collar_L",
-   "rot": 15.5,
+   "crop": "eye_r",
+   "rot": -4.5,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -579,9 +580,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 798,
-    "cy": 1129,
-    "w": 401
+    "cx": 955,
+    "cy": 456,
+    "w": 314
    },
    "variant": "strip",
    "red": false,
@@ -600,8 +601,8 @@
    ],
    "flip_h": false,
    "focus_src": [
-    730,
-    1050
+    1030,
+    460
    ],
    "deco": [
     "torn_edge"
@@ -666,7 +667,8 @@
    ],
    "flip_h": true,
    "deco": [
-    "clock_crop"
+    "clock_crop",
+    "checker_strip"
    ],
    "transition_in": "T5",
    "cam": "static",
@@ -674,32 +676,14 @@
    "pan_dir": 1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "halo",
-     "w": 0.297,
-     "rot": 22.8,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "face",
-     "w": 0.238,
-     "rot": -10.7,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 1
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -712,8 +696,8 @@
     3,
     4
    ],
-   "crop": "cuff_L",
-   "rot": 34.6,
+   "crop": "buttons",
+   "rot": -20.4,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -721,9 +705,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 507,
-    "cy": 987,
-    "w": 529
+    "cx": 1044,
+    "cy": 1042,
+    "w": 625
    },
    "variant": "single",
    "red": false,
@@ -742,7 +726,7 @@
    ],
    "flip_h": false,
    "focus_src": [
-    470,
+    1000,
     960
    ],
    "deco": [
@@ -783,8 +767,8 @@
    "lyric_lines": [
     4
    ],
-   "crop": "buttons",
-   "rot": -15.6,
+   "crop": "nails",
+   "rot": -7.6,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -792,9 +776,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 945,
-    "cy": 977,
-    "w": 559
+    "cx": 387,
+    "cy": 774,
+    "w": 430
    },
    "variant": "single",
    "red": false,
@@ -813,8 +797,8 @@
    ],
    "flip_h": true,
    "focus_src": [
-    1000,
-    960
+    440,
+    760
    ],
    "deco": [
     "code"
@@ -854,8 +838,8 @@
    "lyric_lines": [
     4
    ],
-   "crop": "nails",
-   "rot": -7.1,
+   "crop": "hair_L",
+   "rot": 22.9,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -863,9 +847,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 481,
-    "cy": 823,
-    "w": 445
+    "cx": 786,
+    "cy": 750,
+    "w": 579
    },
    "variant": "strip",
    "red": false,
@@ -882,10 +866,10 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
-    440,
-    760
+    720,
+    720
    ],
    "deco": [
     "torn_edge"
@@ -898,7 +882,7 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cuff_R",
+     "crop": "cuff_L",
      "w": 0.299,
      "rot": 13.0,
      "flip": false,
@@ -926,77 +910,6 @@
     4,
     5
    ],
-   "crop": "hair_L",
-   "rot": 24.2,
-   "flip_v": false,
-   "overlays": [
-    "hud_frame_ornate",
-    "code_text_block"
-   ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 725,
-    "cy": 746,
-    "w": 470
-   },
-   "variant": "strip",
-   "red": false,
-   "section": "verse_a",
-   "layout": "P1",
-   "lyric_orient": "vertical",
-   "lyric_rect": [
-    0.68,
-    0.11,
-    0.95,
-    0.84
-   ],
-   "focus_target": [
-    0.3333333333333333,
-    0.6666666666666666
-   ],
-   "flip_h": true,
-   "focus_src": [
-    720,
-    720
-   ],
-   "deco": [
-    "code"
-   ],
-   "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.0343,
-   "pan_dir": 1,
-   "impact": false,
-   "density": "verse",
-   "cutouts": [
-    {
-     "crop": "nails",
-     "w": 0.239,
-     "rot": -2.1,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 0
-    }
-   ],
-   "echo_rows": 4,
-   "keyword_pop": false,
-   "ring_text": false,
-   "micro_text": true,
-   "recipes": [
-    "echo_band",
-    "micro_text",
-    "cutout_cluster"
-   ]
-  },
-  {
-   "start": 16.591,
-   "dur": 1.265,
-   "scene": 2,
-   "type": "black_crop_vertical",
-   "text_level": "A",
-   "lyric_lines": [
-    5
-   ],
    "crop": null,
    "rot": 0,
    "flip_v": false,
@@ -1004,7 +917,7 @@
     "hud_frame_ornate",
     "code_text_block"
    ],
-   "variant": "single",
+   "variant": "strip",
    "nochar": "ink_type",
    "red": false,
    "section": "verse_a",
@@ -1020,9 +933,71 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": false,
+   "flip_h": true,
    "deco": [
-    "clock_crop"
+    "clock_crop",
+    "checker_strip"
+   ],
+   "transition_in": "T5",
+   "cam": "push_in",
+   "cam_amount": 0.0343,
+   "pan_dir": 1,
+   "impact": false,
+   "density": "verse",
+   "cutouts": [],
+   "echo_rows": 6,
+   "keyword_pop": false,
+   "ring_text": false,
+   "micro_text": true,
+   "recipes": [
+    "echo_band",
+    "micro_text"
+   ]
+  },
+  {
+   "start": 16.591,
+   "dur": 1.265,
+   "scene": 2,
+   "type": "black_crop_vertical",
+   "text_level": "A",
+   "lyric_lines": [
+    5
+   ],
+   "crop": "wide_upper",
+   "rot": 5.4,
+   "flip_v": false,
+   "overlays": [
+    "hud_frame_ornate",
+    "code_text_block"
+   ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1182,
+    "cy": 1173,
+    "w": 2360
+   },
+   "variant": "single",
+   "red": false,
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.6666666666666666
+   ],
+   "flip_h": false,
+   "focus_src": [
+    1030,
+    460
+   ],
+   "deco": [
+    "torn_edge"
    ],
    "transition_in": "T3",
    "cam": "push_in",
@@ -1038,14 +1013,6 @@
      "flip": false,
      "alpha": 0.85,
      "slot": 0
-    },
-    {
-     "crop": "halo",
-     "w": 0.181,
-     "rot": -23.5,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 1
     }
    ],
    "echo_rows": 4,
@@ -1067,8 +1034,8 @@
    "lyric_lines": [
     5
    ],
-   "crop": "wide_upper",
-   "rot": -2.9,
+   "crop": "lolly",
+   "rot": 17.1,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -1076,9 +1043,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1163,
-    "cy": 764,
-    "w": 1888
+    "cx": 327,
+    "cy": 658,
+    "w": 318
    },
    "variant": "single",
    "red": false,
@@ -1097,8 +1064,8 @@
    ],
    "flip_h": true,
    "focus_src": [
-    935,
-    415
+    300,
+    690
    ],
    "deco": [
     "code"
@@ -1111,7 +1078,7 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "lolly",
+     "crop": "cross_close",
      "w": 0.17,
      "rot": -10.7,
      "flip": false,
@@ -1167,7 +1134,7 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     960,
     594
@@ -1210,19 +1177,14 @@
    "lyric_lines": [
     6
    ],
-   "crop": "shoes",
-   "rot": 4.0,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 586,
-    "cy": 1822,
-    "w": 716
-   },
+   "nochar": "ink_type",
    "red": false,
    "section": "verse_a",
    "layout": "P1",
@@ -1238,35 +1200,24 @@
     0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    560,
-    1780
+   "deco": [
+    "clock_crop",
+    "checker_strip"
    ],
-   "deco": [],
    "transition_in": "T2",
    "cam": "push_in",
    "cam_amount": 0.04,
    "pan_dir": 1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "nails",
-     "w": 0.266,
-     "rot": -0.5,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 0
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -1311,7 +1262,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "torn_edge"
+   ],
    "transition_in": "T5",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1374,12 +1327,14 @@
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     1090,
     110
    ],
-   "deco": [],
+   "deco": [
+    "code"
+   ],
    "transition_in": "T3",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1416,74 +1371,6 @@
     7,
     8
    ],
-   "crop": null,
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "roman_clock_ring",
-    "hud_frame_ornate"
-   ],
-   "nochar": "band_only",
-   "red": false,
-   "section": "verse_a",
-   "layout": "P1",
-   "lyric_orient": "vertical",
-   "lyric_rect": [
-    0.68,
-    0.11,
-    0.95,
-    0.84
-   ],
-   "focus_target": [
-    0.3333333333333333,
-    0.3333333333333333
-   ],
-   "flip_h": false,
-   "deco": [],
-   "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.04,
-   "pan_dir": -1,
-   "impact": false,
-   "density": "verse",
-   "cutouts": [
-    {
-     "crop": "halo",
-     "w": 0.229,
-     "rot": -4.1,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "eyes",
-     "w": 0.254,
-     "rot": -12.4,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 1
-    }
-   ],
-   "echo_rows": 4,
-   "keyword_pop": false,
-   "ring_text": false,
-   "micro_text": true,
-   "recipes": [
-    "echo_band",
-    "micro_text",
-    "cutout_cluster"
-   ]
-  },
-  {
-   "start": 25.252,
-   "dur": 0.847,
-   "scene": 3,
-   "type": "repeat_band_clock",
-   "text_level": "D",
-   "lyric_lines": [
-    8,
-    9
-   ],
    "crop": "silhouette",
    "rot": 0,
    "flip_v": false,
@@ -1516,20 +1403,22 @@
     548,
     300
    ],
-   "deco": [],
-   "transition_in": "T3",
+   "deco": [
+    "torn_edge"
+   ],
+   "transition_in": "T5",
    "cam": "static",
    "cam_amount": 0.0,
-   "pan_dir": 1,
+   "pan_dir": -1,
    "impact": false,
    "density": "verse",
    "cutouts": [
     {
-     "crop": "collar_L",
-     "w": 0.201,
-     "rot": -18.5,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "halo",
+     "w": 0.229,
+     "rot": -4.1,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -1541,6 +1430,59 @@
     "echo_band",
     "micro_text",
     "cutout_cluster"
+   ]
+  },
+  {
+   "start": 25.252,
+   "dur": 0.847,
+   "scene": 3,
+   "type": "repeat_band_clock",
+   "text_level": "D",
+   "lyric_lines": [
+    8,
+    9
+   ],
+   "crop": null,
+   "rot": 0,
+   "flip_v": false,
+   "overlays": [
+    "roman_clock_ring",
+    "hud_frame_ornate"
+   ],
+   "nochar": "ink_type",
+   "red": false,
+   "section": "verse_a",
+   "layout": "P1",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.68,
+    0.11,
+    0.95,
+    0.84
+   ],
+   "focus_target": [
+    0.3333333333333333,
+    0.3333333333333333
+   ],
+   "flip_h": true,
+   "deco": [
+    "clock_crop",
+    "checker_strip"
+   ],
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": 1,
+   "impact": false,
+   "density": "verse",
+   "cutouts": [],
+   "echo_rows": 6,
+   "keyword_pop": false,
+   "ring_text": false,
+   "micro_text": true,
+   "recipes": [
+    "echo_band",
+    "micro_text"
    ]
   },
   {
@@ -1585,7 +1527,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "torn_edge"
+   ],
    "transition_in": "T5",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1654,7 +1598,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "code"
+   ],
    "transition_in": "T3",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1723,7 +1669,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "torn_edge"
+   ],
    "transition_in": "T5",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1766,7 +1714,7 @@
     "roman_clock_ring",
     "hud_frame_ornate"
    ],
-   "nochar": "band_only",
+   "nochar": "ink_type",
    "red": false,
    "section": "verse_a",
    "layout": "P1",
@@ -1782,39 +1730,24 @@
     0.3333333333333333
    ],
    "flip_h": true,
-   "deco": [],
+   "deco": [
+    "clock_crop",
+    "checker_strip"
+   ],
    "transition_in": "T3",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "face",
-     "w": 0.252,
-     "rot": 6.2,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "nails",
-     "w": 0.298,
-     "rot": 13.2,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 1
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -1859,7 +1792,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "torn_edge"
+   ],
    "transition_in": "T5",
    "cam": "static",
    "cam_amount": 0.0,
@@ -1924,12 +1859,14 @@
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     1090,
     110
    ],
-   "deco": [],
+   "deco": [
+    "code"
+   ],
    "transition_in": "T3",
    "cam": "push_in",
    "cam_amount": 0.0399,
@@ -2006,7 +1943,7 @@
    ],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": -1,
    "impact": false,
    "density": "relax",
@@ -2060,7 +1997,7 @@
    ],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": 1,
    "impact": false,
    "density": "relax",
@@ -2124,7 +2061,7 @@
    ],
    "transition_in": "T5",
    "cam": "pull_out",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": -1,
    "impact": false,
    "density": "relax",
@@ -2164,19 +2101,19 @@
    "variant": "negative",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     440,
     760
@@ -2235,13 +2172,13 @@
    "variant": "single",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2253,7 +2190,7 @@
     415
    ],
    "deco": [
-    "torn_edge"
+    "code"
    ],
    "transition_in": "T3",
    "cam": "push_in",
@@ -2291,7 +2228,7 @@
     19,
     20
    ],
-   "crop": "eyes",
+   "crop": "halo",
    "rot": 1.5,
    "flip_v": false,
    "overlays": [
@@ -2300,20 +2237,20 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1021,
-    "cy": 387,
-    "w": 532
+    "cx": 1119,
+    "cy": 66,
+    "w": 434
    },
    "variant": "single",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2321,8 +2258,8 @@
    ],
    "flip_h": false,
    "focus_src": [
-    1030,
-    460
+    1090,
+    110
    ],
    "deco": [
     "torn_edge"
@@ -2370,16 +2307,16 @@
     "hud_frame_ornate:dim"
    ],
    "variant": "strip",
-   "nochar": "paper_type",
+   "nochar": "ink_type",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2387,7 +2324,8 @@
    ],
    "flip_h": true,
    "deco": [
-    "guides"
+    "clock_crop",
+    "checker_strip"
    ],
    "transition_in": "T3",
    "cam": "static",
@@ -2395,32 +2333,14 @@
    "pan_dir": -1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "cross_close",
-     "w": 0.225,
-     "rot": 6.9,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 0
-    },
-    {
-     "crop": "buttons",
-     "w": 0.267,
-     "rot": 14.7,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 1
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -2445,13 +2365,13 @@
    "note": "\"Gott ist tot\" tiny on black (B t048)",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2468,19 +2388,11 @@
    "cutouts": [
     {
      "crop": "halo",
-     "w": 0.223,
-     "rot": 24.5,
+     "w": 0.185,
+     "rot": -4.6,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
-    },
-    {
-     "crop": "ribbon_R",
-     "w": 0.279,
-     "rot": -1.1,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 1
     }
    ],
    "echo_rows": 4,
@@ -2502,7 +2414,7 @@
    "lyric_lines": [
     21
    ],
-   "crop": "halo",
+   "crop": "eyes",
    "rot": -5.1,
    "flip_v": false,
    "overlays": [
@@ -2511,20 +2423,20 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1118,
-    "cy": 101,
-    "w": 525
+    "cx": 1019,
+    "cy": 429,
+    "w": 645
    },
    "variant": "single",
    "red": false,
    "section": "pre_chorus",
-   "layout": "P3",
-   "lyric_orient": "horizontal",
+   "layout": "P1",
+   "lyric_orient": "vertical",
    "lyric_rect": [
-    0.5,
-    0.07,
-    0.96,
-    0.86
+    0.68,
+    0.11,
+    0.95,
+    0.84
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2532,11 +2444,11 @@
    ],
    "flip_h": true,
    "focus_src": [
-    1090,
-    110
+    935,
+    415
    ],
    "deco": [
-    "torn_edge"
+    "code"
    ],
    "transition_in": "T3",
    "cam": "static",
@@ -2546,7 +2458,7 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_r",
+     "crop": "eye_l",
      "w": 0.234,
      "rot": 7.9,
      "flip": false,
@@ -2591,21 +2503,13 @@
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2617,8 +2521,9 @@
     690
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T2",
@@ -2691,34 +2596,27 @@
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     960,
     594
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -2788,21 +2686,13 @@
    "note": "\"My God\" tiny",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -2822,9 +2712,9 @@
    "cutouts": [
     {
      "crop": "halo",
-     "w": 0.294,
-     "rot": 20.2,
-     "flip": true,
+     "w": 0.272,
+     "rot": 22.7,
+     "flip": false,
      "alpha": 0.6,
      "slot": 0
     },
@@ -2833,24 +2723,16 @@
      "w": 0.275,
      "rot": -6.6,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 1
     },
     {
      "crop": "eye_l",
-     "w": 0.276,
-     "rot": 19.9,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 2
-    },
-    {
-     "crop": "ribbon_R",
-     "w": 0.204,
-     "rot": 15.8,
+     "w": 0.265,
+     "rot": 16.0,
      "flip": false,
      "alpha": 0.6,
-     "slot": 3
+     "slot": 2
     }
    ],
    "echo_rows": 6,
@@ -2888,25 +2770,17 @@
    "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "deco": [
@@ -2920,48 +2794,14 @@
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "point_hand",
-     "w": 0.267,
-     "rot": -1.2,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 0
-    },
-    {
-     "crop": "sleeve_R",
-     "w": 0.173,
-     "rot": -7.7,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 1
-    },
-    {
-     "crop": "halo",
-     "w": 0.222,
-     "rot": -12.2,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 2
-    },
-    {
-     "crop": "collar_R",
-     "w": 0.207,
-     "rot": 4.0,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 3
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -2992,21 +2832,13 @@
    "variant": "negative",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -3018,8 +2850,9 @@
     760
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -3092,25 +2925,17 @@
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -3118,8 +2943,9 @@
     460
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -3176,7 +3002,7 @@
     24,
     25
    ],
-   "crop": "point_hand",
+   "crop": "lolly_hand",
    "rot": -12,
    "flip_v": false,
    "overlays": [
@@ -3186,41 +3012,34 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1162,
-    "cy": 526,
-    "w": 560
+    "cx": 332,
+    "cy": 726,
+    "w": 476
    },
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
-    935,
-    415
+    330,
+    700
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -3277,48 +3096,31 @@
     25,
     26
    ],
-   "crop": "face",
-   "rot": 156.7,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 919,
-    "cy": 376,
-    "w": 784
-   },
    "variant": "strip",
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    1030,
-    460
-   ],
    "deco": [
     "clock",
     "torn_strip"
@@ -3330,40 +3132,14 @@
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "lolly",
-     "w": 0.201,
-     "rot": 20.6,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "point_hand",
-     "w": 0.171,
-     "rot": -6.5,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 1
-    },
-    {
-     "crop": "ribbon_R",
-     "w": 0.172,
-     "rot": -21.6,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -3391,21 +3167,13 @@
    "note": "\"My God\" tiny",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -3446,14 +3214,6 @@
      "flip": true,
      "alpha": 0.85,
      "slot": 2
-    },
-    {
-     "crop": "halo",
-     "w": 0.172,
-     "rot": -1.9,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 3
     }
    ],
    "echo_rows": 6,
@@ -3495,25 +3255,17 @@
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -3521,8 +3273,9 @@
     1050
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -3590,26 +3343,18 @@
    "crop_box": {
     "cx": 1051,
     "cy": 439,
-    "w": 560
+    "w": 407
    },
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -3617,12 +3362,13 @@
    ],
    "flip_h": false,
    "focus_src": [
-    1030,
-    460
+    935,
+    415
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -3679,48 +3425,31 @@
     27,
     28
    ],
-   "crop": "ribbon_L",
-   "rot": 22.2,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 363,
-    "cy": 1211,
-    "w": 670
-   },
    "variant": "single",
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    420,
-    1180
-   ],
    "deco": [
     "clock",
     "torn_strip"
@@ -3732,40 +3461,14 @@
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "ribbon_R",
-     "w": 0.214,
-     "rot": 1.7,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "nails",
-     "w": 0.243,
-     "rot": 10.8,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 1
-    },
-    {
-     "crop": "halo",
-     "w": 0.193,
-     "rot": -11.0,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -3797,34 +3500,27 @@
    "variant": "single",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     960,
     594
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -3880,42 +3576,44 @@
    "lyric_lines": [
     29
    ],
-   "crop": null,
-   "rot": 0,
+   "crop": "halo",
+   "rot": 202.7,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring:pass",
     "circle_guides",
     "hud_frame_ornate"
    ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1139,
+    "cy": 74,
+    "w": 449
+   },
    "variant": "single",
-   "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
+   "focus_src": [
+    1090,
+    110
+   ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -3934,7 +3632,7 @@
      "slot": 0
     },
     {
-     "crop": "halo",
+     "crop": "neck_frill",
      "w": 0.178,
      "rot": 19.8,
      "flip": true,
@@ -3942,20 +3640,12 @@
      "slot": 1
     },
     {
-     "crop": "neck_frill",
+     "crop": "collar_R",
      "w": 0.25,
      "rot": 0.3,
      "flip": false,
      "alpha": 1.0,
      "slot": 2
-    },
-    {
-     "crop": "collar_R",
-     "w": 0.199,
-     "rot": -23.7,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 3
     }
    ],
    "echo_rows": 6,
@@ -3994,21 +3684,13 @@
    },
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -4016,13 +3698,15 @@
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "pan_y",
    "cam_amount": 0.025,
@@ -4057,13 +3741,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4075,90 +3760,49 @@
    "lyric_lines": [
     30
    ],
-   "crop": "face",
-   "rot": 2.4,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 993,
-    "cy": 513,
-    "w": 786
-   },
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    935,
-    415
-   ],
    "deco": [
-    "torn_edge",
+    "clock",
     "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "ribbon_R",
-     "w": 0.209,
-     "rot": 2.2,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 0
-    },
-    {
-     "crop": "cuff_R",
-     "w": 0.249,
-     "rot": -15.8,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 1
-    },
-    {
-     "crop": "cross_close",
-     "w": 0.264,
-     "rot": -0.8,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4180,25 +3824,17 @@
    "crop_box": {
     "cx": 1046,
     "cy": 427,
-    "w": 560
+    "w": 362
    },
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -4206,13 +3842,15 @@
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "pan_x",
    "cam_amount": 0.025,
@@ -4247,13 +3885,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4267,40 +3906,43 @@
     31,
     32
    ],
-   "crop": null,
-   "rot": 0,
+   "crop": "halo",
+   "rot": -1.5,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
-   "nochar": "ink_type",
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 1065,
+    "cy": 139,
+    "w": 361
+   },
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
+   "focus_src": [
+    1090,
+    110
+   ],
    "deco": [
-    "clock_crop",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
@@ -4325,31 +3967,24 @@
      "slot": 1
     },
     {
-     "crop": "halo",
+     "crop": "hood_top",
      "w": 0.232,
      "rot": -6.1,
      "flip": false,
      "alpha": 0.85,
      "slot": 2
-    },
-    {
-     "crop": "hood_top",
-     "w": 0.245,
-     "rot": 20.5,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 3
     }
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4375,35 +4010,29 @@
    },
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     960,
     594
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
@@ -4438,13 +4067,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4456,90 +4086,49 @@
    "lyric_lines": [
     32
    ],
-   "crop": "eye_r",
-   "rot": -6.6,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 884,
-    "cy": 419,
-    "w": 560
-   },
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    935,
-    415
-   ],
    "deco": [
-    "torn_edge",
+    "clock",
     "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "eye_l",
-     "w": 0.295,
-     "rot": 3.5,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "halo",
-     "w": 0.189,
-     "rot": 2.5,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 1
-    },
-    {
-     "crop": "lolly_hand",
-     "w": 0.268,
-     "rot": -10.0,
-     "flip": true,
-     "alpha": 0.85,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -4569,21 +4158,13 @@
    },
    "red": true,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -4591,8 +4172,8 @@
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
     "starburst",
@@ -4606,7 +4187,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "finger_eye",
+     "crop": "hood_top",
      "w": 0.187,
      "rot": 19.4,
      "flip": true,
@@ -4650,8 +4231,8 @@
    "lyric_lines": [
     33
    ],
-   "crop": "face",
-   "rot": -0.9,
+   "crop": "lolly",
+   "rot": -6.9,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -4661,36 +4242,28 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 914,
-    "cy": 360,
-    "w": 948
+    "cx": 278,
+    "cy": 652,
+    "w": 399
    },
    "red": true,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
-    935,
-    415
+    300,
+    690
    ],
    "deco": [
     "starburst",
@@ -4763,25 +4336,17 @@
    "crop_box": {
     "cx": 1024,
     "cy": 424,
-    "w": 560
+    "w": 354
    },
    "red": true,
    "section": "chorus_a",
-   "layout": "P4",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    [
-     0.78,
-     0.11,
-     0.96,
-     0.84
-    ],
-    [
-     0.04,
-     0.11,
-     0.22,
-     0.84
-    ]
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
     0.3333333333333333,
@@ -4789,8 +4354,8 @@
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
     "starburst",
@@ -4882,7 +4447,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "checker"
+   ],
    "transition_in": "T6",
    "cam": "static",
    "cam_amount": 0.0,
@@ -4990,76 +4557,6 @@
     36,
     37
    ],
-   "crop": "silhouette",
-   "rot": 0,
-   "flip_v": false,
-   "overlays": [
-    "checker_floor",
-    "halftone",
-    "hud_frame_ornate"
-   ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 562,
-    "cy": 1000,
-    "w": null
-   },
-   "red": false,
-   "section": "verse_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
-   "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
-   ],
-   "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
-   ],
-   "flip_h": false,
-   "focus_src": [
-    548,
-    300
-   ],
-   "deco": [],
-   "transition_in": "T3",
-   "cam": "static",
-   "cam_amount": 0.0,
-   "pan_dir": -1,
-   "impact": false,
-   "density": "verse",
-   "cutouts": [
-    {
-     "crop": "cuff_R",
-     "w": 0.234,
-     "rot": -1.8,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 0
-    }
-   ],
-   "echo_rows": 4,
-   "keyword_pop": false,
-   "ring_text": false,
-   "micro_text": true,
-   "recipes": [
-    "echo_band",
-    "micro_text",
-    "cutout_cluster"
-   ]
-  },
-  {
-   "start": 81.026,
-   "dur": 1.683,
-   "scene": 8,
-   "type": "repeat_band_silhouette",
-   "text_level": "D",
-   "lyric_lines": [
-    37,
-    38
-   ],
    "crop": null,
    "rot": 0,
    "flip_v": false,
@@ -5083,30 +4580,86 @@
     0.6666666666666666,
     0.6666666666666666
    ],
+   "flip_h": false,
+   "deco": [
+    "checker"
+   ],
+   "transition_in": "T3",
+   "cam": "static",
+   "cam_amount": 0.0,
+   "pan_dir": -1,
+   "impact": false,
+   "density": "verse",
+   "cutouts": [],
+   "echo_rows": 6,
+   "keyword_pop": false,
+   "ring_text": false,
+   "micro_text": true,
+   "recipes": [
+    "echo_band",
+    "micro_text"
+   ]
+  },
+  {
+   "start": 81.026,
+   "dur": 1.683,
+   "scene": 8,
+   "type": "repeat_band_silhouette",
+   "text_level": "D",
+   "lyric_lines": [
+    37,
+    38
+   ],
+   "crop": "shoes",
+   "rot": -6.3,
+   "flip_v": false,
+   "overlays": [
+    "checker_floor",
+    "halftone",
+    "hud_frame_ornate"
+   ],
+   "crop_src": "art/char_full.webp",
+   "crop_box": {
+    "cx": 634,
+    "cy": 1788,
+    "w": 799
+   },
+   "red": false,
+   "section": "verse_b",
+   "layout": "P2",
+   "lyric_orient": "vertical",
+   "lyric_rect": [
+    0.05,
+    0.11,
+    0.32,
+    0.84
+   ],
+   "focus_target": [
+    0.6666666666666666,
+    0.6666666666666666
+   ],
    "flip_h": true,
-   "deco": [],
+   "focus_src": [
+    560,
+    1780
+   ],
+   "deco": [
+    "checker"
+   ],
    "transition_in": "T5",
-   "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam": "static",
+   "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false,
    "density": "verse",
    "cutouts": [
     {
      "crop": "halo",
-     "w": 0.297,
-     "rot": -6.1,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 0
-    },
-    {
-     "crop": "cuff_L",
-     "w": 0.208,
-     "rot": 3.6,
-     "flip": false,
+     "w": 0.24,
+     "rot": 23.9,
+     "flip": true,
      "alpha": 0.6,
-     "slot": 1
+     "slot": 0
     }
    ],
    "echo_rows": 4,
@@ -5161,7 +4714,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "checker"
+   ],
    "transition_in": "T3",
    "cam": "static",
    "cam_amount": 0.0,
@@ -5198,7 +4753,7 @@
     38,
     39
    ],
-   "crop": "silhouette",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
@@ -5206,12 +4761,7 @@
     "halftone",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 562,
-    "cy": 1000,
-    "w": null
-   },
+   "nochar": "band_only",
    "red": false,
    "section": "verse_b",
    "layout": "P2",
@@ -5224,13 +4774,9 @@
    ],
    "focus_target": [
     0.6666666666666666,
-    0.3333333333333333
+    0.6666666666666666
    ],
-   "flip_h": false,
-   "focus_src": [
-    548,
-    300
-   ],
+   "flip_h": true,
    "deco": [
     "checker"
    ],
@@ -5240,24 +4786,14 @@
    "pan_dir": 1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "halo",
-     "w": 0.255,
-     "rot": 17.0,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 0
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -5303,7 +4839,9 @@
     548,
     300
    ],
-   "deco": [],
+   "deco": [
+    "checker"
+   ],
    "transition_in": "T3",
    "cam": "static",
    "cam_amount": 0.0,
@@ -5411,19 +4949,14 @@
    "lyric_lines": [
     41
    ],
-   "crop": "silhouette",
+   "crop": null,
    "rot": 0,
    "flip_v": false,
    "overlays": [
     "checker_blur",
     "whip_blur"
    ],
-   "crop_src": "art/char_full.webp",
-   "crop_box": {
-    "cx": 562,
-    "cy": 1000,
-    "w": null
-   },
+   "nochar": "band_only",
    "red": false,
    "section": "verse_b",
    "layout": "P2",
@@ -5439,10 +4972,6 @@
     0.3333333333333333
    ],
    "flip_h": false,
-   "focus_src": [
-    548,
-    300
-   ],
    "deco": [
     "checker"
    ],
@@ -5452,24 +4981,14 @@
    "pan_dir": -1,
    "impact": false,
    "density": "verse",
-   "cutouts": [
-    {
-     "crop": "point_hand",
-     "w": 0.225,
-     "rot": -12.6,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 0
-    }
-   ],
-   "echo_rows": 4,
+   "cutouts": [],
+   "echo_rows": 6,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
    "recipes": [
     "echo_band",
-    "micro_text",
-    "cutout_cluster"
+    "micro_text"
    ]
   },
   {
@@ -5609,22 +5128,22 @@
    },
    "red": true,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
     "starburst",
@@ -5682,8 +5201,8 @@
    "lyric_lines": [
     43
    ],
-   "crop": "finger_eye",
-   "rot": 7.0,
+   "crop": "lolly",
+   "rot": -5.0,
    "flip_v": false,
    "overlays": [
     "hud_frame_ornate",
@@ -5692,28 +5211,28 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1091,
-    "cy": 534,
-    "w": 411
+    "cx": 320,
+    "cy": 722,
+    "w": 386
    },
    "red": true,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
-    1030,
-    460
+    300,
+    690
    ],
    "deco": [
     "starburst",
@@ -5735,7 +5254,7 @@
      "slot": 0
     },
     {
-     "crop": "hood_top",
+     "crop": "finger_eye",
      "w": 0.233,
      "rot": 7.6,
      "flip": false,
@@ -5782,16 +5301,16 @@
    "note": "\"My God\" tiny",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -5808,10 +5327,10 @@
    "cutouts": [
     {
      "crop": "cross_close",
-     "w": 0.188,
-     "rot": 6.4,
+     "w": 0.213,
+     "rot": -18.0,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     },
     {
@@ -5824,19 +5343,11 @@
     },
     {
      "crop": "halo",
-     "w": 0.189,
-     "rot": 2.5,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 2
-    },
-    {
-     "crop": "mouth",
-     "w": 0.196,
-     "rot": -24.3,
+     "w": 0.201,
+     "rot": -17.8,
      "flip": false,
      "alpha": 0.6,
-     "slot": 3
+     "slot": 2
     }
    ],
    "echo_rows": 6,
@@ -5868,75 +5379,43 @@
    "overlays": [
     "hud_frame_ornate"
    ],
-   "nochar": "ink_type",
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
    "deco": [
-    "clock_crop",
+    "clock",
     "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "collar_R",
-     "w": 0.27,
-     "rot": -24.5,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 0
-    },
-    {
-     "crop": "halo",
-     "w": 0.265,
-     "rot": 6.5,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 1
-    },
-    {
-     "crop": "nails",
-     "w": 0.284,
-     "rot": -21.7,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 2
-    },
-    {
-     "crop": "ribbon_R",
-     "w": 0.237,
-     "rot": 0.5,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 3
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -5962,27 +5441,29 @@
    },
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
    "focus_src": [
-    935,
-    415
+    1030,
+    460
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "pan_x",
    "cam_amount": 0.025,
@@ -6017,13 +5498,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6053,16 +5535,16 @@
    "variant": "single",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
@@ -6071,9 +5553,11 @@
     1180
    ],
    "deco": [
-    "code",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
@@ -6108,13 +5592,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6143,27 +5628,29 @@
    "variant": "single",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     330,
     700
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "pan_y",
    "cam_amount": 0.025,
@@ -6198,13 +5685,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6230,16 +5718,16 @@
    "note": "\"My God\" tiny",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
@@ -6256,8 +5744,8 @@
    "cutouts": [
     {
      "crop": "halo",
-     "w": 0.235,
-     "rot": 0.2,
+     "w": 0.214,
+     "rot": -0.0,
      "flip": false,
      "alpha": 0.85,
      "slot": 0
@@ -6267,24 +5755,16 @@
      "w": 0.188,
      "rot": 7.7,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 1
     },
     {
      "crop": "lolly_hand",
-     "w": 0.197,
-     "rot": -11.1,
-     "flip": false,
+     "w": 0.298,
+     "rot": -14.6,
+     "flip": true,
      "alpha": 0.6,
      "slot": 2
-    },
-    {
-     "crop": "face",
-     "w": 0.264,
-     "rot": 13.9,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 3
     }
    ],
    "echo_rows": 6,
@@ -6310,35 +5790,46 @@
     47,
     48
    ],
-   "crop": null,
-   "rot": 0,
+   "crop": "neck_frill",
+   "rot": -16.1,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
     "code_text_block",
     "hud_frame_ornate"
    ],
+   "crop_src": "art/char_upper.webp",
+   "crop_box": {
+    "cx": 892,
+    "cy": 672,
+    "w": 428
+   },
    "variant": "single",
-   "nochar": "ink_type",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
-   "deco": [
-    "clock_crop",
-    "torn_strip"
+   "focus_src": [
+    935,
+    690
    ],
+   "deco": [
+    "torn_strip",
+    "clock",
+    "checker_strip"
+   ],
+   "clock_at": "focus",
    "transition_in": "T2",
    "cam": "pan_x",
    "cam_amount": 0.025,
@@ -6348,46 +5839,39 @@
    "cutouts": [
     {
      "crop": "collar_L",
-     "w": 0.227,
-     "rot": 8.7,
-     "flip": true,
+     "w": 0.231,
+     "rot": -3.3,
+     "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eyes",
+     "crop": "eye_r",
      "w": 0.207,
      "rot": -17.1,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 1
     },
     {
      "crop": "halo",
      "w": 0.22,
-     "rot": 22.3,
+     "rot": -5.9,
      "flip": false,
-     "alpha": 0.85,
-     "slot": 2
-    },
-    {
-     "crop": "neck_frill",
-     "w": 0.176,
-     "rot": -11.0,
-     "flip": true,
      "alpha": 1.0,
-     "slot": 3
+     "slot": 2
     }
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6416,27 +5900,29 @@
    "variant": "single",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
-    1030,
-    460
+    935,
+    415
    ],
    "deco": [
-    "code",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
@@ -6471,13 +5957,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6506,16 +5993,16 @@
    "variant": "single",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -6524,9 +6011,11 @@
     760
    ],
    "deco": [
-    "torn_edge",
-    "torn_strip"
+    "torn_strip",
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "pan_y",
    "cam_amount": 0.025,
@@ -6561,13 +6050,14 @@
    ],
    "echo_rows": 6,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
     "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6581,85 +6071,52 @@
     49,
     50
    ],
-   "crop": "sleeve_R",
-   "rot": 17.8,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "glitch_mosaic",
     "code_text_block",
     "hud_frame_ornate"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1517,
-    "cy": 1093,
-    "w": 600
-   },
    "variant": "single",
+   "nochar": "clock_type",
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    1500,
-    1100
-   ],
    "deco": [
-    "code",
+    "clock",
     "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": -1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "ribbon_R",
-     "w": 0.272,
-     "rot": 14.4,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "halo",
-     "w": 0.205,
-     "rot": 12.8,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 1
-    },
-    {
-     "crop": "collar_L",
-     "w": 0.284,
-     "rot": 4.9,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
-   "ring_text": false,
+   "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
-    "keyword_pop"
+    "keyword_pop",
+    "ring_text"
    ]
   },
   {
@@ -6678,16 +6135,16 @@
    "overlays": [],
    "red": false,
    "section": "chorus_b",
-   "layout": "P2",
-   "lyric_orient": "vertical",
+   "layout": "P3",
+   "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.05,
-    0.11,
-    0.32,
-    0.84
+    0.5,
+    0.07,
+    0.96,
+    0.86
    ],
    "focus_target": [
-    0.6666666666666666,
+    0.3333333333333333,
     0.3333333333333333
    ],
    "flip_h": false,
@@ -6748,8 +6205,10 @@
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T6",
    "cam": "static",
    "cam_amount": 0.0,
@@ -6783,7 +6242,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -6831,15 +6289,17 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     1100,
     1600
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
@@ -6873,7 +6333,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -6929,8 +6388,10 @@
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
@@ -6964,7 +6425,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -6993,7 +6453,7 @@
     "torn_paper_strips",
     "hud_frame_ornate:dim"
    ],
-   "nochar": "band_only",
+   "nochar": "clock_type",
    "red": false,
    "section": "last_chorus",
    "layout": "P3",
@@ -7010,58 +6470,24 @@
    ],
    "flip_h": true,
    "deco": [
-    "torn_strip",
-    "clock"
+    "clock",
+    "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "eye_l",
-     "w": 0.207,
-     "rot": 21.4,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "collar_R",
-     "w": 0.26,
-     "rot": -17.3,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 1
-    },
-    {
-     "crop": "ribbon_L",
-     "w": 0.202,
-     "rot": -17.8,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 2
-    },
-    {
-     "crop": "halo",
-     "w": 0.176,
-     "rot": -10.2,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 3
-    }
-   ],
-   "echo_rows": 6,
-   "clock_at": "focus",
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -7109,8 +6535,10 @@
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
@@ -7144,7 +6572,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -7193,15 +6620,17 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     1090,
     110
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
@@ -7235,7 +6664,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -7290,8 +6718,10 @@
    ],
    "deco": [
     "torn_strip",
-    "clock"
+    "clock",
+    "checker_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
@@ -7325,7 +6755,6 @@
     }
    ],
    "echo_rows": 6,
-   "clock_at": "focus",
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
@@ -7346,19 +6775,14 @@
    "lyric_lines": [
     54
    ],
-   "crop": "skirt",
-   "rot": 0.3,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
     "hud_frame_ornate:dim"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1208,
-    "cy": 1717,
-    "w": 1025
-   },
+   "nochar": "clock_type",
    "red": false,
    "section": "last_chorus",
    "layout": "P3",
@@ -7374,55 +6798,25 @@
     0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    1100,
-    1600
-   ],
    "deco": [
-    "torn_strip",
-    "clock"
+    "clock",
+    "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T4",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "buttons",
-     "w": 0.234,
-     "rot": -1.8,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "cross_close",
-     "w": 0.234,
-     "rot": -3.7,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 1
-    },
-    {
-     "crop": "hood_top",
-     "w": 0.208,
-     "rot": -8.2,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
-   "clock_at": "focus",
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -7711,19 +7105,14 @@
     58,
     59
    ],
-   "crop": "halo",
-   "rot": -4.3,
+   "crop": null,
+   "rot": 0,
    "flip_v": false,
    "overlays": [
     "torn_paper_strips",
     "hud_frame_ornate:dim"
    ],
-   "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 1055,
-    "cy": 83,
-    "w": 468
-   },
+   "nochar": "clock_type",
    "red": false,
    "section": "last_chorus",
    "layout": "P3",
@@ -7739,55 +7128,25 @@
     0.6666666666666666
    ],
    "flip_h": true,
-   "focus_src": [
-    1090,
-    110
-   ],
    "deco": [
-    "torn_strip",
-    "clock"
+    "clock",
+    "torn_strip"
    ],
+   "clock_at": "focus",
    "transition_in": "T1",
    "cam": "static",
    "cam_amount": 0.0,
    "pan_dir": 1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "collar_R",
-     "w": 0.228,
-     "rot": -13.6,
-     "flip": false,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "ribbon_R",
-     "w": 0.241,
-     "rot": 10.7,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 1
-    },
-    {
-     "crop": "tongue",
-     "w": 0.272,
-     "rot": 16.0,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 2
-    }
-   ],
-   "echo_rows": 6,
-   "clock_at": "focus",
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -7830,14 +7189,15 @@
     0.3333333333333333,
     0.3333333333333333
    ],
-   "flip_h": false,
+   "flip_h": true,
    "focus_src": [
     960,
     594
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -7923,14 +7283,15 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
     470,
     960
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -8021,8 +7382,9 @@
     460
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -8115,48 +7477,14 @@
    "pan_dir": 1,
    "impact": false,
    "density": "chorus",
-   "cutouts": [
-    {
-     "crop": "sleeve_R",
-     "w": 0.299,
-     "rot": 10.4,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 0
-    },
-    {
-     "crop": "eyes",
-     "w": 0.269,
-     "rot": 24.3,
-     "flip": false,
-     "alpha": 0.85,
-     "slot": 1
-    },
-    {
-     "crop": "collar_L",
-     "w": 0.258,
-     "rot": -6.5,
-     "flip": true,
-     "alpha": 0.6,
-     "slot": 2
-    },
-    {
-     "crop": "halo",
-     "w": 0.251,
-     "rot": -8.6,
-     "flip": false,
-     "alpha": 1.0,
-     "slot": 3
-    }
-   ],
-   "echo_rows": 6,
+   "cutouts": [],
+   "echo_rows": 8,
    "keyword_pop": true,
    "ring_text": true,
    "micro_text": true,
    "recipes": [
     "echo_band",
     "micro_text",
-    "cutout_cluster",
     "keyword_pop",
     "ring_text"
    ]
@@ -8170,9 +7498,9 @@
    "lyric_lines": [
     62
    ],
-   "crop": "face",
-   "rot": 183.0,
-   "flip_v": true,
+   "crop": "finger_eye",
+   "rot": 173.0,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "mirror_symmetry",
@@ -8180,9 +7508,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1042,
-    "cy": 506,
-    "w": 967
+    "cx": 1104,
+    "cy": 525,
+    "w": 433
    },
    "variant": "negative",
    "red": false,
@@ -8205,8 +7533,9 @@
     415
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T4",
@@ -8263,9 +7592,9 @@
     62,
     63
    ],
-   "crop": "lolly_hand",
-   "rot": 156.9,
-   "flip_v": false,
+   "crop": "collar_R",
+   "rot": -3.1,
+   "flip_v": true,
    "overlays": [
     "roman_clock_ring",
     "mirror_symmetry",
@@ -8273,9 +7602,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 290,
-    "cy": 759,
-    "w": 550
+    "cx": 1157,
+    "cy": 999,
+    "w": 452
    },
    "variant": "single",
    "red": false,
@@ -8292,14 +7621,15 @@
     0.3333333333333333,
     0.6666666666666666
    ],
-   "flip_h": true,
+   "flip_h": false,
    "focus_src": [
-    330,
-    700
+    1150,
+    960
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T1",
@@ -8310,7 +7640,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "cuff_L",
+     "crop": "nails",
      "w": 0.231,
      "rot": -16.1,
      "flip": false,
@@ -8355,9 +7685,9 @@
    "lyric_lines": [
     63
    ],
-   "crop": "collar_R",
-   "rot": 6.0,
-   "flip_v": true,
+   "crop": "eye_r",
+   "rot": 196.0,
+   "flip_v": false,
    "overlays": [
     "roman_clock_ring",
     "mirror_symmetry",
@@ -8365,9 +7695,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1187,
-    "cy": 1032,
-    "w": 494
+    "cx": 922,
+    "cy": 450,
+    "w": 386
    },
    "variant": "single",
    "text": "B",
@@ -8388,12 +7718,13 @@
    ],
    "flip_h": false,
    "focus_src": [
-    1150,
-    960
+    935,
+    415
    ],
    "deco": [
+    "torn_strip",
     "clock",
-    "torn_strip"
+    "checker_strip"
    ],
    "clock_at": "focus",
    "transition_in": "T2",
@@ -8404,7 +7735,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly",
+     "crop": "cross_close",
      "w": 0.244,
      "rot": 17.0,
      "flip": false,
@@ -8478,7 +7809,7 @@
    "deco": [],
    "transition_in": "T6",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": 1,
    "impact": true,
    "density": "relax",
@@ -8538,7 +7869,7 @@
    "deco": [],
    "transition_in": "T3",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": -1,
    "impact": false,
    "density": "relax",
@@ -8562,7 +7893,7 @@
     66,
     67
    ],
-   "crop": "face",
+   "crop": "collar_R",
    "rot": -0.7,
    "flip_v": false,
    "overlays": [
@@ -8571,9 +7902,9 @@
    ],
    "crop_src": "art/char_upper.webp",
    "crop_box": {
-    "cx": 1026,
-    "cy": 472,
-    "w": 631
+    "cx": 1227,
+    "cy": 1013,
+    "w": 382
    },
    "variant": "single",
    "red": false,
@@ -8592,13 +7923,13 @@
    ],
    "flip_h": false,
    "focus_src": [
-    1030,
-    460
+    1150,
+    960
    ],
    "deco": [],
    "transition_in": "T5",
    "cam": "push_in",
-   "cam_amount": 0.04,
+   "cam_amount": 0.025,
    "pan_dir": 1,
    "impact": false,
    "density": "relax",

@@ -56,6 +56,7 @@ RULES = {
     "4-5": "충격 줌이 1.7초에 1번 넘음 / 후렴 첫 박·구간 시작·큰 악센트가 아닌 곳",
     "4-6": "움직이는 채널 3개 이상 / 핸드헬드 0.05% 초과 / 회전 떨림",
     "2-8": "활성 가사가 얼굴/눈을 가림",
+    "1-7": "얼굴 클로즈업 컷이 연속",
     "2-9": "낮은 위계 글자 불투명도 45% 초과",
     "5-1": "레이어 수 최소치 미달 (절 4 / 후렴 6 / 릴렉스 3)",
     "5-2": "후렴 구성 미달 (컷아웃 3~5 / 에코 4~8줄 / 장식 2종 이상)",
@@ -76,6 +77,7 @@ SECTION_OF_SCENE = {1: "intro", 2: "verse_a", 3: "verse_a", 4: "verse_a", 5: "pr
                     8: "verse_b", 9: "verse_b", 10: "audio_edit", 11: "chorus_b", 12: "chorus_b", 13: "chorus_b",
                     14: "last_chorus", 15: "last_chorus", 16: "ending", 17: "ending", 18: "ending"}
 CHORUS = {"chorus_a", "chorus_b", "last_chorus"}
+FACE = {"eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye", "point_hand", "wide_upper", "bust"}
 SPECIAL_TR = {"fade_in", "edit_mask", "cut_to_black", "white_blowout", "hard_cut"}
 
 
@@ -206,7 +208,9 @@ def new_checks():
         sec_rect.setdefault(sec, c.get("lyric_rect"))
         deco = c.get("deco") or []
         kd = c.get("density")
-        if kd == "chorus":
+        if ci and c.get("crop") in FACE and CUTS[ci - 1].get("crop") in FACE:
+            bad("1-7", ci, f"{CUTS[ci - 1].get('crop')} → {c.get('crop')}")
+        if kd == "chorus" and not c.get("nochar"):
             nc = len(c.get("cutouts", [])) + (1 if c.get("crop") else 0)
             if not 3 <= nc <= 5:
                 bad("5-2", ci, f"컷아웃 {nc}개")

@@ -556,7 +556,8 @@ def line_ctx(i):
     if orient == "vertical":
         orient = "hbox" if LYRIC_MODE == "horizontal" else "vbox"
     elif orient == "horizontal":
-        orient = "giant"
+        w0, w1 = line_window(i)
+        orient = "giant" if (w1 - w0) * FPS >= 26 else "vbox"     # a quick shout can't land + hold 12 f: same spot, vertical box
     return dict(ci=ci, section=c.get("section"), preset=c.get("layout"), orient=orient, red=red, text=text)
 
 
