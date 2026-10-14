@@ -566,42 +566,53 @@ def is_giant_line(i):
 
 @lru_cache(None)
 def giant_rows(i):
+    """Columns of an emphasised line (vertical writing): phrase chunks, at most 4, never splitting a latin word."""
     ctx = line_ctx(i); text = ctx["text"]
-    if len(text) <= 8:
-        return (text,)
-    ch = list(chunks(i)) if not ctx["red"] else [text]
-    if len(ch) < 2:                               # split on a kana boundary, never inside a latin word
-        cands = [k for k in range(2, len(text) - 1) if text[k - 1] == " " or not (text[k - 1].isascii() and text[k].isascii())]
-        if not cands:
-            return (text,)
-        k = min(cands, key=lambda k: abs(k - len(text) / 2)); return (text[:k].rstrip(), text[k:].lstrip())
-    best = min(range(1, len(ch)), key=lambda k: abs(len("".join(ch[:k])) - len("".join(ch[k:]))))
-    return ("".join(ch[:best]), "".join(ch[best:]))
+    ch = list(chunks(i)) if not ctx["red"] else ([text] if len(text) <= 7 else [text[:len(text) // 2], text[len(text) // 2:]])
+    while len(ch) > 4:                                    # merge the two shortest neighbours
+        k = min(range(len(ch) - 1), key=lambda k: len(ch[k]) + len(ch[k + 1]))
+        ch[k:k + 2] = [ch[k] + ch[k + 1]]
+    return tuple(ch)
+
+
+SMALL_KANA = set("っゃゅょぁぃぅぇぉッャュョァィゥェォ、。・ー〜…")
 
 
 @lru_cache(None)
 def giant_layout(i, W_, H_):
-    """Rows of a giant line inside the preset rect: whole words, first and last glyph always inside the frame."""
+    """Vertical kinetic typography: one column per phrase, first column on the right, columns of different sizes,
+    staggered heights, the leading glyph enlarged. Every glyph stays inside the frame."""
     ctx = line_ctx(i); c = CUTS[ctx["ci"]]
     x0, y0, x1, y1 = rects_px(c)[0]
-    rows = giant_rows(i)
+    cols = giant_rows(i)
     fp = F_L if ctx["red"] else F_XL
-    size = min(int(H_ * 0.22), int((y1 - y0) / (len(rows) * 1.12)))
-    widest = max(font(fp, size).getlength(r) for r in rows)
-    if widest > (x1 - x0) * 0.96:
-        size = int(size * (x1 - x0) * 0.96 / widest)
-    f = font(fp, size)
-    asc = f.getbbox("国")[1]
-    lh = size * 1.12
-    top = (y0 + y1) / 2 - lh * len(rows) / 2
-    chars = []
-    for r, row in enumerate(rows):
-        wrow = f.getlength(row); x = (x0 + x1) / 2 - wrow / 2
-        for k, ch_ in enumerate(row):
-            chars.append((ch_, x + f.getlength(row[:k]), top + r * lh - asc * 0.2))
-    boxes = [((x0 + x1) / 2 - f.getlength(row) / 2, top + r * lh, (x0 + x1) / 2 + f.getlength(row) / 2, top + r * lh + size * 1.05)
-             for r, row in enumerate(rows)]
-    return dict(size=size, font=fp, chars=chars, boxes=boxes)
+    r = np.random.default_rng(i * 97)
+    scale = [1.0 if k == 0 else (0.62 if k % 2 else 0.78) for k in range(len(cols))]
+    if len(cols) > 1:
+        big = max(range(len(cols)), key=lambda k: len(cols[k]) <= 6 and -abs(len(cols[k]) - 4))
+        scale = [0.62 if k % 2 else 0.78 for k in range(len(cols))]; scale[big] = 1.0
+    rh, rw = y1 - y0, x1 - x0
+    def col_h(col, sz):
+        return sum(sz * (0.82 if ch_ in SMALL_KANA else 1.0) for ch_ in col) + sz * 0.25   # + enlarged lead glyph
+    U = min(H_ * 0.24, *[rh * 0.94 / max(1e-6, col_h(col, scale[k])) for k, col in enumerate(cols)])
+    U = min(U, rw / max(1e-6, sum(scale[k] * 1.18 for k in range(len(cols)))))
+    chars, boxes = [], []
+    xr = x1
+    for k, col in enumerate(cols):
+        sz = U * scale[k]
+        h = col_h(col, sz)
+        off = (rh - h) * (0.08 + 0.84 * r.random()) if rh > h else 0.0          # staggered, never aligned
+        y = y0 + off
+        cw = sz * 1.18
+        x = xr - cw
+        bx0, by0 = x, y
+        for j, ch_ in enumerate(col):
+            gs = int(sz * (1.25 if j == 0 else 0.82 if ch_ in SMALL_KANA else 1.0))
+            chars.append((ch_, x + (cw - gs) / 2, y, gs))
+            y += gs
+        boxes.append((bx0, by0, x + cw, y))
+        xr = x - sz * 0.10 * (1 + r.random())
+    return dict(font=fp, chars=chars, boxes=boxes)
 
 
 @lru_cache(None)
@@ -665,9 +676,9 @@ def _line_layout(t, li):
     if ctx["orient"] == "giant":
         L = giant_layout(li, W, H)
         ent, stg, _ = giant_plan(li)
-        for k, (ch_, x, y) in enumerate(L["chars"]):
+        for k, (ch_, x, y, gs) in enumerate(L["chars"]):
             a, dy = _enter_exit(t, w0 + k * stg / FPS, w1, ent)
-            items.append(dict(kind="giant", text=ch_, size=L["size"], font=L["font"], x=x, y=y, alpha=a, dy=dy, red=ctx["red"], still=True))
+            items.append(dict(kind="giant", text=ch_, size=gs, font=L["font"], x=x, y=y, alpha=a, dy=dy, red=ctx["red"], still=True))
         dbg["giant_boxes"] = list(L["boxes"])
         return items, cap, dbg
     size = max(S(BOX_PX_MIN_1080), S(BOX_PX.get(ctx["section"], 62)))
@@ -707,8 +718,8 @@ def _line_layout(t, li):
 
 def item_bbox(it):
     if it["kind"] == "giant":
-        f = font(it["font"], it["size"]); bb = f.getbbox(it["text"])
-        return (it["x"] + bb[0], it["y"] + bb[1], it["x"] + bb[2], it["y"] + bb[3])
+        g = vtext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
+        return (it["x"], it["y"], it["x"] + g.size[0], it["y"] + g.size[1])
     return (it["x"], it["y"], it["x"] + it["img"].size[0], it["y"] + it["img"].size[1])
 
 
@@ -765,7 +776,7 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
     giant = [it for it in items if it["kind"] == "giant" and not it.get("dim")]
     for it in items:
         if it["kind"] == "giant" and it.get("dim"):
-            paste(L, htext(it["text"], it["size"], GRAY_M + (255,), it["font"]), it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
+            paste(L, vtext(it["text"], it["size"], GRAY_M + (255,), it["font"]), it["x"], it["y"] + it["dy"], it["alpha"])
     if giant:
         bb = [item_bbox(it) for it in giant]
         ub = (min(b[0] for b in bb) - S(20), min(b[1] for b in bb) - S(16), max(b[2] for b in bb) + S(20), max(b[3] for b in bb) + S(16))
@@ -781,14 +792,14 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         if plate:                                    # soft halo around the glyphs (no box)
             hm = Image.new("L", out.size, 0)
             for it in giant:
-                g = htext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
-                hm.paste(g.getchannel("A"), (int(it["x"] - 2), int(it["y"] - 2 + it["dy"])), g.getchannel("A"))
+                g = vtext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
+                hm.paste(g.getchannel("A"), (int(it["x"]), int(it["y"] + it["dy"])), g.getchannel("A"))
             hm = hm.filter(ImageFilter.MaxFilter(max(3, S(9) | 1))).filter(ImageFilter.GaussianBlur(S(7)))
             halo = Image.new("RGBA", out.size, plate + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * amax)))
             L.alpha_composite(halo)
         for it in giant:
-            g = htext(it["text"], it["size"], col + (255,), it["font"])
-            paste(L, g, it["x"] - 2, it["y"] - 2 + it["dy"], it["alpha"])
+            g = vtext(it["text"], it["size"], col + (255,), it["font"])
+            paste(L, g, it["x"], it["y"] + it["dy"], it["alpha"])
         crs.append(("red" if giant[0]["red"] else "giant", cr))
     for it in items:
         if it["kind"] == "box":
@@ -1258,21 +1269,24 @@ def decorations(ci, c, t, focus, bg, excl):
 
 
 # ------------------------------------------------------------------ density layers (low tier: 15~45 % or outline only)
-ECHO_SIZES_1080 = {"chorus": [220, 60, 140, 40, 100, 180, 70, 120], "verse": [170, 60, 120], "relax": [110]}
-ECHO_ALPHA = {"chorus": [0.30, 0.42, 0.22, 0.38, 0.18, 0.28, 0.40, 0.25], "verse": [0.30, 0.42, 0.24], "relax": [0.18]}
+ECHO_SIZES_1080 = {"chorus": [220, 60, 140, 40, 100, 180, 70, 120], "verse": [170, 60, 120, 80], "relax": [110]}
+ECHO_ALPHA = {"chorus": [0.30, 0.42, 0.22, 0.38, 0.18, 0.28, 0.40, 0.25], "verse": [0.30, 0.42, 0.24, 0.36], "relax": [0.18]}
 
 
 @lru_cache(256)
 def echo_strip(text, size, outline, color):
+    """Vertical strip of the text (top to bottom), filled or outline only."""
     f = font(F_L, size)
-    bb = f.getbbox(text + "　")
-    w, h = bb[2] - bb[0] + 8, bb[3] - bb[1] + 8
+    tt = text + "　"
+    bb = f.getbbox(tt, direction="ttb", features=["vert"])
     sw = max(1, size // 28)
-    full = Image.new("L", (w + 2 * sw, h + 2 * sw), 0)
-    ImageDraw.Draw(full).text((sw + 2 - bb[0], sw + 2 - bb[1]), text + "　", font=f, fill=255, stroke_width=sw if outline else 0, stroke_fill=255)
+    w, h = bb[2] - bb[0] + 8 + 2 * sw, bb[3] - bb[1] + 8 + 2 * sw
+    full = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(full).text((sw + 4 - bb[0], sw + 4 - bb[1]), tt, font=f, fill=255, direction="ttb", features=["vert"],
+                              stroke_width=sw if outline else 0, stroke_fill=255)
     if outline:
         inner = Image.new("L", full.size, 0)
-        ImageDraw.Draw(inner).text((sw + 2 - bb[0], sw + 2 - bb[1]), text + "　", font=f, fill=255)
+        ImageDraw.Draw(inner).text((sw + 4 - bb[0], sw + 4 - bb[1]), tt, font=f, fill=255, direction="ttb", features=["vert"])
         full = ImageChops.subtract(full, inner)
     im = Image.new("RGBA", full.size, color + (0,)); im.putalpha(full)
     return im
@@ -1286,25 +1300,26 @@ def echo_text_for(t):
 
 
 def echo_layer(L, t, c, kd, rows, color):
-    """Current line repeated in rows of different size / direction / speed; some outline-only (recipe 1)."""
+    """Current line repeated in vertical columns of different size, scrolling up / down at 0.5~3x; some outline-only (recipe 1)."""
     li = echo_text_for(t)
     if li is None or rows <= 0:
         return 0
     text = line_text(li).replace('"', "")
     sizes = ECHO_SIZES_1080[kd]; alphas = ECHO_ALPHA[kd]
     n = min(rows, len(sizes))
-    ys = np.linspace(0.08, 0.86, n) if n > 1 else [0.42]
+    xs = np.linspace(0.06, 0.94, n) if n > 1 else [0.5]
+    order = [0, 3, 1, 5, 2, 4, 6, 7][:n] if n > 1 else [0]
     for r in range(n):
-        size = S(sizes[r]); outline = r % 2 == 1
+        size = S(sizes[order[r] % len(sizes)]); outline = r % 2 == 1
         im = echo_strip(text, size, outline, color)
-        sp = (0.5 + 2.5 * ((r * 37) % 10) / 9) * S(60) * (1 if r % 2 == 0 else -1)   # 0.5x ~ 3x, alternating direction
-        off = (t * sp) % im.size[0]
-        x = -off - im.size[0]
-        y = H_(ys[r]) - im.size[1] / 2
+        sp = (0.5 + 2.5 * ((r * 37) % 10) / 9) * S(60) * (1 if r % 2 == 0 else -1)   # 0.5x ~ 3x, alternating up / down
+        off = (t * sp) % im.size[1]
+        y = -off - im.size[1]
+        x = xs[r] * Q.W - im.size[0] / 2
         a = alphas[r % len(alphas)]
-        while x < Q.W:
+        while y < Q.H:
             paste(L, im, x, y, a)
-            x += im.size[0]
+            y += im.size[1]
     return n
 
 
@@ -1406,19 +1421,20 @@ def cutout_layer(L, t, ci, c, avoid):
 
 
 def keyword_pop(L, t, c, avoid):
-    """Big keyword, outline only, letters pop in 2 frames apart; one letter turns red on every beat (recipe 2)."""
+    """Big keyword in a vertical column, outline only; letters pop in 2 frames apart, one turns red on every beat (recipe 2)."""
     li = active_line(t)
     if li is None:
         return False
-    word = RED_TEXT.get(li) or chunks(li)[0]
-    word = word[:6]
-    size = int(Q.H * 0.17)
+    word = (RED_TEXT.get(li) or chunks(li)[0])[:6]
+    size = int(Q.H * 0.13)
     fx, fy = focus_target_px(c)
-    w = font(F_L, size).getlength(word)
-    cands = [(Q.W * 0.06, Q.H * 0.06), (Q.W * 0.94 - w, Q.H * 0.06), (Q.W * 0.06, Q.H * 0.62), (Q.W * 0.94 - w, Q.H * 0.62)]
+    hgt = size * len(word) * 1.02
+    cands = [(Q.W * 0.04, Q.H * 0.08), (Q.W * 0.96 - size * 1.1, Q.H * 0.08), (Q.W * 0.44, Q.H * 0.08), (Q.W * 0.30, Q.H * 0.10)]
     pos = None
     for x, y in cands:
-        box = (x, y, x + w, y + size * 1.1)
+        box = (x, y, x + size * 1.1, y + hgt)
+        if box[3] > Q.H * 0.88:
+            continue
         if overlaps(box, [(a[0] - S(60), a[1] - S(60), a[2] + S(60), a[3] + S(60)) for a in avoid]):
             continue
         if box[0] - S(80) < fx < box[2] + S(80) and box[1] - S(80) < fy < box[3] + S(80):
@@ -1428,18 +1444,16 @@ def keyword_pop(L, t, c, avoid):
         return False
     w0, _ = line_window(li)
     bi = bisect.bisect_right(BEATS, t)
-    f_ = font(F_L, size)
+    y = pos[1]
     for k, ch in enumerate(word):
         u = ((t - w0) * FPS - 2 * k) / 10
-        if u <= 0:
-            continue
-        s = pop(u) * 1.0
-        g = echo_strip(ch, max(4, int(size * min(1.1, s))), True, GRAY_M if not c.get("red") else GRAY_M)
-        x = pos[0] + f_.getlength(word[:k])
-        paste(L, g, x, pos[1], 0.42)
-        if bi and (bi - 1) % len(word) == k:                  # beat letter flips to red
-            gr = htext(ch, max(4, int(size * min(1.1, s))), RED + (255,), F_L)
-            paste(L, gr, x + S(4), pos[1] + S(4), 0.45)
+        if u > 0:
+            s_ = max(4, int(size * min(1.1, pop(u))))
+            g = echo_strip(ch, s_, True, GRAY_M)
+            paste(L, g, pos[0] + (size - s_) / 2, y, 0.42)
+            if bi and (bi - 1) % len(word) == k:          # beat letter flips to red
+                paste(L, vtext(ch, s_, RED + (255,), F_L), pos[0] + (size - s_) / 2 + S(4), y + S(4), 0.45)
+        y += size * 1.02
     return True
 
 
@@ -1459,23 +1473,20 @@ def ring_text(L, t, cx, cy, color):
 
 
 def micro_text(L, t, color):
-    """Tiny translation / pronunciation / roman numerals repeated along the edges (recipe 5)."""
+    """Tiny translation / pronunciation / roman numerals running down the side edges (recipe 5)."""
     li = echo_text_for(t)
     if li is None:
         return False
-    s = f"{KO[li - 1].strip()}  /  {PRON[li - 1].strip()}  /  {line_text(li)}  ·  "
-    f = font(F_L, S(14), 1)
-    w = max(1, int(f.getlength(s)))
-    strip = Image.new("RGBA", (w, S(20)), (0, 0, 0, 0)); ImageDraw.Draw(strip).text((0, 0), s, font=f, fill=color + (255,))
-    off = (t * S(30)) % w
-    for y, d in ((S(62), 1), (Q.H - S(132), -1)):
-        x = -((off * d) % w) - w
-        while x < Q.W:
-            paste(L, strip, x, y, 0.30); x += w
+    s_ = f"{line_text(li)}　{PRON[li - 1].strip()}　{KO[li - 1].strip()}　"
+    g = vtext(s_, S(14), color + (255,), F_L)
+    oy = (t * S(30)) % max(1, g.size[1])
+    for k in range(3):
+        paste(L, g, S(52), S(90) - oy + k * g.size[1], 0.30)
     nums = "  ".join(["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"])
-    g = vtext(nums, S(13), color + (255,), F_L)
-    oy = (t * S(20)) % max(1, g.size[1])
-    paste(L, g, Q.W - S(52), S(90) - oy, 0.26); paste(L, g, Q.W - S(52), S(90) - oy + g.size[1], 0.26)
+    g2 = vtext(nums, S(13), color + (255,), F_L)
+    oy2 = (t * S(20)) % max(1, g2.size[1])
+    for k in range(3):
+        paste(L, g2, Q.W - S(52), S(90) - oy2 + k * g2.size[1], 0.26)
     return True
 
 

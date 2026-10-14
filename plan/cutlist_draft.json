@@ -46,7 +46,7 @@
   "presets": {
    "P1": "right_column",
    "P2": "left_column",
-   "P3": "center_giant",
+   "P3": "giant_vertical_typo",
    "P4": "mirror",
    "P5": "illustration_only"
   },
@@ -479,7 +479,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -550,7 +550,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -622,7 +622,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -692,7 +692,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -764,7 +764,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -835,7 +835,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -906,7 +906,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -978,7 +978,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1048,7 +1048,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1119,7 +1119,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1191,7 +1191,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1259,7 +1259,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1328,7 +1328,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1396,7 +1396,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1464,7 +1464,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1533,7 +1533,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1602,7 +1602,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1671,7 +1671,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1740,7 +1740,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1807,7 +1807,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1876,7 +1876,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -1946,7 +1946,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2167,8 +2167,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2200,7 +2200,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2238,8 +2238,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2271,7 +2271,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2310,8 +2310,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2343,7 +2343,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2376,8 +2376,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2413,7 +2413,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2448,8 +2448,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2483,7 +2483,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -2521,8 +2521,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -2554,7 +2554,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -4899,7 +4899,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -4970,7 +4970,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5040,7 +5040,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5109,7 +5109,7 @@
      "slot": 1
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5178,7 +5178,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5250,7 +5250,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5320,7 +5320,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5392,7 +5392,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5462,7 +5462,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -5533,7 +5533,7 @@
      "slot": 0
     }
    ],
-   "echo_rows": 3,
+   "echo_rows": 4,
    "keyword_pop": false,
    "ring_text": false,
    "micro_text": true,
@@ -6732,8 +6732,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -6822,14 +6822,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -6913,8 +6913,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -6999,14 +6999,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "deco": [
@@ -7093,8 +7093,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -7184,14 +7184,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -7274,8 +7274,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -7364,14 +7364,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -7457,8 +7457,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -7548,14 +7548,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -7639,8 +7639,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -7729,14 +7729,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -7821,8 +7821,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -7914,14 +7914,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -8006,8 +8006,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8094,14 +8094,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "deco": [
@@ -8190,8 +8190,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8283,14 +8283,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "focus_src": [
@@ -8377,8 +8377,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8465,8 +8465,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8521,8 +8521,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8581,8 +8581,8 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
@@ -8632,14 +8632,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "deco": [
@@ -8683,14 +8683,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": false,
    "deco": [
@@ -8731,14 +8731,14 @@
    "layout": "P3",
    "lyric_orient": "horizontal",
    "lyric_rect": [
-    0.04,
-    0.56,
+    0.5,
+    0.07,
     0.96,
     0.86
    ],
    "focus_target": [
-    0.6666666666666666,
-    0.3333333333333333
+    0.3333333333333333,
+    0.6666666666666666
    ],
    "flip_h": true,
    "deco": [],

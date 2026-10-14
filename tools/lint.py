@@ -39,7 +39,7 @@ RULES = {
     "1-6": "레이아웃 프리셋(5종) 미지정",
     "2-1": "최고 위계(100%) 가사가 두 줄 이상",
     "2-2": "세로 순서(오른쪽→왼쪽) 위반 / 한 장면에 세로·가로 혼용",
-    "2-3": "큰 글자: 첫·끝 글자 잘림 / 3줄 이상 / 단어 중간 줄바꿈 / 글자 위 장식",
+    "2-3": "큰 글자: 첫·끝 글자 잘림 / 5열 이상 / 단어 중간 줄바꿈 / 글자 위 장식",
     "2-4": "글자 크기 미달 (세로 박스 46px, 자막 34px @1080)",
     "2-5": "한국어 자막 띠(60%, 70px) 없음",
     "2-6": "가사 타이밍 (3~5프레임 먼저 / 0.2초 꼬리 / 큰 글자 12프레임 정지)",
@@ -315,8 +315,8 @@ def new_checks():
             if hold < 12:
                 bad("2-6", None, f"{i}행 큰 글자 정지 {hold}프레임")
             rows = R.giant_rows(i)
-            if len(rows) > 2:
-                bad("2-3", None, f"{i}행 큰 글자 {len(rows)}줄")
+            if len(rows) > 4:
+                bad("2-3", None, f"{i}행 큰 세로 글자 {len(rows)}열")
             full = R.line_ctx(i)["text"]; pos = 0
             for a, b in zip(rows, rows[1:]):
                 pos = full.index(a, pos) + len(a)
@@ -356,8 +356,8 @@ def new_checks():
                 mid = (rect[0] + rect[2]) / 2
                 if (fx / W < 0.5) == (mid < 0.5):
                     bad("1-2", cj, "가사가 시선점과 같은 쪽")
-            if rect and c["layout"] == "P3" and fy / H > 0.5:
-                bad("1-2", cj, "큰 글자와 시선점이 같은 아래쪽")
+            if rect and c["layout"] == "P3" and fx / W > 0.5:
+                bad("1-2", cj, "큰 세로 글자와 시선점이 같은 오른쪽")
         if D.get("deco_over_lyrics", 0) > 0:
             bad("1-5", cj, f"장식이 가사 제외영역에 {D['deco_over_lyrics']}px")
         for (x0, y0, x1, y1) in D.get("giant_boxes", []):

@@ -76,7 +76,7 @@ TH = (1 / 3, 2 / 3)
 PRESETS = {
     "P1": dict(name="right_column", orient="vertical", rects=[[0.68, 0.11, 0.95, 0.84]], focus=[(TH[0], TH[0]), (TH[0], TH[1])]),
     "P2": dict(name="left_column", orient="vertical", rects=[[0.05, 0.11, 0.32, 0.84]], focus=[(TH[1], TH[0]), (TH[1], TH[1])]),
-    "P3": dict(name="center_giant", orient="horizontal", rects=[[0.04, 0.56, 0.96, 0.86]], focus=[(TH[0], TH[0]), (TH[1], TH[0])]),
+    "P3": dict(name="giant_vertical_typo", orient="horizontal", rects=[[0.50, 0.07, 0.96, 0.86]], focus=[(TH[0], TH[0]), (TH[0], TH[1])]),
     "P4": dict(name="mirror", orient="vertical", rects=[[0.74, 0.11, 0.96, 0.84], [0.04, 0.11, 0.26, 0.84]],
                focus=[(TH[0], TH[0]), (TH[1], TH[0])]),
     "P5": dict(name="illustration_only", orient=None, rects=[], focus=[(TH[0], TH[0]), (TH[1], TH[0]), (TH[1], TH[1]), (TH[0], TH[1])]),
@@ -402,7 +402,7 @@ for idx, c in enumerate(cuts):
     picks = list(rng.choice(pool, size=n_cut, replace=False)) if n_cut else []
     c["cutouts"] = [dict(crop=str(k), w=round(float(rng.uniform(0.17, 0.30)), 3), rot=round(float(rng.uniform(-25, 25)), 1),
                          flip=bool(rng.random() < 0.4), alpha=float(rng.choice([1.0, 0.85, 0.6])), slot=int(j)) for j, k in enumerate(picks)]
-    c["echo_rows"] = {"verse": 3, "chorus": 6, "relax": 1}[kd]
+    c["echo_rows"] = {"verse": 4, "chorus": 6, "relax": 1}[kd]
     deco = [d for d in (c.get("deco") or []) if d != "band"]          # the repeat band now lives in the echo layer
     if kd == "chorus":
         extra = ["checker_strip"] if c["red"] else [k for k in ("torn_strip", "clock", "checker_strip") if k not in deco]
