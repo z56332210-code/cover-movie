@@ -77,7 +77,7 @@ PRESETS = {
     "P1": dict(name="right_column", orient="vertical", rects=[[0.68, 0.11, 0.95, 0.84]], focus=[(TH[0], TH[0]), (TH[0], TH[1])]),
     "P2": dict(name="left_column", orient="vertical", rects=[[0.05, 0.11, 0.32, 0.84]], focus=[(TH[1], TH[0]), (TH[1], TH[1])]),
     "P3": dict(name="giant_vertical_typo", orient="horizontal", rects=[[0.50, 0.07, 0.96, 0.86]], focus=[(TH[0], TH[0]), (TH[0], TH[1])]),
-    "P4": dict(name="mirror", orient="vertical", rects=[[0.74, 0.11, 0.96, 0.84], [0.04, 0.11, 0.26, 0.84]],
+    "P4": dict(name="mirror", orient="vertical", rects=[[0.78, 0.11, 0.96, 0.84], [0.04, 0.11, 0.22, 0.84]],
                focus=[(TH[0], TH[0]), (TH[1], TH[0])]),
     "P5": dict(name="illustration_only", orient=None, rects=[], focus=[(TH[0], TH[0]), (TH[1], TH[0]), (TH[1], TH[1]), (TH[0], TH[1])]),
 }
@@ -384,8 +384,11 @@ for idx, c in enumerate(cuts):
         c["focus_target"][1] = TH[0]; c["flip_h"] = False
     # face crops: pin the eye nearest the lyric column, so the other eye moves away from the lyrics
     if c.get("crop") in ("eyes", "face", "hood_top", "wide_upper", "bust", "eye_r", "eye_l", "finger_eye", "point_hand"):
-        lyr_left = c["layout"] == "P2"
-        c["focus_src"] = [935, 415] if (lyr_left != bool(c.get("flip_h"))) else [1030, 460]
+        lyr_left = c["layout"] == "P2" or (c["layout"] == "P4" and c["focus_target"][0] < 0.5)   # nearest lyric column
+        if c["layout"] == "P4" and c.get("crop_box", {}).get("w"):
+            c["crop_box"]["w"] = max(c["crop_box"]["w"], 560)       # lyric columns on both edges: keep the eyes small enough
+        mirrored = bool(c.get("flip_h")) != (abs(((c.get("rot", 0) + 180) % 360) - 180) > 90)   # flip or upside-down swaps the eyes
+        c["focus_src"] = [935, 415] if (lyr_left != mirrored) else [1030, 460]
 
 # ---- density layers (the readable line keeps the top tier; everything else is a low-tier layer) ----
 CUT_POOL = [k for k in FOCUS if k not in ("silhouette", "legs", "shoes", "skirt", "bust", "wide_upper")]

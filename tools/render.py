@@ -312,7 +312,7 @@ def image_layer(ci, c, t):
     if src == "upper":
         bw = (c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000
         for ex, ey in EYES_SRC:
-            px, py = fwd(ex, ey); r_ = 70 / bw * W
+            px, py = fwd(ex, ey); r_ = 48 / bw * W                # eye ~48 px radius in the source art
             eyes.append((px - r_, py - r_ * 0.7, px + r_, py + r_ * 0.7))
     if c["scene"] == 16:
         acc = Image.blend(acc, acc.filter(ImageFilter.GaussianBlur(S(2))), 0.5)
