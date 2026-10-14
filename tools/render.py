@@ -466,11 +466,13 @@ def htext(text, size, fill, fontpath=F_XL, stroke=0):
 
 
 @lru_cache(512)
-def vtext(text, size, fill, fontpath=F_XL):
+def vtext(text, size, fill, fontpath=F_XL, stroke=0, stroke_fill=None):
+    """Vertical text. With stroke the image grows by `stroke` px on every side (paste at x - stroke, y - stroke)."""
     f = font(fontpath, size)
     bb = f.getbbox(text, direction="ttb", features=["vert"])
-    im = Image.new("RGBA", (bb[2] - bb[0] + 4, bb[3] - bb[1] + 4), (0, 0, 0, 0))
-    ImageDraw.Draw(im).text((2 - bb[0], 2 - bb[1]), text, font=f, fill=fill, direction="ttb", features=["vert"])
+    im = Image.new("RGBA", (bb[2] - bb[0] + 4 + 2 * stroke, bb[3] - bb[1] + 4 + 2 * stroke), (0, 0, 0, 0))
+    ImageDraw.Draw(im).text((2 + stroke - bb[0], 2 + stroke - bb[1]), text, font=f, fill=fill, direction="ttb", features=["vert"],
+                            stroke_width=stroke, stroke_fill=stroke_fill or fill)
     return im
 
 
@@ -586,7 +588,7 @@ def giant_layout(i, W_, H_):
     ctx = line_ctx(i); c = CUTS[ctx["ci"]]
     x0, y0, x1, y1 = rects_px(c)[0]
     cols = giant_rows(i)
-    fp = F_L if ctx["red"] else F_XL
+    fp = F_R                                         # Regular: ExtraLight hairlines broke up in the encoded video
     r = np.random.default_rng(i * 97)
     scale = [1.0 if k == 0 else (0.62 if k % 2 else 0.78) for k in range(len(cols))]
     if len(cols) > 1:
@@ -781,26 +783,42 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
     if giant:
         bb = [item_bbox(it) for it in giant]
         ub = (min(b[0] for b in bb) - S(20), min(b[1] for b in bb) - S(16), max(b[2] for b in bb) + S(20), max(b[3] for b in bb) + S(16))
-        amax = max(it["alpha"] for it in giant)
         if giant[0]["red"]:                          # red keywords: drawn as they are (contrast rule exempted by the user)
-            col, plate, pa, cr = RED, None, 0.0, _plate_for(out, ub, RED)[2]
-        else:                                        # pick the tone that reads best; if still weak, white text + dark shadow
-            cd = _plate_for(out, ub, INK)[2]; cl = _plate_for(out, ub, PAPER_L)
-            if cd >= max(4.5, cl[2]):
-                col, plate, pa, cr = INK, None, 0.0, cd
-            else:
-                col = PAPER_L; plate, pa, cr = cl
-        if plate:                                    # soft halo around the glyphs (no box)
-            hm = Image.new("L", out.size, 0)
             for it in giant:
-                g = vtext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
-                hm.paste(g.getchannel("A"), (int(it["x"]), int(it["y"] + it["dy"])), g.getchannel("A"))
-            hm = hm.filter(ImageFilter.MaxFilter(max(3, S(9) | 1))).filter(ImageFilter.GaussianBlur(S(7)))
-            halo = Image.new("RGBA", out.size, plate + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * amax)))
-            L.alpha_composite(halo)
-        for it in giant:
-            g = vtext(it["text"], it["size"], col + (255,), it["font"])
-            paste(L, g, it["x"], it["y"] + it["dy"], it["alpha"])
+                paste(L, vtext(it["text"], it["size"], RED + (255,), it["font"]), it["x"], it["y"] + it["dy"], it["alpha"])
+            cr = _plate_for(out, ub, RED)[2]
+        else:                                        # tone chosen per column, so a column over a bright area doesn't vanish
+            groups = []
+            for it in sorted(giant, key=lambda it: it["x"] + it["size"] / 2):     # glyphs of one column share a centre x
+                cx = it["x"] + it["size"] / 2
+                if groups and cx - groups[-1][-1]["x"] - groups[-1][-1]["size"] / 2 < S(8):
+                    groups[-1].append(it)
+                else:
+                    groups.append([it])
+            cr = 21.0
+            for grp in groups:
+                bb = [item_bbox(it) for it in grp]
+                cb = (min(b[0] for b in bb) - S(8), min(b[1] for b in bb) - S(8), max(b[2] for b in bb) + S(8), max(b[3] for b in bb) + S(8))
+                amax = max(it["alpha"] for it in grp)
+                cd = _plate_for(out, cb, INK)[2]; cl = _plate_for(out, cb, PAPER_L)
+                if cd >= max(4.5, cl[2]):            # dark type on a bright area: solid, no backing
+                    for it in grp:
+                        paste(L, vtext(it["text"], it["size"], INK + (255,), it["font"]), it["x"], it["y"] + it["dy"], it["alpha"])
+                    cr = min(cr, cd); continue
+                plate, pa, c2 = cl                   # white type: crisp dark keyline (no blur) + a tight dark shadow if needed
+                sw = max(2, S(3))
+                if plate:
+                    hm = Image.new("L", out.size, 0)
+                    for it in grp:
+                        g = vtext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
+                        hm.paste(g.getchannel("A"), (int(it["x"]), int(it["y"] + it["dy"])), g.getchannel("A"))
+                    hm = hm.filter(ImageFilter.MaxFilter(max(3, S(5) | 1))).filter(ImageFilter.GaussianBlur(S(2.5)))
+                    halo = Image.new("RGBA", out.size, INK + (0,)); halo.putalpha(hm.point(lambda v: int(v * pa * amax)))
+                    L.alpha_composite(halo)
+                for it in grp:
+                    g = vtext(it["text"], it["size"], PAPER_L + (255,), it["font"], sw, INK + (255,))
+                    paste(L, g, it["x"] - sw, it["y"] + it["dy"] - sw, it["alpha"])
+                cr = min(cr, c2)
         crs.append(("red" if giant[0]["red"] else "giant", cr))
     for it in items:
         if it["kind"] == "box":
