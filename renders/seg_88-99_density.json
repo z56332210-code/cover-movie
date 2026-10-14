@@ -1,20 +1,20 @@
 {
  "verse": {
   "frames": 22,
-  "filled_pct": 52.3,
-  "filled_min": 44.1,
-  "filled_max": 57.6,
-  "edge_pct": 7.65,
-  "edge_min": 6.73,
-  "edge_max": 8.32
+  "filled_pct": 54.5,
+  "filled_min": 47.6,
+  "filled_max": 62.5,
+  "edge_pct": 8.38,
+  "edge_min": 7.06,
+  "edge_max": 9.83
  },
  "chorus": {
   "frames": 56,
-  "filled_pct": 75.5,
+  "filled_pct": 75.3,
   "filled_min": 66.3,
   "filled_max": 83.7,
-  "edge_pct": 9.93,
-  "edge_min": 7.9,
+  "edge_pct": 9.89,
+  "edge_min": 7.98,
   "edge_max": 11.1
  }
 }

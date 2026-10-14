@@ -1351,7 +1351,7 @@ def bg_pattern(frame, t, kd, bg):
     tex = halftone_tex("chorus" if kd == "chorus" else "verse")
     ox = int((t * S(8)) % (tex.size[0] - Q.W)); oy = int((t * S(4)) % (tex.size[1] - Q.H))
     m = tex.crop((ox, oy, ox + Q.W, oy + Q.H))
-    a = {"chorus": 0.16, "verse": 0.24, "relax": 0.09}[kd]
+    a = {"chorus": 0.16, "verse": 0.25, "relax": 0.09}[kd]
     col = GRAY_M if sum(bg) <= 380 else GRAY_D
     lay = Image.new("RGBA", (Q.W, Q.H), col + (0,)); lay.putalpha(m.point(lambda v: int(v * a)))
     frame.alpha_composite(lay)
@@ -1399,6 +1399,27 @@ def popped(t, idx, n):
     return 0.9 + 0.1 * arrive(u, 0.05)
 
 
+WORD_HITS = {45: "健康"}      # the cutouts jump on every sung "健康" (超健康 / 健康)
+
+
+@lru_cache(None)
+def word_hit_times(li):
+    w = WORD_HITS.get(li)
+    if not w:
+        return ()
+    return tuple(a for p, a in zip(chunks(li), chunk_appear(li)) if w in p)
+
+
+def word_hit(t):
+    """(hit index, eased progress) of the last word hit on the active line, or None."""
+    li = active_line(t)
+    hits = [h for h in word_hit_times(li)] if li else []
+    k = bisect.bisect_right(hits, t)
+    if not k:
+        return None
+    return k, EASE_OUT(clamp((t - hits[k - 1]) * FPS / 4))
+
+
 def cutout_layer(L, t, ci, c, avoid):
     """Cutout cluster: other crops of the same character, rotated / mirrored / half-transparent (recipe 6)."""
     specs = c.get("cutouts") or []
@@ -1412,10 +1433,19 @@ def cutout_layer(L, t, ci, c, avoid):
         x, y = slots[order[k]]
         card = cutout_card(sp["crop"], S(sp["w"] * 1920), sp["rot"], sp["flip"], False)
         s = popped(t, k, len(specs) + 1)
+        wh = word_hit(t)
+        jx = jy = 0.0
+        if wh:                                                # word hit: every card steps once, two of them pop
+            n_hit, e = wh
+            for h in range(n_hit):
+                prog = e if h == n_hit - 1 else 1.0
+                jx += (1 if (k + h) % 2 else -1) * S(46) * prog; jy += (1 if h % 2 else -1) * S(22) * prog
+            if (k + n_hit) % len(specs) < 2 and e < 1:
+                s = 0.9 + 0.1 * arrive(e, 0.06)
         if s != 1.0:
             card = card.resize((max(1, int(card.size[0] * s)), max(1, int(card.size[1] * s))), Image.BICUBIC)
         drift = (t - c["start"]) * S(14) * (1 if k % 2 else -1)              # slow, opposite to the echo rows
-        paste(L, card, x - card.size[0] / 2 + drift, y - card.size[1] / 2 - drift * 0.4, sp["alpha"])
+        paste(L, card, x - card.size[0] / 2 + drift + jx, y - card.size[1] / 2 - drift * 0.4 + jy, sp["alpha"])
         drawn += 1
     return drawn
 
