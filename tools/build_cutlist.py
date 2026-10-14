@@ -398,8 +398,38 @@ for idx, c in enumerate(cuts):
         continue
     rng = np.random.default_rng(idx * 313 + 11)
     n_cut = {"verse": 1, "chorus": 3, "relax": 0}[kd] + (1 if not c.get("crop") and kd != "relax" else 0)
-    pool = [k for k in CUT_POOL if k != c.get("crop")]
-    picks = list(rng.choice(pool, size=n_cut, replace=False)) if n_cut else []
+    # cluster mix: different kinds of crop each time (face / hands / halo / props / costume), at most one face close-up
+    CATS = {"face": ["eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye"],
+            "hands": ["point_hand", "lolly_hand", "nails", "cuff_L", "cuff_R"],
+            "halo": ["halo"], "props": ["lolly", "cross_close", "collar_L", "collar_R"],
+            "costume": ["ribbon_R", "ribbon_L", "buttons", "neck_frill", "sleeve_R", "hair_L"]}
+    main = c.get("crop")
+    prev_faces = set()
+    if idx:
+        pc = cuts[idx - 1]
+        prev_faces = {x for x in [pc.get("crop")] + [q["crop"] for q in pc.get("cutouts", [])] if x in CATS["face"]}
+    faces_left = 2 - (1 if main in CATS["face"] else 0)            # up to two face close-ups per frame (main included)
+    cats = [k for k in rng.permutation(sorted(CATS)) if any(x != main for x in CATS[k])]
+    picks = []
+    while len(picks) < n_cut and cats:
+        for cat in list(cats):
+            opts = [x for x in CATS[cat] if x != main and x not in picks]
+            if cat == "face":
+                opts = [x for x in opts if x not in prev_faces]      # no face crop straight from the previous cut
+                if faces_left <= 0 or (picks and picks[-1] in CATS["face"]):   # never two faces in a row
+                    opts = [] if faces_left <= 0 else None
+            if opts is None:
+                continue
+            if not opts:
+                cats.remove(cat); continue
+            picks.append(str(rng.choice(opts)))
+            if cat == "face":
+                faces_left -= 1
+            if len(picks) == n_cut:
+                break
+        else:
+            if all(c_ == "face" for c_ in cats):
+                break
     c["cutouts"] = [dict(crop=str(k), w=round(float(rng.uniform(0.17, 0.30)), 3), rot=round(float(rng.uniform(-25, 25)), 1),
                          flip=bool(rng.random() < 0.4), alpha=float(rng.choice([1.0, 0.85, 0.6])), slot=int(j)) for j, k in enumerate(picks)]
     c["echo_rows"] = {"verse": 4, "chorus": 6, "relax": 1}[kd]

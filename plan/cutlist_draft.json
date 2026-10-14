@@ -471,11 +471,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.194,
-     "rot": 24.9,
+     "crop": "point_hand",
+     "w": 0.205,
+     "rot": 22.2,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -542,11 +542,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cuff_R",
-     "w": 0.186,
-     "rot": -3.4,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.216,
+     "rot": 9.3,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -614,10 +614,10 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cross_close",
-     "w": 0.232,
-     "rot": 7.7,
-     "flip": false,
+     "crop": "collar_R",
+     "w": 0.3,
+     "rot": -3.1,
+     "flip": true,
      "alpha": 0.85,
      "slot": 0
     }
@@ -676,19 +676,19 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "ribbon_L",
-     "w": 0.205,
-     "rot": 23.7,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "halo",
+     "w": 0.297,
+     "rot": 22.8,
+     "flip": true,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.21,
-     "rot": 1.0,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "face",
+     "w": 0.238,
+     "rot": -10.7,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 1
     }
    ],
@@ -756,11 +756,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "tongue",
-     "w": 0.256,
-     "rot": -5.0,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "halo",
+     "w": 0.187,
+     "rot": -2.8,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -827,11 +827,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "neck_frill",
-     "w": 0.266,
-     "rot": -11.1,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "lolly",
+     "w": 0.194,
+     "rot": 2.6,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -898,9 +898,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_l",
-     "w": 0.287,
-     "rot": 7.1,
+     "crop": "cuff_R",
+     "w": 0.299,
+     "rot": 13.0,
      "flip": false,
      "alpha": 1.0,
      "slot": 0
@@ -970,10 +970,10 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eyes",
-     "w": 0.279,
-     "rot": -4.6,
-     "flip": false,
+     "crop": "nails",
+     "w": 0.239,
+     "rot": -2.1,
+     "flip": true,
      "alpha": 0.85,
      "slot": 0
     }
@@ -1033,18 +1033,18 @@
    "cutouts": [
     {
      "crop": "cross_close",
-     "w": 0.207,
-     "rot": 13.1,
-     "flip": true,
-     "alpha": 0.6,
+     "w": 0.269,
+     "rot": -24.9,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eyes",
-     "w": 0.284,
-     "rot": -3.2,
+     "crop": "halo",
+     "w": 0.181,
+     "rot": -23.5,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     }
    ],
@@ -1111,11 +1111,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cuff_L",
-     "w": 0.275,
-     "rot": 18.0,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "lolly",
+     "w": 0.17,
+     "rot": -10.7,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -1183,11 +1183,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.261,
-     "rot": 13.5,
+     "crop": "collar_R",
+     "w": 0.287,
+     "rot": 10.8,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -1251,11 +1251,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.22,
-     "rot": -3.4,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "nails",
+     "w": 0.266,
+     "rot": -0.5,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -1320,11 +1320,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "neck_frill",
-     "w": 0.233,
-     "rot": 23.3,
+     "crop": "sleeve_R",
+     "w": 0.219,
+     "rot": -22.6,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     }
    ],
@@ -1388,10 +1388,10 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "ribbon_R",
-     "w": 0.197,
-     "rot": -18.5,
-     "flip": false,
+     "crop": "point_hand",
+     "w": 0.284,
+     "rot": 20.7,
+     "flip": true,
      "alpha": 1.0,
      "slot": 0
     }
@@ -1448,19 +1448,19 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cuff_R",
-     "w": 0.204,
-     "rot": 5.5,
-     "flip": true,
-     "alpha": 1.0,
-     "slot": 0
-    },
-    {
-     "crop": "finger_eye",
+     "crop": "halo",
      "w": 0.229,
      "rot": -4.1,
      "flip": false,
      "alpha": 1.0,
+     "slot": 0
+    },
+    {
+     "crop": "eyes",
+     "w": 0.254,
+     "rot": -12.4,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 1
     }
    ],
@@ -1525,9 +1525,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "collar_R",
-     "w": 0.271,
-     "rot": 3.3,
+     "crop": "collar_L",
+     "w": 0.201,
+     "rot": -18.5,
      "flip": true,
      "alpha": 0.6,
      "slot": 0
@@ -1594,11 +1594,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "finger_eye",
-     "w": 0.277,
-     "rot": -11.0,
+     "crop": "halo",
+     "w": 0.206,
+     "rot": -1.9,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -1663,11 +1663,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "point_hand",
-     "w": 0.266,
-     "rot": -22.5,
+     "crop": "finger_eye",
+     "w": 0.291,
+     "rot": 20.4,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -1732,9 +1732,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "finger_eye",
-     "w": 0.28,
-     "rot": 15.0,
+     "crop": "point_hand",
+     "w": 0.221,
+     "rot": -22.0,
      "flip": true,
      "alpha": 0.6,
      "slot": 0
@@ -1791,19 +1791,19 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_l",
-     "w": 0.223,
-     "rot": 6.5,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "face",
+     "w": 0.252,
+     "rot": 6.2,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "point_hand",
-     "w": 0.211,
-     "rot": -19.9,
+     "crop": "nails",
+     "w": 0.298,
+     "rot": 13.2,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 1
     }
    ],
@@ -1868,11 +1868,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.212,
-     "rot": -16.4,
-     "flip": false,
-     "alpha": 0.6,
+     "crop": "eye_r",
+     "w": 0.261,
+     "rot": -3.2,
+     "flip": true,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -1938,10 +1938,10 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cross_close",
-     "w": 0.246,
-     "rot": -13.0,
-     "flip": true,
+     "crop": "eye_l",
+     "w": 0.214,
+     "rot": 13.6,
+     "flip": false,
      "alpha": 0.85,
      "slot": 0
     }
@@ -2193,10 +2193,10 @@
    "cutouts": [
     {
      "crop": "collar_L",
-     "w": 0.216,
-     "rot": -11.3,
-     "flip": false,
-     "alpha": 1.0,
+     "w": 0.238,
+     "rot": -0.5,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -2263,11 +2263,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "hair_L",
-     "w": 0.171,
-     "rot": 24.5,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.266,
+     "rot": -10.9,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 0
     }
    ],
@@ -2335,11 +2335,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.277,
-     "rot": 3.5,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "nails",
+     "w": 0.264,
+     "rot": 3.6,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 0
     }
    ],
@@ -2397,19 +2397,19 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "mouth",
-     "w": 0.224,
-     "rot": -3.9,
+     "crop": "cross_close",
+     "w": 0.225,
+     "rot": 6.9,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "hair_L",
-     "w": 0.244,
-     "rot": 19.4,
+     "crop": "buttons",
+     "w": 0.267,
+     "rot": 14.7,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 1
     }
    ],
@@ -2467,19 +2467,19 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "finger_eye",
-     "w": 0.248,
-     "rot": -19.4,
+     "crop": "halo",
+     "w": 0.223,
+     "rot": 24.5,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "eye_l",
-     "w": 0.299,
-     "rot": -1.0,
+     "crop": "ribbon_R",
+     "w": 0.279,
+     "rot": -1.1,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 1
     }
    ],
@@ -2547,10 +2547,10 @@
    "cutouts": [
     {
      "crop": "eye_r",
-     "w": 0.176,
-     "rot": 18.0,
+     "w": 0.234,
+     "rot": 7.9,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     }
    ],
@@ -2629,27 +2629,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "sleeve_R",
-     "w": 0.23,
-     "rot": 10.4,
+     "crop": "point_hand",
+     "w": 0.262,
+     "rot": -19.2,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "ribbon_L",
-     "w": 0.197,
-     "rot": 19.3,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "hood_top",
+     "w": 0.229,
+     "rot": -9.3,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "collar_L",
-     "w": 0.189,
-     "rot": -13.5,
+     "crop": "cross_close",
+     "w": 0.2,
+     "rot": -8.3,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -2729,23 +2729,23 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "neck_frill",
+     "crop": "face",
      "w": 0.29,
      "rot": 13.7,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "buttons",
-     "w": 0.201,
-     "rot": 3.9,
-     "flip": false,
+     "crop": "halo",
+     "w": 0.245,
+     "rot": 9.9,
+     "flip": true,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "eyes",
+     "crop": "neck_frill",
      "w": 0.207,
      "rot": -4.0,
      "flip": false,
@@ -2821,33 +2821,33 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "eye_l",
-     "w": 0.272,
-     "rot": 22.7,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "halo",
+     "w": 0.294,
+     "rot": 20.2,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "halo",
-     "w": 0.22,
-     "rot": 15.4,
-     "flip": true,
+     "crop": "collar_R",
+     "w": 0.275,
+     "rot": -6.6,
+     "flip": false,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "mouth",
-     "w": 0.265,
-     "rot": 16.0,
-     "flip": false,
+     "crop": "eye_l",
+     "w": 0.276,
+     "rot": 19.9,
+     "flip": true,
      "alpha": 0.6,
      "slot": 2
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.22,
-     "rot": -11.9,
+     "crop": "ribbon_R",
+     "w": 0.204,
+     "rot": 15.8,
      "flip": false,
      "alpha": 0.6,
      "slot": 3
@@ -2922,7 +2922,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly_hand",
+     "crop": "point_hand",
      "w": 0.267,
      "rot": -1.2,
      "flip": true,
@@ -2930,7 +2930,7 @@
      "slot": 0
     },
     {
-     "crop": "collar_R",
+     "crop": "sleeve_R",
      "w": 0.173,
      "rot": -7.7,
      "flip": false,
@@ -2938,7 +2938,7 @@
      "slot": 1
     },
     {
-     "crop": "hair_L",
+     "crop": "halo",
      "w": 0.222,
      "rot": -12.2,
      "flip": false,
@@ -2946,7 +2946,7 @@
      "slot": 2
     },
     {
-     "crop": "cuff_L",
+     "crop": "collar_R",
      "w": 0.207,
      "rot": 4.0,
      "flip": true,
@@ -3034,19 +3034,19 @@
      "w": 0.2,
      "rot": 13.5,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "collar_R",
-     "w": 0.297,
-     "rot": 13.9,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.271,
+     "rot": 19.5,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "eye_l",
+     "crop": "tongue",
      "w": 0.241,
      "rot": 15.4,
      "flip": true,
@@ -3130,27 +3130,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "sleeve_R",
-     "w": 0.283,
-     "rot": -7.7,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "cross_close",
+     "w": 0.215,
+     "rot": -7.2,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "buttons",
-     "w": 0.243,
-     "rot": -19.7,
-     "flip": false,
+     "crop": "halo",
+     "w": 0.184,
+     "rot": 9.0,
+     "flip": true,
      "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "hood_top",
-     "w": 0.259,
-     "rot": -22.1,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "mouth",
+     "w": 0.177,
+     "rot": 4.7,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 2
     }
    ],
@@ -3231,25 +3231,25 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_L",
-     "w": 0.237,
-     "rot": -7.7,
+     "crop": "cross_close",
+     "w": 0.215,
+     "rot": -10.0,
      "flip": true,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "lolly",
-     "w": 0.172,
-     "rot": -1.5,
+     "crop": "cuff_R",
+     "w": 0.284,
+     "rot": -14.9,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "collar_R",
-     "w": 0.253,
-     "rot": -12.2,
+     "crop": "face",
+     "w": 0.203,
+     "rot": -2.2,
      "flip": false,
      "alpha": 1.0,
      "slot": 2
@@ -3332,27 +3332,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "sleeve_R",
-     "w": 0.3,
-     "rot": -13.1,
+     "crop": "lolly",
+     "w": 0.201,
+     "rot": 20.6,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "finger_eye",
-     "w": 0.235,
-     "rot": -24.7,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "point_hand",
+     "w": 0.171,
+     "rot": -6.5,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "collar_L",
-     "w": 0.194,
-     "rot": -24.1,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "ribbon_R",
+     "w": 0.172,
+     "rot": -21.6,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -3424,35 +3424,35 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.228,
-     "rot": 20.1,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "finger_eye",
+     "w": 0.287,
+     "rot": -8.4,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "lolly",
-     "w": 0.289,
-     "rot": 13.5,
+     "crop": "collar_R",
+     "w": 0.27,
+     "rot": -14.3,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "buttons",
-     "w": 0.239,
-     "rot": -15.8,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "ribbon_L",
+     "w": 0.194,
+     "rot": 18.4,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 2
     },
     {
-     "crop": "face",
-     "w": 0.174,
-     "rot": -24.3,
+     "crop": "halo",
+     "w": 0.172,
+     "rot": -1.9,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 3
     }
    ],
@@ -3533,26 +3533,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "cross_close",
-     "w": 0.256,
-     "rot": 20.4,
+     "crop": "point_hand",
+     "w": 0.288,
+     "rot": 11.4,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "mouth",
-     "w": 0.291,
-     "rot": -17.7,
+     "crop": "sleeve_R",
+     "w": 0.189,
+     "rot": -7.2,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "ribbon_R",
-     "w": 0.189,
-     "rot": -6.1,
-     "flip": false,
+     "crop": "collar_R",
+     "w": 0.219,
+     "rot": 13.3,
+     "flip": true,
      "alpha": 1.0,
      "slot": 2
     }
@@ -3633,7 +3633,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "finger_eye",
+     "crop": "point_hand",
      "w": 0.278,
      "rot": 10.1,
      "flip": false,
@@ -3641,19 +3641,19 @@
      "slot": 0
     },
     {
-     "crop": "lolly_hand",
-     "w": 0.185,
-     "rot": -13.6,
+     "crop": "finger_eye",
+     "w": 0.2,
+     "rot": 5.6,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "tongue",
+     "crop": "halo",
      "w": 0.229,
      "rot": 16.4,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -3734,23 +3734,23 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly_hand",
+     "crop": "ribbon_R",
      "w": 0.214,
      "rot": 1.7,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "eye_l",
-     "w": 0.295,
-     "rot": 2.9,
-     "flip": false,
+     "crop": "nails",
+     "w": 0.243,
+     "rot": 10.8,
+     "flip": true,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "tongue",
+     "crop": "halo",
      "w": 0.193,
      "rot": -11.0,
      "flip": false,
@@ -3835,26 +3835,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "ribbon_R",
-     "w": 0.239,
-     "rot": 21.3,
+     "crop": "finger_eye",
+     "w": 0.29,
+     "rot": -16.6,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 0
     },
     {
      "crop": "lolly",
-     "w": 0.218,
-     "rot": 21.1,
-     "flip": false,
-     "alpha": 0.6,
+     "w": 0.29,
+     "rot": 19.1,
+     "flip": true,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "neck_frill",
-     "w": 0.217,
-     "rot": 1.6,
-     "flip": false,
+     "crop": "point_hand",
+     "w": 0.239,
+     "rot": 21.6,
+     "flip": true,
      "alpha": 0.85,
      "slot": 2
     }
@@ -3926,7 +3926,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_R",
+     "crop": "eye_r",
      "w": 0.18,
      "rot": 2.7,
      "flip": false,
@@ -3934,7 +3934,7 @@
      "slot": 0
     },
     {
-     "crop": "hood_top",
+     "crop": "halo",
      "w": 0.178,
      "rot": 19.8,
      "flip": true,
@@ -3942,7 +3942,7 @@
      "slot": 1
     },
     {
-     "crop": "eye_r",
+     "crop": "neck_frill",
      "w": 0.25,
      "rot": 0.3,
      "flip": false,
@@ -3950,7 +3950,7 @@
      "slot": 2
     },
     {
-     "crop": "collar_L",
+     "crop": "collar_R",
      "w": 0.199,
      "rot": -23.7,
      "flip": false,
@@ -4031,7 +4031,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "tongue",
+     "crop": "sleeve_R",
      "w": 0.191,
      "rot": -3.0,
      "flip": true,
@@ -4039,15 +4039,15 @@
      "slot": 0
     },
     {
-     "crop": "collar_L",
-     "w": 0.259,
-     "rot": -19.2,
+     "crop": "lolly",
+     "w": 0.185,
+     "rot": -18.4,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "finger_eye",
+     "crop": "halo",
      "w": 0.218,
      "rot": -10.4,
      "flip": true,
@@ -4126,27 +4126,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "eyes",
-     "w": 0.211,
-     "rot": -9.9,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "ribbon_R",
+     "w": 0.209,
+     "rot": 2.2,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "buttons",
-     "w": 0.19,
-     "rot": -23.8,
+     "crop": "cuff_R",
+     "w": 0.249,
+     "rot": -15.8,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "eye_l",
-     "w": 0.253,
-     "rot": 11.2,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "cross_close",
+     "w": 0.264,
+     "rot": -0.8,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 2
     }
    ],
@@ -4221,23 +4221,23 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "finger_eye",
+     "crop": "halo",
      "w": 0.211,
      "rot": 0.9,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "point_hand",
-     "w": 0.231,
-     "rot": 13.8,
-     "flip": false,
-     "alpha": 0.6,
+     "crop": "cuff_L",
+     "w": 0.271,
+     "rot": 2.6,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "tongue",
+     "crop": "cross_close",
      "w": 0.196,
      "rot": 3.9,
      "flip": false,
@@ -4309,7 +4309,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly",
+     "crop": "cuff_R",
      "w": 0.2,
      "rot": 11.0,
      "flip": false,
@@ -4317,7 +4317,7 @@
      "slot": 0
     },
     {
-     "crop": "finger_eye",
+     "crop": "hair_L",
      "w": 0.187,
      "rot": -8.9,
      "flip": false,
@@ -4325,7 +4325,7 @@
      "slot": 1
     },
     {
-     "crop": "cuff_L",
+     "crop": "halo",
      "w": 0.232,
      "rot": -6.1,
      "flip": false,
@@ -4333,7 +4333,7 @@
      "slot": 2
     },
     {
-     "crop": "tongue",
+     "crop": "hood_top",
      "w": 0.245,
      "rot": 20.5,
      "flip": false,
@@ -4412,26 +4412,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "point_hand",
-     "w": 0.235,
-     "rot": -6.1,
+     "crop": "neck_frill",
+     "w": 0.219,
+     "rot": 0.4,
      "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eye_l",
-     "w": 0.266,
-     "rot": 10.8,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.263,
+     "rot": -22.8,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "cuff_R",
-     "w": 0.229,
-     "rot": 16.2,
-     "flip": false,
+     "crop": "cuff_L",
+     "w": 0.277,
+     "rot": -3.5,
+     "flip": true,
      "alpha": 0.85,
      "slot": 2
     }
@@ -4507,7 +4507,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hood_top",
+     "crop": "eye_l",
      "w": 0.295,
      "rot": 3.5,
      "flip": true,
@@ -4515,15 +4515,15 @@
      "slot": 0
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.245,
-     "rot": -17.6,
+     "crop": "halo",
+     "w": 0.189,
+     "rot": 2.5,
      "flip": false,
      "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "collar_L",
+     "crop": "lolly_hand",
      "w": 0.268,
      "rot": -10.0,
      "flip": true,
@@ -4606,27 +4606,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.281,
-     "rot": -7.1,
+     "crop": "finger_eye",
+     "w": 0.187,
+     "rot": 19.4,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "mouth",
-     "w": 0.285,
-     "rot": -15.6,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "halo",
+     "w": 0.276,
+     "rot": -21.8,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "hood_top",
-     "w": 0.203,
-     "rot": -4.4,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "neck_frill",
+     "w": 0.177,
+     "rot": -20.2,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -4704,27 +4704,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly",
+     "crop": "halo",
      "w": 0.267,
      "rot": -18.0,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 0
     },
     {
      "crop": "nails",
-     "w": 0.281,
-     "rot": 11.4,
-     "flip": false,
-     "alpha": 0.85,
+     "w": 0.265,
+     "rot": 20.0,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "collar_L",
+     "crop": "hair_L",
      "w": 0.238,
      "rot": 3.2,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -4804,27 +4804,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "cuff_R",
-     "w": 0.293,
-     "rot": -6.2,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "collar_L",
+     "w": 0.219,
+     "rot": 0.7,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "ribbon_L",
-     "w": 0.204,
-     "rot": 17.1,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "halo",
+     "w": 0.279,
+     "rot": -19.7,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "face",
-     "w": 0.206,
-     "rot": 24.6,
+     "crop": "ribbon_L",
+     "w": 0.299,
+     "rot": -5.7,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -4891,9 +4891,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "ribbon_L",
-     "w": 0.196,
-     "rot": -3.1,
+     "crop": "cross_close",
+     "w": 0.272,
+     "rot": -5.7,
      "flip": false,
      "alpha": 0.85,
      "slot": 0
@@ -4962,9 +4962,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "tongue",
-     "w": 0.297,
-     "rot": -16.4,
+     "crop": "halo",
+     "w": 0.192,
+     "rot": -17.8,
      "flip": true,
      "alpha": 0.85,
      "slot": 0
@@ -5032,11 +5032,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.299,
-     "rot": 11.8,
+     "crop": "cuff_R",
+     "w": 0.234,
+     "rot": -1.8,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 0
     }
    ],
@@ -5093,17 +5093,17 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.24,
-     "rot": 23.9,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "halo",
+     "w": 0.297,
+     "rot": -6.1,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "lolly",
-     "w": 0.241,
-     "rot": -10.4,
+     "crop": "cuff_L",
+     "w": 0.208,
+     "rot": 3.6,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
@@ -5170,11 +5170,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "neck_frill",
-     "w": 0.224,
-     "rot": -2.1,
+     "crop": "halo",
+     "w": 0.232,
+     "rot": 17.8,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -5242,9 +5242,9 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "cuff_L",
-     "w": 0.199,
-     "rot": 15.7,
+     "crop": "halo",
+     "w": 0.255,
+     "rot": 17.0,
      "flip": false,
      "alpha": 0.6,
      "slot": 0
@@ -5312,11 +5312,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.224,
-     "rot": 11.1,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "halo",
+     "w": 0.195,
+     "rot": -9.2,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -5384,11 +5384,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "ribbon_R",
-     "w": 0.219,
-     "rot": -17.8,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "point_hand",
+     "w": 0.253,
+     "rot": -11.1,
+     "flip": true,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -5454,11 +5454,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "hair_L",
-     "w": 0.226,
-     "rot": -17.1,
+     "crop": "point_hand",
+     "w": 0.225,
+     "rot": -12.6,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     }
    ],
@@ -5525,11 +5525,11 @@
    "density": "verse",
    "cutouts": [
     {
-     "crop": "neck_frill",
-     "w": 0.215,
-     "rot": 21.8,
+     "crop": "hair_L",
+     "w": 0.214,
+     "rot": 3.1,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 0
     }
    ],
@@ -5638,27 +5638,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "sleeve_R",
-     "w": 0.192,
-     "rot": -11.4,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "face",
+     "w": 0.205,
+     "rot": -19.5,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "cuff_L",
-     "w": 0.268,
-     "rot": 7.9,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "collar_R",
+     "w": 0.255,
+     "rot": -19.8,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "eye_r",
-     "w": 0.198,
-     "rot": -3.8,
+     "crop": "halo",
+     "w": 0.225,
+     "rot": -21.6,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -5727,27 +5727,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly_hand",
-     "w": 0.294,
-     "rot": 15.0,
+     "crop": "nails",
+     "w": 0.274,
+     "rot": 0.9,
      "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "cuff_L",
-     "w": 0.287,
-     "rot": 13.9,
+     "crop": "hood_top",
+     "w": 0.233,
+     "rot": 7.6,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "buttons",
-     "w": 0.279,
-     "rot": 13.6,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "hair_L",
+     "w": 0.27,
+     "rot": -22.2,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -5807,7 +5807,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly",
+     "crop": "cross_close",
      "w": 0.188,
      "rot": 6.4,
      "flip": false,
@@ -5815,7 +5815,7 @@
      "slot": 0
     },
     {
-     "crop": "finger_eye",
+     "crop": "ribbon_R",
      "w": 0.174,
      "rot": 14.8,
      "flip": false,
@@ -5823,7 +5823,7 @@
      "slot": 1
     },
     {
-     "crop": "eyes",
+     "crop": "halo",
      "w": 0.189,
      "rot": 2.5,
      "flip": false,
@@ -5831,7 +5831,7 @@
      "slot": 2
     },
     {
-     "crop": "eye_l",
+     "crop": "mouth",
      "w": 0.196,
      "rot": -24.3,
      "flip": false,
@@ -5896,35 +5896,35 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "neck_frill",
-     "w": 0.253,
-     "rot": 13.5,
-     "flip": true,
+     "crop": "collar_R",
+     "w": 0.27,
+     "rot": -24.5,
+     "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.292,
-     "rot": 11.7,
+     "crop": "halo",
+     "w": 0.265,
+     "rot": 6.5,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "ribbon_R",
-     "w": 0.211,
-     "rot": 18.7,
+     "crop": "nails",
+     "w": 0.284,
+     "rot": -21.7,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     },
     {
-     "crop": "mouth",
-     "w": 0.198,
-     "rot": 0.8,
+     "crop": "ribbon_R",
+     "w": 0.237,
+     "rot": 0.5,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 3
     }
    ],
@@ -5991,18 +5991,18 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hair_L",
+     "crop": "eye_r",
      "w": 0.17,
      "rot": 11.0,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "cuff_L",
+     "crop": "collar_R",
      "w": 0.255,
-     "rot": 7.8,
-     "flip": true,
+     "rot": -8.1,
+     "flip": false,
      "alpha": 0.85,
      "slot": 1
     },
@@ -6011,7 +6011,7 @@
      "w": 0.257,
      "rot": 24.3,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -6082,25 +6082,25 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_R",
-     "w": 0.223,
-     "rot": -7.2,
-     "flip": true,
+     "crop": "tongue",
+     "w": 0.182,
+     "rot": 24.4,
+     "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eye_l",
-     "w": 0.299,
-     "rot": -2.9,
+     "crop": "cross_close",
+     "w": 0.265,
+     "rot": -4.7,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "neck_frill",
-     "w": 0.292,
-     "rot": 4.5,
+     "crop": "buttons",
+     "w": 0.175,
+     "rot": -21.5,
      "flip": true,
      "alpha": 0.85,
      "slot": 2
@@ -6172,27 +6172,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_L",
-     "w": 0.2,
-     "rot": 9.9,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "halo",
+     "w": 0.177,
+     "rot": -22.1,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "face",
-     "w": 0.177,
-     "rot": -0.3,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "point_hand",
+     "w": 0.172,
+     "rot": 16.5,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "neck_frill",
-     "w": 0.239,
-     "rot": -13.1,
+     "crop": "hood_top",
+     "w": 0.186,
+     "rot": -13.4,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -6255,33 +6255,33 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_R",
-     "w": 0.214,
-     "rot": -0.0,
+     "crop": "halo",
+     "w": 0.235,
+     "rot": 0.2,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "cuff_R",
-     "w": 0.281,
-     "rot": -17.9,
-     "flip": false,
+     "crop": "collar_R",
+     "w": 0.188,
+     "rot": 7.7,
+     "flip": true,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "nails",
-     "w": 0.298,
-     "rot": -14.6,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "lolly_hand",
+     "w": 0.197,
+     "rot": -11.1,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 2
     },
     {
-     "crop": "lolly",
-     "w": 0.225,
-     "rot": 11.1,
+     "crop": "face",
+     "w": 0.264,
+     "rot": 13.9,
      "flip": false,
      "alpha": 0.85,
      "slot": 3
@@ -6355,7 +6355,7 @@
      "slot": 0
     },
     {
-     "crop": "lolly_hand",
+     "crop": "eyes",
      "w": 0.207,
      "rot": -17.1,
      "flip": true,
@@ -6363,7 +6363,7 @@
      "slot": 1
     },
     {
-     "crop": "ribbon_L",
+     "crop": "halo",
      "w": 0.22,
      "rot": 22.3,
      "flip": false,
@@ -6371,7 +6371,7 @@
      "slot": 2
     },
     {
-     "crop": "halo",
+     "crop": "neck_frill",
      "w": 0.176,
      "rot": -11.0,
      "flip": true,
@@ -6446,26 +6446,26 @@
    "cutouts": [
     {
      "crop": "cuff_L",
-     "w": 0.282,
-     "rot": 15.5,
-     "flip": true,
+     "w": 0.18,
+     "rot": -3.7,
+     "flip": false,
      "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "lolly",
-     "w": 0.225,
-     "rot": 12.6,
+     "crop": "finger_eye",
+     "w": 0.293,
+     "rot": -5.2,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "hair_L",
-     "w": 0.294,
-     "rot": 17.7,
+     "crop": "ribbon_L",
+     "w": 0.264,
+     "rot": -13.4,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 2
     }
    ],
@@ -6535,26 +6535,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "tongue",
-     "w": 0.193,
-     "rot": -22.0,
+     "crop": "lolly_hand",
+     "w": 0.178,
+     "rot": -9.2,
      "flip": true,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eye_r",
-     "w": 0.174,
-     "rot": 23.3,
-     "flip": false,
+     "crop": "halo",
+     "w": 0.283,
+     "rot": 9.0,
+     "flip": true,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "halo",
-     "w": 0.18,
-     "rot": 14.8,
-     "flip": false,
+     "crop": "eye_r",
+     "w": 0.273,
+     "rot": 0.2,
+     "flip": true,
      "alpha": 0.6,
      "slot": 2
     }
@@ -6627,27 +6627,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "finger_eye",
-     "w": 0.293,
+     "crop": "ribbon_R",
+     "w": 0.272,
      "rot": 14.4,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "tongue",
-     "w": 0.224,
-     "rot": -11.4,
+     "crop": "halo",
+     "w": 0.205,
+     "rot": 12.8,
      "flip": false,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "nails",
-     "w": 0.203,
-     "rot": 18.9,
+     "crop": "collar_L",
+     "w": 0.284,
+     "rot": 4.9,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -6758,7 +6758,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_L",
+     "crop": "halo",
      "w": 0.252,
      "rot": 12.6,
      "flip": true,
@@ -6766,19 +6766,19 @@
      "slot": 0
     },
     {
-     "crop": "finger_eye",
-     "w": 0.295,
-     "rot": -2.8,
+     "crop": "nails",
+     "w": 0.228,
+     "rot": -8.9,
      "flip": true,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "eye_l",
+     "crop": "collar_L",
      "w": 0.239,
      "rot": 24.6,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 2
     }
    ],
@@ -6848,27 +6848,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hood_top",
-     "w": 0.231,
-     "rot": -21.0,
+     "crop": "cross_close",
+     "w": 0.181,
+     "rot": 10.1,
      "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eye_r",
-     "w": 0.263,
-     "rot": 10.2,
-     "flip": false,
+     "crop": "hair_L",
+     "w": 0.262,
+     "rot": 23.7,
+     "flip": true,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "collar_R",
-     "w": 0.231,
-     "rot": 5.5,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.249,
+     "rot": -7.1,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -6939,27 +6939,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "cuff_R",
-     "w": 0.17,
-     "rot": -16.6,
-     "flip": false,
+     "crop": "cuff_L",
+     "w": 0.192,
+     "rot": 23.1,
+     "flip": true,
      "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "hair_L",
-     "w": 0.179,
-     "rot": 21.4,
+     "crop": "lolly",
+     "w": 0.291,
+     "rot": 4.2,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "neck_frill",
-     "w": 0.213,
-     "rot": 15.6,
+     "crop": "buttons",
+     "w": 0.275,
+     "rot": 21.6,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -7021,7 +7021,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "nails",
+     "crop": "eye_l",
      "w": 0.207,
      "rot": 21.4,
      "flip": false,
@@ -7029,27 +7029,27 @@
      "slot": 0
     },
     {
-     "crop": "hood_top",
-     "w": 0.229,
-     "rot": 9.5,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "collar_R",
+     "w": 0.26,
+     "rot": -17.3,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "neck_frill",
+     "crop": "ribbon_L",
      "w": 0.202,
      "rot": -17.8,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 2
     },
     {
-     "crop": "lolly",
-     "w": 0.269,
-     "rot": -22.5,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "halo",
+     "w": 0.176,
+     "rot": -10.2,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 3
     }
    ],
@@ -7119,27 +7119,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "halo",
+     "crop": "lolly",
      "w": 0.298,
      "rot": 23.8,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "cross_close",
-     "w": 0.215,
-     "rot": -17.5,
+     "crop": "point_hand",
+     "w": 0.19,
+     "rot": 16.5,
      "flip": false,
      "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "point_hand",
+     "crop": "halo",
      "w": 0.3,
      "rot": 14.9,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -7210,26 +7210,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "point_hand",
-     "w": 0.219,
-     "rot": -9.9,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "collar_L",
+     "w": 0.209,
+     "rot": -22.5,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "buttons",
-     "w": 0.233,
-     "rot": -21.7,
+     "crop": "hood_top",
+     "w": 0.179,
+     "rot": 0.3,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.267,
-     "rot": 13.8,
-     "flip": false,
+     "crop": "neck_frill",
+     "w": 0.271,
+     "rot": 22.5,
+     "flip": true,
      "alpha": 0.6,
      "slot": 2
     }
@@ -7300,7 +7300,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "tongue",
+     "crop": "halo",
      "w": 0.237,
      "rot": -12.1,
      "flip": false,
@@ -7308,15 +7308,15 @@
      "slot": 0
     },
     {
-     "crop": "collar_R",
-     "w": 0.222,
-     "rot": -21.6,
-     "flip": true,
-     "alpha": 0.6,
+     "crop": "eye_l",
+     "w": 0.179,
+     "rot": -10.1,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "mouth",
+     "crop": "cuff_R",
      "w": 0.268,
      "rot": -18.8,
      "flip": false,
@@ -7390,26 +7390,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hair_L",
-     "w": 0.202,
-     "rot": -0.3,
+     "crop": "buttons",
+     "w": 0.234,
+     "rot": -1.8,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "neck_frill",
-     "w": 0.261,
-     "rot": -0.4,
+     "crop": "cross_close",
+     "w": 0.234,
+     "rot": -3.7,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "mouth",
-     "w": 0.265,
-     "rot": -10.4,
-     "flip": true,
+     "crop": "hood_top",
+     "w": 0.208,
+     "rot": -8.2,
+     "flip": false,
      "alpha": 0.6,
      "slot": 2
     }
@@ -7483,27 +7483,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "cross_close",
+     "crop": "nails",
      "w": 0.191,
      "rot": -9.4,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     },
     {
      "crop": "collar_L",
-     "w": 0.275,
-     "rot": 9.6,
+     "w": 0.26,
+     "rot": 11.5,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "point_hand",
+     "crop": "halo",
      "w": 0.216,
      "rot": -15.0,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -7574,18 +7574,18 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "halo",
+     "crop": "finger_eye",
      "w": 0.22,
      "rot": 0.9,
      "flip": true,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "sleeve_R",
-     "w": 0.254,
-     "rot": -12.2,
-     "flip": true,
+     "crop": "halo",
+     "w": 0.203,
+     "rot": -7.6,
+     "flip": false,
      "alpha": 0.85,
      "slot": 1
     },
@@ -7594,7 +7594,7 @@
      "w": 0.247,
      "rot": 13.3,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -7665,27 +7665,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hair_L",
-     "w": 0.178,
-     "rot": -3.5,
+     "crop": "nails",
+     "w": 0.226,
+     "rot": 4.7,
      "flip": false,
      "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "hood_top",
-     "w": 0.256,
-     "rot": -13.7,
+     "crop": "ribbon_L",
+     "w": 0.199,
+     "rot": 6.3,
      "flip": false,
      "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "point_hand",
-     "w": 0.181,
-     "rot": 5.9,
-     "flip": true,
-     "alpha": 0.85,
+     "crop": "cross_close",
+     "w": 0.25,
+     "rot": -13.5,
+     "flip": false,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -7755,27 +7755,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "point_hand",
-     "w": 0.293,
-     "rot": -2.6,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "collar_R",
+     "w": 0.228,
+     "rot": -13.6,
+     "flip": false,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "mouth",
-     "w": 0.25,
-     "rot": 2.5,
+     "crop": "ribbon_R",
+     "w": 0.241,
+     "rot": 10.7,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "eye_r",
-     "w": 0.205,
-     "rot": 14.4,
-     "flip": false,
-     "alpha": 0.85,
+     "crop": "tongue",
+     "w": 0.272,
+     "rot": 16.0,
+     "flip": true,
+     "alpha": 1.0,
      "slot": 2
     }
    ],
@@ -7848,26 +7848,26 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.295,
-     "rot": 17.9,
+     "crop": "point_hand",
+     "w": 0.248,
+     "rot": 15.7,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 0.6,
      "slot": 0
     },
     {
-     "crop": "cuff_L",
-     "w": 0.276,
-     "rot": 22.8,
-     "flip": true,
+     "crop": "collar_R",
+     "w": 0.213,
+     "rot": 20.2,
+     "flip": false,
      "alpha": 1.0,
      "slot": 1
     },
     {
-     "crop": "collar_L",
-     "w": 0.258,
-     "rot": 16.6,
-     "flip": true,
+     "crop": "hair_L",
+     "w": 0.183,
+     "rot": -5.5,
+     "flip": false,
      "alpha": 0.6,
      "slot": 2
     }
@@ -7941,27 +7941,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "collar_R",
-     "w": 0.19,
-     "rot": -21.3,
-     "flip": false,
-     "alpha": 0.6,
+     "crop": "eye_r",
+     "w": 0.239,
+     "rot": 13.7,
+     "flip": true,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "eye_r",
-     "w": 0.271,
-     "rot": -7.9,
+     "crop": "collar_R",
+     "w": 0.291,
+     "rot": -13.8,
      "flip": false,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "eyes",
-     "w": 0.266,
-     "rot": 1.7,
+     "crop": "halo",
+     "w": 0.227,
+     "rot": -2.6,
      "flip": false,
-     "alpha": 1.0,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
@@ -8033,25 +8033,25 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "face",
-     "w": 0.253,
-     "rot": -13.1,
-     "flip": false,
+     "crop": "lolly",
+     "w": 0.256,
+     "rot": -15.8,
+     "flip": true,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "hair_L",
-     "w": 0.194,
-     "rot": -15.5,
+     "crop": "halo",
+     "w": 0.28,
+     "rot": -3.5,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "point_hand",
-     "w": 0.226,
-     "rot": -23.0,
+     "crop": "ribbon_L",
+     "w": 0.242,
+     "rot": -17.5,
      "flip": false,
      "alpha": 0.6,
      "slot": 2
@@ -8117,7 +8117,7 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hood_top",
+     "crop": "sleeve_R",
      "w": 0.299,
      "rot": 10.4,
      "flip": true,
@@ -8125,7 +8125,7 @@
      "slot": 0
     },
     {
-     "crop": "collar_L",
+     "crop": "eyes",
      "w": 0.269,
      "rot": 24.3,
      "flip": false,
@@ -8133,7 +8133,7 @@
      "slot": 1
     },
     {
-     "crop": "lolly",
+     "crop": "collar_L",
      "w": 0.258,
      "rot": -6.5,
      "flip": true,
@@ -8141,7 +8141,7 @@
      "slot": 2
     },
     {
-     "crop": "buttons",
+     "crop": "halo",
      "w": 0.251,
      "rot": -8.6,
      "flip": false,
@@ -8217,27 +8217,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "lolly_hand",
-     "w": 0.173,
-     "rot": -18.4,
+     "crop": "sleeve_R",
+     "w": 0.187,
+     "rot": 9.1,
      "flip": false,
-     "alpha": 0.85,
+     "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "hair_L",
-     "w": 0.255,
-     "rot": -6.4,
-     "flip": false,
-     "alpha": 1.0,
+     "crop": "nails",
+     "w": 0.218,
+     "rot": 14.6,
+     "flip": true,
+     "alpha": 0.6,
      "slot": 1
     },
     {
-     "crop": "buttons",
-     "w": 0.26,
-     "rot": -20.9,
+     "crop": "cross_close",
+     "w": 0.181,
+     "rot": -17.0,
      "flip": true,
-     "alpha": 1.0,
+     "alpha": 0.6,
      "slot": 2
     }
    ],
@@ -8310,25 +8310,25 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "hood_top",
-     "w": 0.195,
-     "rot": -1.5,
-     "flip": true,
+     "crop": "cuff_L",
+     "w": 0.231,
+     "rot": -16.1,
+     "flip": false,
      "alpha": 0.85,
      "slot": 0
     },
     {
-     "crop": "eye_r",
-     "w": 0.228,
-     "rot": 6.6,
+     "crop": "lolly",
+     "w": 0.275,
+     "rot": 14.9,
      "flip": false,
      "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "hair_L",
-     "w": 0.239,
-     "rot": -5.4,
+     "crop": "halo",
+     "w": 0.221,
+     "rot": 19.1,
      "flip": false,
      "alpha": 0.6,
      "slot": 2
@@ -8404,27 +8404,27 @@
    "density": "chorus",
    "cutouts": [
     {
-     "crop": "eye_r",
-     "w": 0.289,
-     "rot": 3.5,
+     "crop": "lolly",
+     "w": 0.244,
+     "rot": 17.0,
      "flip": false,
      "alpha": 1.0,
      "slot": 0
     },
     {
-     "crop": "ribbon_L",
-     "w": 0.231,
-     "rot": 3.9,
+     "crop": "halo",
+     "w": 0.205,
+     "rot": -11.1,
      "flip": true,
-     "alpha": 0.6,
+     "alpha": 0.85,
      "slot": 1
     },
     {
-     "crop": "ribbon_R",
-     "w": 0.215,
-     "rot": 5.1,
-     "flip": true,
-     "alpha": 1.0,
+     "crop": "hair_L",
+     "w": 0.248,
+     "rot": -8.4,
+     "flip": false,
+     "alpha": 0.85,
      "slot": 2
     }
    ],
