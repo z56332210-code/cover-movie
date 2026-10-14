@@ -1,0 +1,26 @@
+{
+ "chorus": {
+  "frames": 77,
+  "filled_pct": 71.6,
+  "filled_min": 60.4,
+  "filled_max": 79.5,
+  "edge_pct": 10.16,
+  "edge_min": 7.84,
+  "edge_max": 11.73,
+  "layers_mean": 10.6,
+  "layers_min": 9,
+  "layer_example": [
+   "bg_pattern",
+   "deco_back",
+   "echo",
+   "ring_text",
+   "micro_text",
+   "cutouts:3",
+   "illustration",
+   "deco_front",
+   "keyword_pop",
+   "active_lyric",
+   "hud"
+  ]
+ }
+}

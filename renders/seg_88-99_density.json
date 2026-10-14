@@ -1,0 +1,45 @@
+{
+ "verse": {
+  "frames": 22,
+  "filled_pct": 55.4,
+  "filled_min": 48.3,
+  "filled_max": 61.8,
+  "edge_pct": 8.28,
+  "edge_min": 7.1,
+  "edge_max": 9.33,
+  "layers_mean": 8.0,
+  "layers_min": 8,
+  "layer_example": [
+   "bg_pattern",
+   "deco_back",
+   "echo",
+   "micro_text",
+   "cutouts:1",
+   "illustration",
+   "active_lyric",
+   "hud"
+  ]
+ },
+ "chorus": {
+  "frames": 56,
+  "filled_pct": 76.2,
+  "filled_min": 66.3,
+  "filled_max": 82.6,
+  "edge_pct": 10.23,
+  "edge_min": 8.05,
+  "edge_max": 11.62,
+  "layers_mean": 9.0,
+  "layers_min": 9,
+  "layer_example": [
+   "bg_pattern",
+   "deco_back",
+   "echo",
+   "micro_text",
+   "cutouts:4",
+   "deco_front",
+   "keyword_pop",
+   "active_lyric",
+   "hud"
+  ]
+ }
+}

@@ -1245,10 +1245,254 @@ def decorations(ci, c, t, focus, bg, excl):
                 if u <= 0:
                     continue
                 starburst(front, W * px_, H * py_, H * R * pop(u), td, ci * 10 + j, alpha=0.72 + 0.28 * beat_flash(t))
+        elif k == "torn_strip":
+            torn_strip_deco(front, t, ci)
+        elif k == "checker_strip":
+            checker_strip(front, td, y_frac=0.86 if fy < H / 2 else 0.18)
+        elif k == "band":
+            pass                    # the repeat band lives in the echo layer now
         elif k == "torn_edge":      # edge line of the tear that cuts the illustration
             _, edge = torn_mask(ci, c)
             ImageDraw.Draw(front).line(edge, fill=GRAY_M + (170,), width=max(1, S(2)))
     return _masked(back, excl), _masked(front, excl)
+
+
+# ------------------------------------------------------------------ density layers (low tier: 15~45 % or outline only)
+ECHO_SIZES_1080 = {"chorus": [220, 60, 140, 40, 100, 180, 70, 120], "verse": [170, 60, 120], "relax": [110]}
+ECHO_ALPHA = {"chorus": [0.30, 0.42, 0.22, 0.38, 0.18, 0.28, 0.40, 0.25], "verse": [0.30, 0.42, 0.24], "relax": [0.18]}
+
+
+@lru_cache(256)
+def echo_strip(text, size, outline, color):
+    f = font(F_L, size)
+    bb = f.getbbox(text + "　")
+    w, h = bb[2] - bb[0] + 8, bb[3] - bb[1] + 8
+    sw = max(1, size // 28)
+    full = Image.new("L", (w + 2 * sw, h + 2 * sw), 0)
+    ImageDraw.Draw(full).text((sw + 2 - bb[0], sw + 2 - bb[1]), text + "　", font=f, fill=255, stroke_width=sw if outline else 0, stroke_fill=255)
+    if outline:
+        inner = Image.new("L", full.size, 0)
+        ImageDraw.Draw(inner).text((sw + 2 - bb[0], sw + 2 - bb[1]), text + "　", font=f, fill=255)
+        full = ImageChops.subtract(full, inner)
+    im = Image.new("RGBA", full.size, color + (0,)); im.putalpha(full)
+    return im
+
+
+def echo_text_for(t):
+    li = active_line(t)
+    if li is None:
+        li = max((i for i in LINE_T if line_window(i)[0] <= t), default=None)
+    return li
+
+
+def echo_layer(L, t, c, kd, rows, color):
+    """Current line repeated in rows of different size / direction / speed; some outline-only (recipe 1)."""
+    li = echo_text_for(t)
+    if li is None or rows <= 0:
+        return 0
+    text = line_text(li).replace('"', "")
+    sizes = ECHO_SIZES_1080[kd]; alphas = ECHO_ALPHA[kd]
+    n = min(rows, len(sizes))
+    ys = np.linspace(0.08, 0.86, n) if n > 1 else [0.42]
+    for r in range(n):
+        size = S(sizes[r]); outline = r % 2 == 1
+        im = echo_strip(text, size, outline, color)
+        sp = (0.5 + 2.5 * ((r * 37) % 10) / 9) * S(60) * (1 if r % 2 == 0 else -1)   # 0.5x ~ 3x, alternating direction
+        off = (t * sp) % im.size[0]
+        x = -off - im.size[0]
+        y = H_(ys[r]) - im.size[1] / 2
+        a = alphas[r % len(alphas)]
+        while x < Q.W:
+            paste(L, im, x, y, a)
+            x += im.size[0]
+    return n
+
+
+def H_(fy):
+    return fy * Q.H
+
+
+@lru_cache(None)
+def halftone_tex(kind):
+    W, H = int(Q.W * 1.3), int(Q.H * 1.3)
+    L = Image.new("L", (W, H), 0); d = ImageDraw.Draw(L)
+    step = S(22) if kind != "chorus" else S(18)
+    for yy in range(0, H, step):
+        for xx in range(0, W, step):
+            r = step * (0.12 + 0.18 * (0.5 + 0.5 * math.sin(xx * 0.01 + yy * 0.013)))
+            ox = step / 2 if (yy // step) % 2 else 0
+            d.ellipse((xx + ox - r, yy - r, xx + ox + r, yy + r), fill=255)
+    if kind == "chorus":                                     # faint checker under the dots
+        sq = S(64)
+        for yy in range(0, H, sq):
+            for xx in range(0, W, sq):
+                if (xx // sq + yy // sq) % 2:
+                    d.rectangle((xx, yy, xx + sq - 1, yy + sq - 1), fill=60)
+    return L
+
+
+def bg_pattern(frame, t, kd, bg):
+    """Slow background layer (parallax: slowest)."""
+    tex = halftone_tex("chorus" if kd == "chorus" else "verse")
+    ox = int((t * S(8)) % (tex.size[0] - Q.W)); oy = int((t * S(4)) % (tex.size[1] - Q.H))
+    m = tex.crop((ox, oy, ox + Q.W, oy + Q.H))
+    a = {"chorus": 0.16, "verse": 0.24, "relax": 0.09}[kd]
+    col = GRAY_M if sum(bg) <= 380 else GRAY_D
+    lay = Image.new("RGBA", (Q.W, Q.H), col + (0,)); lay.putalpha(m.point(lambda v: int(v * a)))
+    frame.alpha_composite(lay)
+
+
+@lru_cache(512)
+def cutout_card(crop, w_px, rot, flip, neg):
+    src, (cx, cy), cw = CROPS[crop]
+    cw = cw or 600
+    im = art(src, negative=neg)
+    k = ART_UP
+    ch = int(cw * 0.75)
+    box = (int((cx - cw / 2) * k), int((cy - ch / 2) * k), int((cx + cw / 2) * k), int((cy + ch / 2) * k))
+    card = im.crop(box).resize((w_px, int(w_px * 0.75)), Image.LANCZOS)
+    base = Image.new("RGBA", card.size, PAPER + (255,))
+    base.alpha_composite(card)
+    ImageDraw.Draw(base).rectangle((0, 0, base.size[0] - 1, base.size[1] - 1), outline=INK + (255,), width=max(1, S(3)))
+    if flip:
+        base = base.transpose(Image.FLIP_LEFT_RIGHT)
+    return base.rotate(rot, resample=Image.BICUBIC, expand=True)
+
+
+SLOTS = [(0.17, 0.24), (0.83, 0.22), (0.18, 0.78), (0.82, 0.80), (0.50, 0.16), (0.50, 0.84), (0.10, 0.50), (0.90, 0.52)]
+
+
+def free_slots(c, avoid):
+    fx, fy = focus_target_px(c)
+    out = []
+    for sx, sy in SLOTS:
+        x, y = sx * Q.W, sy * Q.H
+        if math.hypot(x - fx, y - fy) < 0.20 * Q.W:          # keep the subject's face clear
+            continue
+        if any(a[0] - S(120) < x < a[2] + S(120) and a[1] - S(90) < y < a[3] + S(90) for a in avoid):
+            continue
+        out.append((x, y))
+    return out
+
+
+def popped(t, idx, n):
+    """Element `idx` of `n` pops on its beat: 0.9 -> 1.0 with a small overshoot over 5 frames (one element per beat)."""
+    bi = bisect.bisect_right(BEATS, t)
+    if not bi or n <= 0 or (bi - 1) % n != idx:
+        return 1.0
+    u = clamp((t - BEATS[bi - 1]) * FPS / 5)
+    return 0.9 + 0.1 * arrive(u, 0.05)
+
+
+def cutout_layer(L, t, ci, c, avoid):
+    """Cutout cluster: other crops of the same character, rotated / mirrored / half-transparent (recipe 6)."""
+    specs = c.get("cutouts") or []
+    slots = free_slots(c, avoid)
+    r = np.random.default_rng(ci * 41)
+    order = list(r.permutation(len(slots))) if slots else []
+    drawn = 0
+    for k, sp in enumerate(specs):
+        if k >= len(order):
+            break
+        x, y = slots[order[k]]
+        card = cutout_card(sp["crop"], S(sp["w"] * 1920), sp["rot"], sp["flip"], False)
+        s = popped(t, k, len(specs) + 1)
+        if s != 1.0:
+            card = card.resize((max(1, int(card.size[0] * s)), max(1, int(card.size[1] * s))), Image.BICUBIC)
+        drift = (t - c["start"]) * S(14) * (1 if k % 2 else -1)              # slow, opposite to the echo rows
+        paste(L, card, x - card.size[0] / 2 + drift, y - card.size[1] / 2 - drift * 0.4, sp["alpha"])
+        drawn += 1
+    return drawn
+
+
+def keyword_pop(L, t, c, avoid):
+    """Big keyword, outline only, letters pop in 2 frames apart; one letter turns red on every beat (recipe 2)."""
+    li = active_line(t)
+    if li is None:
+        return False
+    word = RED_TEXT.get(li) or chunks(li)[0]
+    word = word[:6]
+    size = int(Q.H * 0.17)
+    fx, fy = focus_target_px(c)
+    w = font(F_L, size).getlength(word)
+    cands = [(Q.W * 0.06, Q.H * 0.06), (Q.W * 0.94 - w, Q.H * 0.06), (Q.W * 0.06, Q.H * 0.62), (Q.W * 0.94 - w, Q.H * 0.62)]
+    pos = None
+    for x, y in cands:
+        box = (x, y, x + w, y + size * 1.1)
+        if overlaps(box, [(a[0] - S(60), a[1] - S(60), a[2] + S(60), a[3] + S(60)) for a in avoid]):
+            continue
+        if box[0] - S(80) < fx < box[2] + S(80) and box[1] - S(80) < fy < box[3] + S(80):
+            continue
+        pos = (x, y); break
+    if pos is None:
+        return False
+    w0, _ = line_window(li)
+    bi = bisect.bisect_right(BEATS, t)
+    f_ = font(F_L, size)
+    for k, ch in enumerate(word):
+        u = ((t - w0) * FPS - 2 * k) / 10
+        if u <= 0:
+            continue
+        s = pop(u) * 1.0
+        g = echo_strip(ch, max(4, int(size * min(1.1, s))), True, GRAY_M if not c.get("red") else GRAY_M)
+        x = pos[0] + f_.getlength(word[:k])
+        paste(L, g, x, pos[1], 0.42)
+        if bi and (bi - 1) % len(word) == k:                  # beat letter flips to red
+            gr = htext(ch, max(4, int(size * min(1.1, s))), RED + (255,), F_L)
+            paste(L, gr, x + S(4), pos[1] + S(4), 0.45)
+    return True
+
+
+def ring_text(L, t, cx, cy, color):
+    """Current line written around the clock ring, slowly turning (recipe 3, on twos)."""
+    li = echo_text_for(t)
+    if li is None:
+        return False
+    text = (line_text(li).replace('"', "") + "　") * 2
+    R = Q.H * 0.47; td = math.floor(t * 12) / 12
+    n = len(text)
+    for k, ch in enumerate(text):
+        a = 2 * math.pi * k / n + math.radians(td * 4)
+        g = htext(ch, S(30), color + (255,), F_L).rotate(-math.degrees(a), resample=Image.BICUBIC, expand=True)
+        paste(L, g, cx + R * math.sin(a) - g.size[0] / 2, cy - R * math.cos(a) - g.size[1] / 2, 0.34)
+    return True
+
+
+def micro_text(L, t, color):
+    """Tiny translation / pronunciation / roman numerals repeated along the edges (recipe 5)."""
+    li = echo_text_for(t)
+    if li is None:
+        return False
+    s = f"{KO[li - 1].strip()}  /  {PRON[li - 1].strip()}  /  {line_text(li)}  ·  "
+    f = font(F_L, S(14), 1)
+    w = max(1, int(f.getlength(s)))
+    strip = Image.new("RGBA", (w, S(20)), (0, 0, 0, 0)); ImageDraw.Draw(strip).text((0, 0), s, font=f, fill=color + (255,))
+    off = (t * S(30)) % w
+    for y, d in ((S(62), 1), (Q.H - S(132), -1)):
+        x = -((off * d) % w) - w
+        while x < Q.W:
+            paste(L, strip, x, y, 0.30); x += w
+    nums = "  ".join(["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"])
+    g = vtext(nums, S(13), color + (255,), F_L)
+    oy = (t * S(20)) % max(1, g.size[1])
+    paste(L, g, Q.W - S(52), S(90) - oy, 0.26); paste(L, g, Q.W - S(52), S(90) - oy + g.size[1], 0.26)
+    return True
+
+
+def torn_strip_deco(L, t, ci):
+    """Paper strips with torn edges crossing the frame edge to edge (attached to the frame, never floating)."""
+    r = np.random.default_rng(ci * 61)
+    W, H = Q.W, Q.H
+    for k in range(2):
+        h = r.uniform(50, 100) * Q.s; ln = W * 2.0
+        strip = Image.new("RGBA", (int(ln), int(h * 1.6)), (0, 0, 0, 0)); d = ImageDraw.Draw(strip)
+        top = [(x, h * 0.3 + r.uniform(-1, 1) * h * 0.12) for x in np.linspace(0, ln, 120)]
+        bot = [(x, h * 1.3 + r.uniform(-1, 1) * h * 0.12) for x in np.linspace(ln, 0, 120)]
+        d.polygon(top + bot, fill=(PAPER_L if k == 0 else GRAY_M) + (215,))
+        ang = r.uniform(12, 24) * (1 if k else -1)
+        strip = strip.rotate(ang, resample=Image.BICUBIC, expand=True)
+        slide = ((math.floor(t * 12) / 12) * S(40) * (1 if k else -1)) % S(200)
+        paste(L, strip, W / 2 - strip.size[0] / 2 + slide - S(100), H * (0.30 + 0.38 * k) - strip.size[1] / 2)
 
 
 def scene_layer(ci, t, excl):
@@ -1273,12 +1517,41 @@ def scene_layer(ci, t, excl):
     src_ci, src_c = (ci + 1, dict(CUTS[ci + 1], transition_in="T3")) if c["scene"] == 10 else (ci, c)   # edit mask: borrowed art, already in place
     img, focus, eyes = image_layer(src_ci, src_c, t)
     back, front = decorations(ci, c, t, focus, bg, excl)
+    kd = c.get("density"); layers = []
+    if kd:
+        bg_pattern(frame, t, kd, bg); layers.append("bg_pattern")
     frame.alpha_composite(back)
+    if any(k in (c.get("deco") or []) for k in ("clock", "clock_crop", "checker", "speed_lines")):
+        layers.append("deco_back")
+    tc = text_color_for(bg)
+    low = Image.new("RGBA", (W, H), (0, 0, 0, 0))            # low-tier typography, behind the illustration
+    if kd:
+        if echo_layer(low, t, c, kd, c.get("echo_rows", 0), tc):
+            layers.append("echo")
+        if c.get("ring_text") and ring_text(low, t, focus[0], focus[1], tc):
+            layers.append("ring_text")
+        if c.get("micro_text") and micro_text(low, t, GRAY_M):
+            layers.append("micro_text")
+    frame.alpha_composite(_masked(low, excl))
+    avoid = DEBUG_ACTIVE_BOXES[0]
+    if kd and c.get("cutouts"):
+        cl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        n_c = cutout_layer(cl, t, ci, c, avoid)
+        frame.alpha_composite(cl)
+        if n_c:
+            layers.append(f"cutouts:{n_c}")
     if img is not None:
         if c["scene"] in CROP_SCENES + (4, 5, 16):
             frame.alpha_composite(ghost_echo(img, ci, t))
         frame.alpha_composite(img)
+        layers.append("illustration")
     frame.alpha_composite(front)
+    if any(k in (c.get("deco") or []) for k in ("starburst", "torn_strip", "checker_strip", "guides", "code", "torn_edge")):
+        layers.append("deco_front")
+    if kd and c.get("keyword_pop"):
+        kp = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        if keyword_pop(kp, t, c, avoid):
+            frame.alpha_composite(_masked(kp, excl)); layers.append("keyword_pop")
     if img is None and c["scene"] not in (10, 18):
         zm, px, py, rot = cam_motion(ci, c, t)
         cx, cy = W / 2, H / 2
@@ -1293,7 +1566,8 @@ def scene_layer(ci, t, excl):
     if c["scene"] == 13:
         frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.82)
     deco_px = int((np.asarray(back.getchannel("A")) > 8).sum() + (np.asarray(front.getchannel("A")) > 8).sum()) if excl is not None else 0
-    return frame, dict(focus=focus, eyes=eyes, bg=bg, deco_px=deco_px)
+    return frame, dict(focus=focus, eyes=eyes, bg=bg, deco_px=deco_px, layers=layers,
+                       deco_kinds=[k for k in (c.get("deco") or []) if k != "band"])
 
 
 # ------------------------------------------------------------------ transition library T1..T6
@@ -1376,11 +1650,15 @@ def compose_scene(t, excl):
     return frame, info, kind
 
 
+DEBUG_ACTIVE_BOXES = [[]]
+
+
 def render_frame(t):
     W, H = Q.W, Q.H
     ci, c = cut_at(t)
     items, cap, dbg = lyric_layout(t)
     excl, lyric_boxes = exclusion_mask(items, cap)
+    DEBUG_ACTIVE_BOXES[0] = [item_bbox(it) for it in items if not it.get("dim")]
     frame, info, tr = compose_scene(t, excl)
     if c["scene"] == 10:                 # audio edit mask: white hit + mosaic over the incoming cut
         u = (t - c["start"]) * FPS
@@ -1434,7 +1712,10 @@ def render_frame(t):
         n = np.random.default_rng(fr + 1).normal(0, 9.0, (H, W)).astype(np.float32)
         out = Image.fromarray(np.clip(np.asarray(out).astype(np.float32) + n[..., None], 0, 255).astype(np.uint8))
     DEBUG.clear()
-    DEBUG.update(dbg, cut=ci, focus=None if c.get("nochar") else info["focus"], transition=tr,
+    act = [item_bbox(it) for it in items if not it.get("dim") and it["alpha"] > 0.5]
+    layers = list(info.get("layers", [])) + (["active_lyric"] if act else []) + (["hud"] if c["scene"] not in (10, 13, 17, 18) else [])
+    DEBUG.update(dbg, cut=ci, focus=None if c.get("nochar") else info["focus"], transition=tr, layers=layers,
+                 deco_kinds=info.get("deco_kinds", []), eye_cover=any(overlaps(b, info.get("eyes", [])) for b in act),
                  deco_over_lyrics=0 if not lyric_boxes else _deco_overlap(t, ci, c, info, lyric_boxes))
     return out
 

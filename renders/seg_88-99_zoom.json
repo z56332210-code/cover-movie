@@ -6,8 +6,8 @@
  ],
  "flips_per_s_long_cuts": 0.0,
  "max_flips_per_s": 0.0,
- "max_abs_net_zoom": 1.0,
- "max_peak_speed": 1.6,
+ "max_abs_net_zoom": 1.91,
+ "max_peak_speed": 3.2,
  "impacts": 1,
  "min_impact_gap": 99,
  "tracked_pairs_pct": 98.2,
@@ -16,10 +16,10 @@
    "t": 89.05,
    "dur": 1.71,
    "cam": "static",
-   "net_zoom": -0.65,
+   "net_zoom": 0.2,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 0.9,
+   "peak_speed": 1.2,
    "impact": false
   },
   {
@@ -37,20 +37,20 @@
    "t": 91.16,
    "dur": 1.28,
    "cam": "pan_x",
-   "net_zoom": 0.53,
+   "net_zoom": 1.91,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 1.0,
+   "peak_speed": 3.2,
    "impact": true
   },
   {
    "t": 92.44,
    "dur": 1.26,
    "cam": "static",
-   "net_zoom": -0.07,
+   "net_zoom": -1.6,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 0.2,
+   "peak_speed": 3.1,
    "impact": false
   },
   {
@@ -68,30 +68,30 @@
    "t": 94.12,
    "dur": 1.7,
    "cam": "static",
-   "net_zoom": 0.17,
+   "net_zoom": 0.61,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 0.3,
+   "peak_speed": 1.4,
    "impact": false
   },
   {
    "t": 95.82,
    "dur": 1.7,
    "cam": "pan_x",
-   "net_zoom": 1.0,
+   "net_zoom": 1.13,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 1.6,
+   "peak_speed": 1.7,
    "impact": false
   },
   {
    "t": 97.51,
    "dur": 1.68,
    "cam": "static",
-   "net_zoom": -0.09,
+   "net_zoom": -0.36,
    "flips": 0,
    "flips_per_s": 0.0,
-   "peak_speed": 0.3,
+   "peak_speed": 0.6,
    "impact": false
   }
  ]

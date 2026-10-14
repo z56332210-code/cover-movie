@@ -32,13 +32,12 @@ FPS = 30
 T0, T1 = A.range or (-1, 1e9)
 
 RULES = {
-    "1-1": "한 프레임 요소 3종류 초과 (장식 2종 이상 / 일러스트 크롭 2개)",
     "1-2": "시선점이 3등분 교차점 밖 / 가사가 반대쪽 1/3에 없음",
     "1-3": "같은 구간 안에서 가사 박스 위치가 바뀜",
     "1-4": "이유 없는 장식 (시계≠주인공 뒤 / 빨강 밖 스타버스트 / 떠 있는 찢어진 종이)",
     "1-5": "장식이 가사 박스(+60px)와 겹침",
     "1-6": "레이아웃 프리셋(5종) 미지정",
-    "2-1": "두 줄 이상이 동시에 밝게 보임",
+    "2-1": "최고 위계(100%) 가사가 두 줄 이상",
     "2-2": "세로 순서(오른쪽→왼쪽) 위반 / 한 장면에 세로·가로 혼용",
     "2-3": "큰 글자: 첫·끝 글자 잘림 / 3줄 이상 / 단어 중간 줄바꿈 / 글자 위 장식",
     "2-4": "글자 크기 미달 (세로 박스 46px, 자막 34px @1080)",
@@ -56,6 +55,11 @@ RULES = {
     "4-4": "카메라 방향 정책 위반 (절=푸시인, 후렴=팬/정지, 풀아웃은 구간 끝 1번·연속 금지, 푸시인 연속 3컷 초과)",
     "4-5": "충격 줌이 1.7초에 1번 넘음 / 후렴 첫 박·구간 시작·큰 악센트가 아닌 곳",
     "4-6": "움직이는 채널 3개 이상 / 핸드헬드 0.05% 초과 / 회전 떨림",
+    "2-8": "활성 가사가 얼굴/눈을 가림",
+    "2-9": "낮은 위계 글자 불투명도 45% 초과",
+    "5-1": "레이어 수 최소치 미달 (절 4 / 후렴 6 / 릴렉스 3)",
+    "5-2": "후렴 구성 미달 (컷아웃 3~5 / 에코 4~8줄 / 장식 2종 이상)",
+    "5-3": "고밀도 타이포 레시피 2가지 미만 (장면 단위)",
 }
 V = []
 
@@ -201,8 +205,17 @@ def new_checks():
             bad("1-3", ci, f"{sec}: 가사 영역 변경")
         sec_rect.setdefault(sec, c.get("lyric_rect"))
         deco = c.get("deco") or []
-        if len(deco) > 1 or c.get("variant") == "split":
-            bad("1-1", ci, f"장식 {deco}")
+        kd = c.get("density")
+        if kd == "chorus":
+            nc = len(c.get("cutouts", [])) + (1 if c.get("crop") else 0)
+            if not 3 <= nc <= 5:
+                bad("5-2", ci, f"컷아웃 {nc}개")
+            if not 4 <= c.get("echo_rows", 0) <= 8:
+                bad("5-2", ci, f"에코 {c.get('echo_rows', 0)}줄")
+            if len([d for d in deco if d != "band"]) < 2:
+                bad("5-2", ci, f"장식 {deco}")
+        if kd and len(c.get("recipes", [])) < 2:
+            bad("5-3", ci, f"레시피 {c.get('recipes')}")
         for d in deco:
             if d == "starburst" and not c.get("red"):
                 bad("1-4", ci, "빨강 밖 스타버스트")
@@ -309,6 +322,9 @@ def new_checks():
                 pos = full.index(a, pos) + len(a)
                 if re.search(r"[A-Za-z]$", a) and re.match(r"[A-Za-z]", b) and full[pos:pos + 1] != " ":
                     bad("2-3", None, f"{i}행 영어 단어 중간 줄바꿈: {a}|{b}")
+    low_alpha = max(max(v) for v in R.ECHO_ALPHA.values())
+    if low_alpha > 0.45 + 1e-9:
+        bad("2-9", None, f"에코 불투명도 {low_alpha:.2f}")
     if R.CAPTION_PX_1080 < 34:
         bad("2-4", None, f"자막 {R.CAPTION_PX_1080}px")
     if R.BOX_PX_MIN_1080 < 46:
@@ -350,6 +366,13 @@ def new_checks():
                 bad("2-3", cj, f"큰 글자가 화면 밖 ({x0:.0f},{y0:.0f},{x1:.0f},{y1:.0f})")
         if D.get("lines_bright", 0) > 1:
             bad("2-1", cj, f"밝은 줄 {D['lines_bright']}개")
+        if D.get("eye_cover"):
+            bad("2-8", cj, "활성 가사가 눈 위에 있음")
+        kd = CUTS[cj].get("density")
+        need = {"verse": 4, "chorus": 6, "relax": 3}.get(kd)
+        nl = len(D.get("layers", []))
+        if need and nl < need and (t - CUTS[cj]["start"]) * 30 > 6:
+            bad("5-1", cj, f"{kd} 레이어 {nl}개 {D.get('layers')}")
         if D.get("order_ok") is False:
             bad("2-2", cj, "세로 박스 순서 위반")
         for kind, cr in D.get("contrast", []):

@@ -382,6 +382,39 @@ for idx, c in enumerate(cuts):
         c["focus_target"] = list(cuts[idx - 1]["focus_target"])     # flash match: same screen position
     if c.get("crop") == "silhouette":
         c["focus_target"][1] = TH[0]; c["flip_h"] = False
+    # face crops: pin the eye nearest the lyric column, so the other eye moves away from the lyrics
+    if c.get("crop") in ("eyes", "face", "hood_top", "wide_upper", "bust", "eye_r", "eye_l", "finger_eye", "point_hand"):
+        lyr_left = c["layout"] == "P2"
+        c["focus_src"] = [935, 415] if (lyr_left != bool(c.get("flip_h"))) else [1030, 460]
+
+# ---- density layers (the readable line keeps the top tier; everything else is a low-tier layer) ----
+CUT_POOL = [k for k in FOCUS if k not in ("silhouette", "legs", "shoes", "skirt", "bust", "wide_upper")]
+for idx, c in enumerate(cuts):
+    sc = c["scene"]
+    kd = None if sc in (10, 13) else "relax" if sc in (1, 4, 16, 17, 18) else ("chorus" if c["section"] in CHORUS else "verse")
+    c["density"] = kd
+    if kd is None:
+        c.update(cutouts=[], echo_rows=0, keyword_pop=False, ring_text=False, micro_text=False, recipes=[])
+        continue
+    rng = np.random.default_rng(idx * 313 + 11)
+    n_cut = {"verse": 1, "chorus": 3, "relax": 0}[kd] + (1 if not c.get("crop") and kd != "relax" else 0)
+    pool = [k for k in CUT_POOL if k != c.get("crop")]
+    picks = list(rng.choice(pool, size=n_cut, replace=False)) if n_cut else []
+    c["cutouts"] = [dict(crop=str(k), w=round(float(rng.uniform(0.17, 0.30)), 3), rot=round(float(rng.uniform(-25, 25)), 1),
+                         flip=bool(rng.random() < 0.4), alpha=float(rng.choice([1.0, 0.85, 0.6])), slot=int(j)) for j, k in enumerate(picks)]
+    c["echo_rows"] = {"verse": 3, "chorus": 6, "relax": 1}[kd]
+    deco = [d for d in (c.get("deco") or []) if d != "band"]          # the repeat band now lives in the echo layer
+    if kd == "chorus":
+        extra = ["checker_strip"] if c["red"] else [k for k in ("torn_strip", "clock", "checker_strip") if k not in deco]
+        deco += extra[:1] if c["red"] else extra[:max(1, 2 - len(deco))]
+    c["deco"] = deco
+    if "clock" in deco:
+        c["clock_at"] = "focus"
+    c["keyword_pop"] = kd == "chorus"
+    c["ring_text"] = "clock" in deco and kd != "relax"
+    c["micro_text"] = True
+    c["recipes"] = (["echo_band", "micro_text"] + (["cutout_cluster"] if c["cutouts"] else []) +
+                    (["keyword_pop"] if c["keyword_pop"] else []) + (["ring_text"] if c["ring_text"] else []))
 
 # ---- density table (cuts starting in each 10 s window) ----
 dens = []
