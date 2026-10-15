@@ -1555,12 +1555,26 @@ def prop_place(n):
     rot = float(r.uniform(-16, 16))
     src = Image.open(ROOT / f"art/props/{name}.png")
     k = min((x1 - x0) * 0.92 / src.size[0], (y1 - y0) * 0.92 / src.size[1])   # as big as the open area allows
-    if name == "signal":                                               # pole runs off the bottom: may use the full height
-        k = min((x1 - x0) * 0.92 / src.size[0], (Q.H - lb - y0) * 1.0 / src.size[1])
     h = src.size[1] * k
     cx = (x0 + x1) / 2 + (x1 - x0) * 0.06 * r.uniform(-1, 1)
     cy = (y0 + y1) / 2 + (y1 - y0) * 0.04 * r.uniform(-1, 1)
+    cut = PROP_CUT_EDGES.get(name, ())
+    if cut:                                                            # drawing ends at its canvas edge: that edge goes
+        m = S(90)                                                      # past the picture edge (+ room for the float)
+        top, bot = lb, Q.H - lb
+        if "top" in cut and "bottom" in cut:
+            h = (bot - top) + 2 * m
+            cy = (top + bot) / 2
+        else:                                                          # bottom only: from near the top down past the bottom
+            h = (bot - top) * 0.96 + m
+            cy = bot + m - h / 2
+        w = src.size[0] * h / src.size[1]
+        cx = x1 - w / 2                                                # right side against the lyric column; left may bleed
+        rot = 0.0
     return cx, cy, int(h), rot
+
+
+PROP_CUT_EDGES = {"scissors": ("top", "bottom"), "signal": ("bottom",)}   # where the source drawing is cut by its canvas
 
 
 LETTERBOX_SCENES = (3, 8, 14)
@@ -1609,13 +1623,14 @@ def prop_layer(t):
         sc = 1.35 - 0.35 * e
         rr = rot + 14 * (1 - e) * (1 if n % 2 else -1)
         fx_, fy_, fr_ = zero_g(t, th, n)                      # then it floats as if weightless
-        rr += fr_
+        if name in PROP_CUT_EDGES:                            # cut-off drawings: no turn, so the cut edge never shows
+            rr, fy_ = 0.0, max(-S(60), min(S(60), fy_))
+        else:
+            rr += fr_
         im = prop_img(name, hpx)
         im = im.resize((max(1, int(im.size[0] * sc)), max(1, int(im.size[1] * sc))), Image.BICUBIC)
         im = im.rotate(rr, resample=Image.BICUBIC, expand=True)
         x, y = cx - im.size[0] / 2 + fx_, cy - im.size[1] / 2 + fy_
-        if name == "signal":                                  # the pole runs off the bottom of the picture
-            y = Q.H - letterbox_px(cut_at(th + 0.05)[1]) - im.size[1] * 0.92 + fy_
         sh = Image.new("RGBA", im.size, INK + (0,)); sh.putalpha(im.getchannel("A").point(lambda v: int(v * 0.5)))
         paste(L, sh, x + S(10), y + S(12))
         paste(L, im, x, y, min(1.0, u * 3))
