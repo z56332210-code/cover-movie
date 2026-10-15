@@ -1505,7 +1505,7 @@ PROP_LINES = (31, 32, 52, 53)                  # その名言 その意見 そ�
 PROP_ORDER = ["ribbon", "scissors", "compact", "lipstick", "brush2", "signal", "lipstick2", "brush"]
 PROP_H = {"signal": 0.62, "scissors": 0.50, "ribbon": 0.50, "compact": 0.36, "brush2": 0.44, "brush": 0.30,
           "lipstick": 0.30, "lipstick2": 0.30}
-PROP_KEEP = 3                                  # at most three on screen: the new one + the two before it
+PROP_KEEP = 1                                  # one prop at a time: each 「その…」 beat swaps it for the next
 
 
 @lru_cache(None)
@@ -1565,6 +1565,14 @@ def prop_place(n):
             best = (sc, k)
     rot = float(r.uniform(-24, 24))
     return best[1], rot
+
+
+def props_active(t):
+    """True while a prop is on screen (first 「その」 hit of a pair of lines -> that pair's tail end): the character is left out."""
+    for th, li, _ in prop_hits():
+        if th <= t < prop_group_end(li):
+            return True
+    return False
 
 
 def prop_layer(t):
@@ -1737,6 +1745,8 @@ def scene_layer(ci, t, excl):
     frame = base.convert("RGBA")
     src_ci, src_c = (ci + 1, dict(CUTS[ci + 1], transition_in="T3")) if c["scene"] == 10 else (ci, c)   # edit mask: borrowed art, already in place
     img, focus, eyes = image_layer(src_ci, src_c, t)
+    if props_active(t):                              # props replace the character: no illustration / cutouts / ghost
+        img, eyes = None, []
     back, front = decorations(ci, c, t, focus, bg, excl)
     kd = c.get("density"); layers = []
     if kd:
@@ -1755,7 +1765,7 @@ def scene_layer(ci, t, excl):
             layers.append("micro_text")
     frame.alpha_composite(_masked(low, excl))
     avoid = DEBUG_ACTIVE_BOXES[0]
-    if kd and c.get("cutouts"):
+    if kd and c.get("cutouts") and not props_active(t):
         cl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         n_c = cutout_layer(cl, t, ci, c, avoid)
         frame.alpha_composite(cl)
@@ -1938,7 +1948,7 @@ def render_frame(t):
     DEBUG.clear()
     act = [item_bbox(it) for it in items if not it.get("dim") and it["alpha"] > 0.5]
     layers = list(info.get("layers", [])) + (["active_lyric"] if act else []) + (["hud"] if c["scene"] not in (10, 13, 17, 18) else [])
-    DEBUG.update(dbg, cut=ci, focus=None if c.get("nochar") else info["focus"], transition=tr, layers=layers,
+    DEBUG.update(dbg, cut=ci, focus=None if (c.get("nochar") or props_active(t)) else info["focus"], transition=tr, layers=layers,
                  deco_kinds=info.get("deco_kinds", []), eye_cover=any(overlaps(b, info.get("eyes", [])) for b in act),
                  deco_over_lyrics=0)
     return out
