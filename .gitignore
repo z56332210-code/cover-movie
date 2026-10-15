@@ -1,2 +1,7 @@
 renders/.parts_*/
 __pycache__/
+
+# final masters are too big for GitHub (100 MB / file)
+renders/final.mp4
+renders/final_upload.mp4
+renders/.parts_*/
