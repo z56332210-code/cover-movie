@@ -319,7 +319,7 @@ def new_checks():
             if hold < 12:
                 bad("2-6", None, f"{i}행 큰 글자 정지 {hold}프레임")
             rows = R.giant_rows(i)
-            if len(rows) > 4:
+            if len(rows) > 3:                          # one box per column, max 3 boxes on screen
                 bad("2-3", None, f"{i}행 큰 세로 글자 {len(rows)}열")
             full = R.line_ctx(i)["text"]; pos = 0
             for a, b in zip(rows, rows[1:]):

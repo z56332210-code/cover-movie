@@ -569,10 +569,10 @@ def is_giant_line(i):
 
 @lru_cache(None)
 def giant_rows(i):
-    """Columns of an emphasised line (vertical writing): phrase chunks, at most 4, never splitting a latin word."""
+    """Columns of an emphasised line (vertical writing): phrase chunks, at most 3 (one box each), never splitting a latin word."""
     ctx = line_ctx(i); text = ctx["text"]
     ch = list(chunks(i)) if not ctx["red"] else ([text] if len(text) <= 7 else [text[:len(text) // 2], text[len(text) // 2:]])
-    while len(ch) > 4:                                    # merge the two shortest neighbours
+    while len(ch) > 3:                                    # merge the two shortest neighbours
         k = min(range(len(ch) - 1), key=lambda k: len(ch[k]) + len(ch[k + 1]))
         ch[k:k + 2] = [ch[k] + ch[k + 1]]
     return tuple(ch)
@@ -616,6 +616,29 @@ def giant_layout(i, W_, H_):
         boxes.append((bx0, by0, x + cw, y))
         xr = x - sz * 0.10 * (1 + r.random())
     return dict(font=fp, chars=chars, boxes=boxes)
+
+
+@lru_cache(None)
+def emph_layout(i, W_, H_):
+    """Emphasised line as vertical boxes: right-to-left columns, the most fitting column 1.3x, staggered heights, inside the rect."""
+    ctx = line_ctx(i); c = CUTS[ctx["ci"]]
+    x0, y0, x1, y1 = rects_px(c)[0]
+    cols = giant_rows(i)
+    base = max(S(BOX_PX_MIN_1080), S(BOX_PX.get(ctx["section"], 62)))
+    big = max(range(len(cols)), key=lambda k: len(cols[k]) <= 6 and -abs(len(cols[k]) - 4))
+    r = np.random.default_rng(i * 97)
+    out, xr = [], x1
+    for k, col in enumerate(cols):
+        sz = int(base * (1.3 if k == big else 1.0))
+        while sz > S(BOX_PX_MIN_1080) and vbox(col, sz).size[1] > (y1 - y0):
+            sz -= 2
+        b = vbox(col, sz)
+        free = (y1 - y0) - b.size[1]
+        y = y0 + max(0, free) * (0.05 + 0.6 * r.random())
+        x = xr - b.size[0]
+        out.append((col, x, y, sz))
+        xr = x - int(sz * 0.35)
+    return tuple(out)
 
 
 @lru_cache(None)
@@ -676,28 +699,24 @@ def _line_layout(t, li):
     if not rects or ctx["orient"] is None:
         return items, cap, dbg
     dbg["lines_bright"] = 1
-    if ctx["orient"] == "giant":
-        L = giant_layout(li, W, H)
-        ent, stg, _ = giant_plan(li)
-        for k, (ch_, x, y, gs) in enumerate(L["chars"]):
-            a, dy = _enter_exit(t, w0 + k * stg / FPS, w1, ent)
-            items.append(dict(kind="giant", text=ch_, size=gs, font=L["font"], x=x, y=y, alpha=a, dy=dy, red=ctx["red"], still=True))
-        dbg["giant_boxes"] = list(L["boxes"])
+    if ctx["orient"] == "giant":                     # emphasis: vertical boxes, a size step up from normal boxes, staggered
+        base = max(S(BOX_PX_MIN_1080), S(BOX_PX.get(ctx["section"], 62)))
+        for k, (piece, x, y, sz) in enumerate(emph_layout(li, W, H)):
+            a, dy = _enter_exit(t, w0 + k * 3 / FPS, w1)
+            items.append(dict(kind="box", text=piece, size=sz, key=(li, k), x=x, y=y, alpha=a, dy=dy, red=ctx["red"], emph=True))
+            dbg["giant_boxes"].append((x, y, x + vbox(piece, sz).size[0], y + vbox(piece, sz).size[1]))
         return items, cap, dbg
     size = max(S(BOX_PX_MIN_1080), S(BOX_PX.get(ctx["section"], 62)))
-    if ctx["red"]:                                   # red keyword, written in the section's own direction
+    if ctx["red"]:                                   # red keyword: a box like any lyric, red type, one size step up
         x0, y0, x1, y1 = rects[0]
-        n = len(ctx["text"])
-        if ctx["orient"] == "vbox":
-            sz = int(min((x1 - x0) * 0.8, (y1 - y0) / (n * 1.04), S(150)))
-            im = vtext(ctx["text"], sz, RED + (255,), F_L)
-            x, y = x1 - im.size[0], y0
-        else:
-            sz = int(min((y1 - y0) * 0.5, (x1 - x0) / (n * 1.04), S(150)))
-            im = htext(ctx["text"], sz, RED + (255,), F_L)
-            x, y = x0, y0
+        vert = ctx["orient"] == "vbox"
+        sz = int(size * 1.3)
+        while sz > S(BOX_PX_MIN_1080) and ((vbox if vert else hbox)(ctx["text"], sz).size[1 if vert else 0] > ((y1 - y0) if vert else (x1 - x0))):
+            sz -= 2
+        im = (vbox if vert else hbox)(ctx["text"], sz)
+        x, y = (x1 - im.size[0], y0) if vert else (x0, y0)
         a, dy = _enter_exit(t, w0, w1)
-        items.append(dict(kind="red", img=im, x=x, y=y, alpha=a, dy=dy, red=True))
+        items.append(dict(kind="box", text=ctx["text"], size=sz, key=(li, 0), vert=vert, x=x, y=y, alpha=a, dy=dy, red=True))
         return items, cap, dbg
     vis = [(j, p) for j, (p, ap) in enumerate(zip(chunks(li), chunk_appear(li))) if ap <= t][-3:]   # max 3 boxes
     xs = [r[2] for r in rects]; ys = [r[1] for r in rects]
@@ -705,17 +724,17 @@ def _line_layout(t, li):
     for n_, (j, piece) in enumerate(vis):
         ri = 0 if (len(rects) == 1 or n_ < 2) else 1          # P4: right rect takes the first two columns, then the left rect
         if ctx["orient"] == "vbox":
-            box = vbox(piece, size); bright = vbox(piece, size, fg=(255, 255, 255))
+            box = vbox(piece, size)
             x = xs[ri] - box.size[0]; xs[ri] = x - int(size * 0.35)
             y = rects[ri][1] + (n_ % 2) * S(40)
             if last_x is not None and x >= last_x:          # reading order must run right -> left across the screen
                 dbg["order_ok"] = False
             last_x = x
         else:
-            box = hbox(piece, size); bright = hbox(piece, size, fg=(255, 255, 255))
+            box = hbox(piece, size)
             x = rects[ri][0]; y = ys[ri]; ys[ri] = y + box.size[1] + int(size * 0.3)
         a, dy = _enter_exit(t, chunk_appear(li)[j], w1)
-        items.append(dict(kind="box", img=box, bright=bright, x=x, y=y, alpha=a, dy=dy, red=False))
+        items.append(dict(kind="box", text=piece, size=size, key=(li, j), vert=ctx["orient"] == "vbox", x=x, y=y, alpha=a, dy=dy, red=False))
     return items, cap, dbg
 
 
@@ -723,7 +742,46 @@ def item_bbox(it):
     if it["kind"] == "giant":
         g = vtext(it["text"], it["size"], (255, 255, 255, 255), it["font"])
         return (it["x"], it["y"], it["x"] + g.size[0], it["y"] + g.size[1])
+    if it["kind"] == "box":
+        im = box_img(it, False)
+        return (it["x"], it["y"], it["x"] + im.size[0], it["y"] + im.size[1])
     return (it["x"], it["y"], it["x"] + it["img"].size[0], it["y"] + it["img"].size[1])
+
+
+def box_img(it, on_dark, bright=False):
+    """On a dark background: white box, black type. On a bright background: black box, white type. Red type keeps its red."""
+    fg, bg = (INK, PAPER_L) if on_dark else (PAPER_L, INK)
+    if it.get("red"):
+        fg = RED
+    if bright:
+        fg, bg = (fg, (255, 255, 255)) if on_dark else ((255, 255, 255) if not it.get("red") else fg, bg)
+    mk = vbox if it.get("vert", True) else hbox
+    return mk(it["text"], it["size"], fg=fg, bg=bg)
+
+
+_TONE = {}
+
+
+def box_on_dark(it):
+    """Is the background behind this box dark? Decided once per (line, box, cut) from the scene at three moments of its stay,
+    so the box never flips colour mid-line (and every render process agrees)."""
+    ci, c = cut_at(t_now[0])
+    k = (it["key"], ci)
+    if k not in _TONE:
+        w0, w1 = line_window(it["key"][0])
+        lo, hi = max(w0, c["start"]), min(w1, c["start"] + c["dur"])
+        x0, y0, x1, y1 = [int(v) for v in item_bbox(it)]
+        vals = []
+        for u in (0.25, 0.5, 0.75):                  # three moments of its stay in this cut (clear of transitions); mean tone
+            tr = lo + (hi - lo) * u
+            items, cap, _ = lyric_layout(tr)
+            excl, _ = exclusion_mask(items, cap)
+            fr = compose_scene(tr, excl)[0].convert("L")
+            reg = np.asarray(fr.crop((max(0, x0), max(0, y0), min(Q.W, x1), min(Q.H, y1))))
+            if reg.size:
+                vals.append(float(reg.mean()))
+        _TONE[k] = bool(not vals or np.mean(vals) < 118)
+    return _TONE[k]
 
 
 def caption_rect(cap):
@@ -822,12 +880,15 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
         crs.append(("red" if giant[0]["red"] else "giant", cr))
     for it in items:
         if it["kind"] == "box":
-            paste(L, box_shadow(it["img"]), it["x"] + hx + S(7), it["y"] + hy + it["dy"] + S(9), it["alpha"] * 0.45)
-            paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
+            dark = box_on_dark(it)
+            img = box_img(it, dark)
+            if not dark:
+                paste(L, box_shadow(img), it["x"] + hx + S(7), it["y"] + hy + it["dy"] + S(9), it["alpha"] * 0.45)
+            paste(L, img, it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
             bf = beat_flash(t_now[0])
             if bf > 0 and not it.get("dim"):
-                paste(L, it.get("bright") or it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"] * 0.7 * bf)
-            crs.append(("box", contrast(rel_lum(PAPER_L), rel_lum(INK))))
+                paste(L, box_img(it, dark, True), it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"] * 0.7 * bf)
+            crs.append(("red" if it.get("red") else "box", contrast(rel_lum(PAPER_L), rel_lum(INK))))
         elif it["kind"] == "red":                    # red keyword: no backing of any kind
             bb = item_bbox(it)
             cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)[2]
