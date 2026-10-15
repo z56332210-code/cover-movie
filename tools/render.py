@@ -278,7 +278,43 @@ def torn_mask(ci, c):
 def _image_once(ci, c, t):
     src, inv, fwd = cut_transform(ci, c, t)
     neg = (c["scene"] in (8, 9) and c["crop"] == "silhouette") or c.get("variant") == "negative"
-    return art(src, negative=neg).transform((Q.W, Q.H), Image.AFFINE, inv, resample=Image.BICUBIC, fillcolor=(0, 0, 0, 0)), fwd, src
+    im = silhouette_art(src, sum(scene_bg(c)) > 380) if c.get("variant") == "silhouette_fill" else art(src, negative=neg)
+    return im.transform((Q.W, Q.H), Image.AFFINE, inv, resample=Image.BICUBIC, fillcolor=(0, 0, 0, 0)), fwd, src
+
+
+@lru_cache(4)
+def silhouette_art(name, on_light):
+    """The whole drawing as one flat shape (ink on a light ground, paper on a dark one); the red eyes stay red."""
+    im = art(name)
+    a = np.asarray(im).astype(np.int16)
+    red = (a[..., 0] > 120) & (a[..., 0] - a[..., 1] > 60) & (a[..., 0] - a[..., 2] > 60) & (a[..., 3] > 0)
+    out = np.zeros_like(a, dtype=np.uint8)
+    out[..., :3] = INK if on_light else PAPER_L
+    out[..., 3] = a[..., 3]
+    out[red, :3] = RED
+    return Image.fromarray(out, "RGBA")
+
+
+def slice_glitch_layer(im, t, seed, amt):
+    """Horizontal slice glitch on an RGBA layer: bands shoved sideways, a few dropped, a thin offset ghost (mono)."""
+    if amt <= 0:
+        return im
+    W, H = im.size
+    fr = int(round(t * FPS))
+    r = np.random.default_rng(seed * 7919 + fr)
+    out = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    y = 0
+    while y < H:
+        h = int(r.integers(max(2, S(8)), max(3, S(70))))
+        band = im.crop((0, y, W, min(H, y + h)))
+        if r.random() < 0.18 * amt:                     # dropped band
+            y += h; continue
+        dx = int(r.normal(0, S(90) * amt)) if r.random() < 0.65 else 0
+        out.paste(band, (dx, y), band)
+        y += h
+    ghost = im.copy(); ghost.putalpha(ghost.getchannel("A").point(lambda v: int(v * 0.35 * amt)))
+    out.alpha_composite(ImageChops.offset(ghost, int(S(24) * amt), 0))
+    return out
 
 
 def image_layer(ci, c, t):
@@ -316,6 +352,10 @@ def image_layer(ci, c, t):
             eyes.append((px - r_, py - r_ * 0.7, px + r_, py + r_ * 0.7))
     if c["scene"] == 16:
         acc = Image.blend(acc, acc.filter(ImageFilter.GaussianBlur(S(2))), 0.5)
+    if c.get("variant") == "silhouette_fill":            # glitches in and out of the cut (into the next one)
+        f_in = (t - c["start"]) * FPS; f_out = (c["start"] + c["dur"] - t) * FPS
+        amt = max(clamp(1 - f_in / 7), clamp(1 - f_out / 8) if c.get("glitch_out") else 0.0)
+        acc = slice_glitch_layer(acc, t, ci, amt)
     return acc, focus, eyes
 
 
@@ -1165,6 +1205,38 @@ def torn_strips(L, t, seed):
         paste(L, strip, x, r.uniform(-0.3, 0.6) * H)
 
 
+GUIDE_SPOTS = [(0.40, 0.40), (0.20, 0.66), (0.54, 0.26), (0.28, 0.30), (0.50, 0.64), (0.14, 0.42)]
+
+
+@lru_cache(None)
+def guide_pos(ci):
+    """Reticle centre for cut ci: away from the lyric column, never the spot of the cut before."""
+    c = CUTS[ci]
+    prev = guide_pos(ci - 1) if ci and "guides" in (CUTS[ci - 1].get("deco") or []) else None
+    rect = c.get("lyric_rect")
+    rects = rect if rect and isinstance(rect[0], list) else ([rect] if rect else [])
+    r = np.random.default_rng(ci * 53 + 11)
+    for k in r.permutation(len(GUIDE_SPOTS)):
+        x, y = GUIDE_SPOTS[k][0] * Q.W, GUIDE_SPOTS[k][1] * Q.H
+        if any(a[0] * Q.W - S(280) < x < a[2] * Q.W + S(280) for a in rects):
+            continue
+        if prev and math.hypot(x - prev[0], y - prev[1]) < 0.18 * Q.W:
+            continue
+        return x, y
+    return Q.W * 0.35, Q.H * 0.45
+
+
+def guide_shake(ci, c, t):
+    """Big damped shake (about 0.6 s) on the cut where the reticle first appears; still afterwards."""
+    if ci and "guides" in (CUTS[ci - 1].get("deco") or []):
+        return 0.0, 0.0
+    u = t - c["start"]
+    if u < 0 or u > 0.7:
+        return 0.0, 0.0
+    env = math.exp(-u * 6.0)
+    return S(70) * env * math.sin(2 * math.pi * 7.5 * u), S(46) * env * math.sin(2 * math.pi * 6.0 * u + 1.3)
+
+
 def circle_guides(L, t, eyes, color):
     d = ImageDraw.Draw(L)
     col = color + (170,)
@@ -1323,8 +1395,10 @@ def decorations(ci, c, t, focus, bg, excl):
             draw_clock(back, td * 1.5, cx_, cy_, GRAY_M, 0.75, 2.1, t_real=t)
         elif k == "speed_lines":
             speed_lines(back, td, ci, GRAY_M, alpha=0.8, cx=fx, cy=fy)
-        elif k == "guides":
-            circle_guides(front, td, [(fx - 1, fy - 1, fx + 1, fy + 1)], GRAY_M)
+        elif k == "guides":                 # reticle: a new spot every cut; one big shake when it first appears
+            gx, gy = guide_pos(ci)
+            sx, sy = guide_shake(ci, c, t)
+            circle_guides(front, td, [(gx + sx - 1, gy + sy - 1, gx + sx + 1, gy + sy + 1)], GRAY_M)
         elif k == "code":
             cb = code_block(); off = int(td * S(30)) % max(1, cb.size[1] // 2)
             x = S(70) if fx > W / 2 else W - S(70) - cb.size[0]

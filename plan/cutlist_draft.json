@@ -7685,8 +7685,8 @@
    "lyric_lines": [
     63
    ],
-   "crop": "eye_r",
-   "rot": 196.0,
+   "crop": "bust_full",
+   "rot": 0.0,
    "flip_v": false,
    "overlays": [
     "roman_clock_ring",
@@ -7694,12 +7694,7 @@
     "hud_frame_ornate"
    ],
    "crop_src": "art/char_upper.webp",
-   "crop_box": {
-    "cx": 922,
-    "cy": 450,
-    "w": 386
-   },
-   "variant": "single",
+   "variant": "silhouette_fill",
    "text": "B",
    "note": "giant 神っぽいな thin serif, cropped off-frame",
    "red": false,
@@ -7729,9 +7724,10 @@
    "clock_at": "focus",
    "transition_in": "T2",
    "cam": "pull_out",
-   "cam_amount": 0.04,
+   "cam_amount": 0.02,
    "pan_dir": -1,
    "impact": false,
+   "glitch_out": true,
    "density": "chorus",
    "cutouts": [
     {

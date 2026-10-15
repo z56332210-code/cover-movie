@@ -56,6 +56,7 @@ CROPS = {
     "wide_upper":  ("upper", (1000, 950), 1900),
     "sleeve_R":    ("upper", (1500, 1100), 700),
     "silhouette":  ("full", (562, 1000), None),   # whole figure fit to height (band scenes)
+    "bust_full":   ("upper", (1000, 1000), None),  # the whole bust fit to height (shown as a silhouette)
     "legs":        ("full", (560, 1500), 900),
     "shoes":       ("full", (560, 1780), 760),
 }
@@ -67,7 +68,7 @@ FOCUS = {
     "lolly": (300, 690), "nails": (440, 760), "neck_frill": (935, 690), "collar_L": (730, 1050), "collar_R": (1150, 960),
     "cross_close": (730, 1060), "buttons": (1000, 960), "halo": (1090, 110), "ribbon_R": (1540, 760),
     "ribbon_L": (420, 1180), "cuff_L": (470, 960), "cuff_R": (1450, 660), "hood_top": (935, 415), "hair_L": (720, 720),
-    "wide_upper": (935, 415), "sleeve_R": (1500, 1100), "skirt": (1100, 1600), "bust": (935, 415),
+    "wide_upper": (935, 415), "sleeve_R": (1500, 1100), "skirt": (1100, 1600), "bust": (935, 415), "bust_full": (935, 415),
     "silhouette": (548, 300), "legs": (560, 1500), "shoes": (560, 1780),
 }
 
@@ -95,7 +96,7 @@ GRAMMAR = {
     "bridge": dict(deco=[["checker"]],             nochar_every=3, nochar="band_only",  trans=["T5", "T3"], cam="static"),
     "relax":  dict(deco=[["guides"]],              nochar_every=0, nochar="paper_type", trans=["T3", "T5"], cam="push_in"),
 }
-FACE_CROPS = {"eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye", "point_hand", "wide_upper", "bust"}
+FACE_CROPS = {"bust_full", "eyes", "eye_r", "eye_l", "face", "mouth", "tongue", "hood_top", "finger_eye", "point_hand", "wide_upper", "bust"}
 
 
 def zone_type(scene_id):
@@ -428,6 +429,18 @@ for idx, c in enumerate(cuts):
             c["crop_box"]["w"] = max(c["crop_box"]["w"], 560)       # lyric columns on both edges: keep the eyes small enough
         mirrored = bool(c.get("flip_h")) != (abs(((c.get("rot", 0) + 180) % 360) - 180) > 90)   # flip or upside-down swaps the eyes
         c["focus_src"] = [935, 415] if (lyr_left != mirrored) else [1030, 460]
+
+# ---- hand-directed cuts (user notes) ----
+MANUAL = {
+    129.614: dict(crop="bust_full", rot=0.0, flip_h=False, flip_v=False, variant="silhouette_fill", cam="pull_out", cam_amount=0.02,
+                  glitch_out=True, crop_box=None, focus_src=[935, 415]),   # 2:09.6 「神っぽいな」: whole bust as a silhouette, slow camera
+}
+for c in cuts:
+    m = MANUAL.get(round(c["start"], 3))
+    if m:
+        c.update(m)
+        if c.get("crop_box") is None:
+            c.pop("crop_box", None)
 
 # ---- density layers (the readable line keeps the top tier; everything else is a low-tier layer) ----
 CUT_POOL = [k for k in FOCUS if k not in ("silhouette", "legs", "shoes", "skirt", "bust", "wide_upper")]
