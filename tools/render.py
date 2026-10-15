@@ -1548,17 +1548,39 @@ def prop_place(n):
     boxes = [item_bbox(it) for it in items if not it.get("dim")]
     x1 = min([b[0] for b in boxes] + [Q.W * 0.62]) - S(50)             # open area: left edge -> lyric column
     x0 = Q.W * 0.04
-    y0, y1 = Q.H * 0.06, Q.H * 0.86                                    # above the caption band
+    t1 = prop_group_end(li)
+    lb = max([letterbox_px(cc) for cc in CUTS if cc["start"] < t1 and cc["start"] + cc["dur"] > t] + [0])
+    y0, y1 = max(Q.H * 0.06, lb + S(40)), min(Q.H * 0.86, Q.H - lb - S(40))   # inside the letterbox, above the caption
     r = np.random.default_rng(n * 131 + 7)
     rot = float(r.uniform(-16, 16))
     src = Image.open(ROOT / f"art/props/{name}.png")
     k = min((x1 - x0) * 0.92 / src.size[0], (y1 - y0) * 0.92 / src.size[1])   # as big as the open area allows
     if name == "signal":                                               # pole runs off the bottom: may use the full height
-        k = min((x1 - x0) * 0.92 / src.size[0], Q.H * 0.95 / src.size[1])
+        k = min((x1 - x0) * 0.92 / src.size[0], (Q.H - lb - y0) * 1.0 / src.size[1])
     h = src.size[1] * k
     cx = (x0 + x1) / 2 + (x1 - x0) * 0.06 * r.uniform(-1, 1)
     cy = (y0 + y1) / 2 + (y1 - y0) * 0.04 * r.uniform(-1, 1)
     return cx, cy, int(h), rot
+
+
+LETTERBOX_SCENES = (3, 8, 14)
+
+
+def letterbox_px(c):
+    return int(Q.H * 0.115) if c["scene"] in LETTERBOX_SCENES else 0
+
+
+def zero_g(t, th, n):
+    """Weightless drift after the prop lands: slow figure-eight float, a lazy sway and a slow spin (per-prop phases)."""
+    r = np.random.default_rng(n * 977 + 3)
+    ph = r.uniform(0, 2 * math.pi, 4)
+    spin = r.choice([-1, 1]) * r.uniform(2.0, 4.0)                # deg / s
+    a = clamp((t - th) * FPS / 8)                                  # eases in once the slam has settled
+    u = t - th
+    dx = S(26) * math.sin(2 * math.pi * 0.21 * u + ph[0]) + S(9) * math.sin(2 * math.pi * 0.47 * u + ph[1])
+    dy = S(20) * math.sin(2 * math.pi * 0.16 * u + ph[2]) - S(14) * u               # bob + a slow rise
+    dr = 5.0 * math.sin(2 * math.pi * 0.12 * u + ph[3]) + spin * u
+    return dx * a, dy * a, dr * a
 
 
 def props_active(t):
@@ -1570,7 +1592,7 @@ def props_active(t):
 
 
 def prop_layer(t):
-    """Props slam in on each 「その…」 beat (scale 1.35 -> 1, a twist), then stay; on later beats they tick a little."""
+    """Props slam in on each 「その…」 beat (scale 1.35 -> 1, a twist), then float weightless; kept inside the letterbox."""
     hits = prop_hits()
     k = bisect.bisect_right([h[0] for h in hits], t)
     if not k:
@@ -1586,18 +1608,22 @@ def prop_layer(t):
         e = arrive(u, 0.08)
         sc = 1.35 - 0.35 * e
         rr = rot + 14 * (1 - e) * (1 if n % 2 else -1)
-        bf = beat_flash(t, 3) if n != k - 1 else 0.0          # older props tick on every beat
-        rr += 2.5 * bf * (1 if n % 2 else -1)
+        fx_, fy_, fr_ = zero_g(t, th, n)                      # then it floats as if weightless
+        rr += fr_
         im = prop_img(name, hpx)
         im = im.resize((max(1, int(im.size[0] * sc)), max(1, int(im.size[1] * sc))), Image.BICUBIC)
         im = im.rotate(rr, resample=Image.BICUBIC, expand=True)
-        x, y = cx - im.size[0] / 2, cy - im.size[1] / 2
-        if name == "signal":                                  # the pole runs off the bottom of the frame
-            y = Q.H - im.size[1] * 0.92
+        x, y = cx - im.size[0] / 2 + fx_, cy - im.size[1] / 2 + fy_
+        if name == "signal":                                  # the pole runs off the bottom of the picture
+            y = Q.H - letterbox_px(cut_at(th + 0.05)[1]) - im.size[1] * 0.92 + fy_
         sh = Image.new("RGBA", im.size, INK + (0,)); sh.putalpha(im.getchannel("A").point(lambda v: int(v * 0.5)))
         paste(L, sh, x + S(10), y + S(12))
         paste(L, im, x, y, min(1.0, u * 3))
         drawn += 1
+    lb = letterbox_px(cut_at(t)[1])
+    if lb and drawn:                                         # never over the cinema bars
+        d = ImageDraw.Draw(L)
+        d.rectangle((0, 0, Q.W, lb), fill=(0, 0, 0, 0)); d.rectangle((0, Q.H - lb, Q.W, Q.H), fill=(0, 0, 0, 0))
     return L, drawn
 
 
@@ -1784,7 +1810,7 @@ def scene_layer(ci, t, excl):
                                 fillcolor=bg + (255,))
     if img is not None and c["scene"] not in (10, 13, 17, 18):
         frame = shade(frame, ci, sum(bg) <= 380)
-    if c["scene"] in (3, 8, 14):  # cinema letterbox like ref B's band scenes (framing)
+    if c["scene"] in LETTERBOX_SCENES:  # cinema letterbox like ref B's band scenes (framing)
         d = ImageDraw.Draw(frame); lb = int(H * 0.115)
         d.rectangle((0, 0, W, lb), fill=INK + (255,)); d.rectangle((0, H - lb, W, H), fill=INK + (255,))
     if c["scene"] == 13:
