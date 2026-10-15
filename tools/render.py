@@ -284,14 +284,11 @@ def _image_once(ci, c, t):
 
 @lru_cache(4)
 def silhouette_art(name, on_light):
-    """The whole drawing as one flat shape (ink on a light ground, paper on a dark one); the red eyes stay red."""
-    im = art(name)
-    a = np.asarray(im).astype(np.int16)
-    red = (a[..., 0] > 120) & (a[..., 0] - a[..., 1] > 60) & (a[..., 0] - a[..., 2] > 60) & (a[..., 3] > 0)
-    out = np.zeros_like(a, dtype=np.uint8)
+    """The whole drawing as one flat shape (ink on a light ground, paper on a dark one), red included (user note)."""
+    a = np.asarray(art(name))
+    out = np.zeros_like(a)
     out[..., :3] = INK if on_light else PAPER_L
     out[..., 3] = a[..., 3]
-    out[red, :3] = RED
     return Image.fromarray(out, "RGBA")
 
 
