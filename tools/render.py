@@ -1500,6 +1500,106 @@ def word_hit(t):
     return k, EASE_OUT(clamp((t - hits[k - 1]) * FPS / 4))
 
 
+# ------------------------------------------------------------------ props (makeup / scissors / ribbon / signal) on 「その…」
+PROP_LINES = (31, 32, 52, 53)                  # その名言 その意見 その批評 / そのカリスマ そのギャグ そのセンス (twice)
+PROP_ORDER = ["ribbon", "scissors", "compact", "lipstick", "brush2", "signal", "lipstick2", "brush"]
+PROP_H = {"signal": 0.62, "scissors": 0.50, "ribbon": 0.50, "compact": 0.36, "brush2": 0.44, "brush": 0.30,
+          "lipstick": 0.30, "lipstick2": 0.30}
+PROP_KEEP = 3                                  # at most three on screen: the new one + the two before it
+
+
+@lru_cache(None)
+def prop_hits():
+    """(time, line, prop name) for every sung 「その…」 chunk, snapped to the nearest beat."""
+    out = []
+    for li in PROP_LINES:
+        for p, a in zip(chunks(li), chunk_appear(li)):
+            if p.startswith("その"):
+                b = min(BEATS, key=lambda x: abs(x - a))
+                out.append([b if abs(b - a) < 0.2 else a, li])
+    return tuple((t, li, PROP_ORDER[n % len(PROP_ORDER)]) for n, (t, li) in enumerate(out))
+
+
+def prop_group_end(li):
+    """Props of a pair of lines leave when the second line's tail ends."""
+    last = li if li in (32, 53) else li + 1
+    return tail_end(last)
+
+
+@lru_cache(64)
+def prop_img(name, h_px):
+    im = Image.open(ROOT / f"art/props/{name}.png").convert("RGBA")
+    k = h_px / im.size[1]
+    im = im.resize((max(1, int(im.size[0] * k)), max(1, int(h_px))), Image.LANCZOS)
+    pad = S(8)
+    a = Image.new("L", (im.size[0] + 2 * pad, im.size[1] + 2 * pad), 0); a.paste(im.getchannel("A"), (pad, pad))
+    edge = a.filter(ImageFilter.MaxFilter(max(3, S(7) | 1)))                 # crisp paper edge: a cut-out sticker
+    out = Image.new("RGBA", a.size, PAPER_L + (0,)); out.putalpha(edge)
+    out.alpha_composite(im, (pad, pad))
+    return out
+
+
+PROP_SLOTS = [(0.22, 0.30), (0.20, 0.70), (0.46, 0.24), (0.42, 0.72), (0.12, 0.48), (0.62, 0.30), (0.60, 0.74)]
+
+
+@lru_cache(None)
+def prop_place(n):
+    """Slot, rotation of hit n: decided once from the cut / lyric boxes at its hit, then it stays put."""
+    t, li, name = prop_hits()[n]
+    ci, c = cut_at(t + 0.05)
+    items, _, _ = lyric_layout(line_window(li)[1] - 0.05)             # every box this line will show
+    boxes = [item_bbox(it) for it in items if not it.get("dim")]
+    t1 = prop_group_end(li)
+    faces = [focus_target_px(cc) for cc in CUTS if cc["start"] < t1 and cc["start"] + cc["dur"] > t and not cc.get("nochar")]
+    used = [prop_place(m)[0] for m in range(max(0, n - PROP_KEEP + 1), n) if prop_group_end(prop_hits()[m][1]) == prop_group_end(li)]
+    r = np.random.default_rng(n * 131 + 7)
+    best = None
+    for k in r.permutation(len(PROP_SLOTS)):
+        sx, sy = PROP_SLOTS[k]
+        x, y = sx * Q.W, sy * Q.H
+        sc = 0.0
+        sc += 3 if any(a[0] - S(140) < x < a[2] + S(140) and a[1] - S(120) < y < a[3] + S(120) for a in boxes) else 0
+        sc += 2 * sum(1 for fx, fy in faces if math.hypot(x - fx, y - fy) < 0.22 * Q.W)   # every face it will sit over
+        sc += 2 if k in used else 0
+        if best is None or sc < best[0]:
+            best = (sc, k)
+    rot = float(r.uniform(-24, 24))
+    return best[1], rot
+
+
+def prop_layer(t):
+    """Props slam in on each 「その…」 beat (scale 1.35 -> 1, a twist), then stay; on later beats they tick a little."""
+    hits = prop_hits()
+    k = bisect.bisect_right([h[0] for h in hits], t)
+    if not k:
+        return None, 0
+    L = Image.new("RGBA", (Q.W, Q.H), (0, 0, 0, 0))
+    drawn = 0
+    for n in range(max(0, k - PROP_KEEP), k):
+        th, li, name = hits[n]
+        if t >= prop_group_end(li) or prop_group_end(li) != prop_group_end(hits[k - 1][1]):   # only the current pair of lines
+            continue
+        slot, rot = prop_place(n)
+        u = clamp((t - th) * FPS / 6)
+        e = arrive(u, 0.08)
+        sc = 1.35 - 0.35 * e
+        rr = rot + 14 * (1 - e) * (1 if n % 2 else -1)
+        bf = beat_flash(t, 3) if n != k - 1 else 0.0          # older props tick on every beat
+        rr += 2.5 * bf * (1 if n % 2 else -1)
+        im = prop_img(name, int(PROP_H[name] * Q.H))
+        im = im.resize((max(1, int(im.size[0] * sc)), max(1, int(im.size[1] * sc))), Image.BICUBIC)
+        im = im.rotate(rr, resample=Image.BICUBIC, expand=True)
+        sx, sy = PROP_SLOTS[slot]
+        x, y = sx * Q.W - im.size[0] / 2, sy * Q.H - im.size[1] / 2
+        if name == "signal":                                  # the pole runs off the bottom of the frame
+            y = Q.H - im.size[1] * 0.92
+        sh = Image.new("RGBA", im.size, INK + (0,)); sh.putalpha(im.getchannel("A").point(lambda v: int(v * 0.5)))
+        paste(L, sh, x + S(10), y + S(12))
+        paste(L, im, x, y, min(1.0, u * 3))
+        drawn += 1
+    return L, drawn
+
+
 def cutout_layer(L, t, ci, c, avoid):
     """Cutout cluster: other crops of the same character, rotated / mirrored / half-transparent (recipe 6)."""
     specs = c.get("cutouts") or []
@@ -1781,6 +1881,9 @@ def render_frame(t):
     excl, lyric_boxes = exclusion_mask(items, cap)
     DEBUG_ACTIVE_BOXES[0] = [item_bbox(it) for it in items if not it.get("dim")]
     frame, info, tr = compose_scene(t, excl)
+    pl, n_props = prop_layer(t)
+    if pl is not None and n_props:
+        frame.alpha_composite(pl); info.setdefault("layers", []).append(f"props:{n_props}")
     if c["scene"] == 10:                 # audio edit mask: white hit + mosaic over the incoming cut
         u = (t - c["start"]) * FPS
         frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.92 if u < 1.5 else max(0, 0.75 - (u - 1.5) * 0.25))
