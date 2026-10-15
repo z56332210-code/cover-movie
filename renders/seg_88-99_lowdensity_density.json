@@ -1,0 +1,20 @@
+{
+ "verse": {
+  "frames": 22,
+  "filled_pct": 34.4,
+  "filled_min": 28.8,
+  "filled_max": 40.3,
+  "edge_pct": 4.06,
+  "edge_min": 3.76,
+  "edge_max": 4.39
+ },
+ "chorus": {
+  "frames": 56,
+  "filled_pct": 61.5,
+  "filled_min": 35.1,
+  "filled_max": 81.2,
+  "edge_pct": 7.32,
+  "edge_min": 3.78,
+  "edge_max": 9.82
+ }
+}

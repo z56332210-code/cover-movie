@@ -1,0 +1,29 @@
+{
+ "relax": {
+  "frames": 278,
+  "filled_pct": 34.7,
+  "filled_min": 0.0,
+  "filled_max": 71.5,
+  "edge_pct": 3.85,
+  "edge_min": 0.01,
+  "edge_max": 7.9
+ },
+ "verse": {
+  "frames": 314,
+  "filled_pct": 75.0,
+  "filled_min": 42.4,
+  "filled_max": 91.0,
+  "edge_pct": 13.58,
+  "edge_min": 5.16,
+  "edge_max": 20.97
+ },
+ "chorus": {
+  "frames": 445,
+  "filled_pct": 73.2,
+  "filled_min": 42.0,
+  "filled_max": 88.2,
+  "edge_pct": 9.69,
+  "edge_min": 4.25,
+  "edge_max": 12.78
+ }
+}

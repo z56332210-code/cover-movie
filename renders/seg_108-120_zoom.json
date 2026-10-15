@@ -1,0 +1,127 @@
+{
+ "file": "renders/seg_108-120.mp4",
+ "range": [
+  108.0,
+  120.0
+ ],
+ "flips_per_s_long_cuts": 0.0,
+ "max_flips_per_s": 0.0,
+ "max_abs_net_zoom": 0.48,
+ "max_peak_speed": 2.8,
+ "impacts": 2,
+ "min_impact_gap": 9.3,
+ "tracked_pairs_pct": 97.8,
+ "cuts": [
+  {
+   "t": 108.07,
+   "dur": 1.7,
+   "cam": "static",
+   "net_zoom": 0.25,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.5,
+   "impact": true
+  },
+  {
+   "t": 109.76,
+   "dur": 1.26,
+   "cam": "static",
+   "net_zoom": -0.14,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.5,
+   "impact": false
+  },
+  {
+   "t": 111.03,
+   "dur": 0.85,
+   "cam": "static",
+   "net_zoom": -0.53,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 2.1,
+   "impact": false
+  },
+  {
+   "t": 111.87,
+   "dur": 1.26,
+   "cam": "static",
+   "net_zoom": -0.48,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 2.8,
+   "impact": false
+  },
+  {
+   "t": 113.14,
+   "dur": 1.27,
+   "cam": "static",
+   "net_zoom": 0.22,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.5,
+   "impact": false
+  },
+  {
+   "t": 114.41,
+   "dur": 0.85,
+   "cam": "static",
+   "net_zoom": -0.1,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.3,
+   "impact": false
+  },
+  {
+   "t": 115.25,
+   "dur": 1.27,
+   "cam": "static",
+   "net_zoom": 0.12,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.5,
+   "impact": false
+  },
+  {
+   "t": 116.52,
+   "dur": 0.85,
+   "cam": "static",
+   "net_zoom": 0.06,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.2,
+   "impact": false
+  },
+  {
+   "t": 117.36,
+   "dur": 0.85,
+   "cam": "static",
+   "net_zoom": 0.03,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.2,
+   "impact": true
+  },
+  {
+   "t": 118.21,
+   "dur": 1.26,
+   "cam": "static",
+   "net_zoom": 0.35,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.6,
+   "impact": false
+  },
+  {
+   "t": 119.48,
+   "dur": 1.7,
+   "cam": "static",
+   "net_zoom": null,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": null,
+   "impact": false,
+   "note": "측정 구간 짧음"
+  }
+ ]
+}

@@ -1,0 +1,98 @@
+{
+ "file": "renders/seg_88-99.mp4",
+ "range": [
+  88.0,
+  99.0
+ ],
+ "flips_per_s_long_cuts": 0.11,
+ "max_flips_per_s": 0.59,
+ "max_abs_net_zoom": 2.14,
+ "max_peak_speed": 8.1,
+ "impacts": 1,
+ "min_impact_gap": 99,
+ "tracked_pairs_pct": 98.5,
+ "cuts": [
+  {
+   "t": 89.05,
+   "dur": 1.71,
+   "cam": "static",
+   "net_zoom": 0.55,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 1.1,
+   "impact": false
+  },
+  {
+   "t": 90.75,
+   "dur": 0.41,
+   "cam": "static",
+   "net_zoom": null,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": null,
+   "impact": false,
+   "note": "측정 구간 짧음"
+  },
+  {
+   "t": 91.16,
+   "dur": 1.28,
+   "cam": "pan_x",
+   "net_zoom": 2.14,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 3.2,
+   "impact": true
+  },
+  {
+   "t": 92.44,
+   "dur": 1.26,
+   "cam": "static",
+   "net_zoom": -1.04,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 1.7,
+   "impact": false
+  },
+  {
+   "t": 93.7,
+   "dur": 0.42,
+   "cam": "static",
+   "net_zoom": null,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": null,
+   "impact": false,
+   "note": "측정 구간 짧음"
+  },
+  {
+   "t": 94.12,
+   "dur": 1.7,
+   "cam": "static",
+   "net_zoom": -1.62,
+   "flips": 1,
+   "flips_per_s": 0.59,
+   "peak_speed": 8.1,
+   "impact": false
+  },
+  {
+   "t": 95.82,
+   "dur": 1.7,
+   "cam": "pan_x",
+   "net_zoom": 1.01,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 1.6,
+   "impact": false
+  },
+  {
+   "t": 97.51,
+   "dur": 1.68,
+   "cam": "static",
+   "net_zoom": -0.41,
+   "flips": 0,
+   "flips_per_s": 0.0,
+   "peak_speed": 0.6,
+   "impact": false
+  }
+ ]
+}

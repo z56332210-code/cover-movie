@@ -1,0 +1,66 @@
+{
+ "file": "renders/seg_88-99.mp4",
+ "range": [
+  88.0,
+  99.0
+ ],
+ "cuts": 8,
+ "pre_cut": 14.94,
+ "pre_cut_min": 1.86,
+ "settle_mean": 0.283,
+ "settle_min": 0.133,
+ "settle_max": 0.533,
+ "non_cut": 6.75,
+ "non_cut_strict": 3.62,
+ "same_transition_in_a_row": 0,
+ "per_cut": [
+  {
+   "t": 89.05,
+   "tr": "T5",
+   "pre": 4.17,
+   "settle": 0.3
+  },
+  {
+   "t": 90.75,
+   "tr": "edit_mask",
+   "pre": 3.42,
+   "settle": 0.27
+  },
+  {
+   "t": 91.16,
+   "tr": "T1",
+   "pre": 18.35,
+   "settle": 0.13
+  },
+  {
+   "t": 92.44,
+   "tr": "T4",
+   "pre": 24.12,
+   "settle": 0.2
+  },
+  {
+   "t": 93.7,
+   "tr": "T1",
+   "pre": 27.72,
+   "settle": 0.13
+  },
+  {
+   "t": 94.12,
+   "tr": "T4",
+   "pre": 14.23,
+   "settle": 0.53
+  },
+  {
+   "t": 95.82,
+   "tr": "T1",
+   "pre": 1.86,
+   "settle": 0.23
+  },
+  {
+   "t": 97.51,
+   "tr": "T4",
+   "pre": 25.63,
+   "settle": 0.47
+  }
+ ]
+}
