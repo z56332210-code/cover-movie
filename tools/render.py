@@ -1407,10 +1407,10 @@ def decorations(ci, c, t, focus, bg, excl):
                 if u <= 0:
                     continue
                 starburst(front, W * px_, H * py_, H * R * pop(u), td, ci * 10 + j, alpha=0.72 + 0.28 * beat_flash(t))
-        elif k == "torn_strip":
-            torn_strip_deco(front, t, ci)
+        elif k == "torn_strip":     # strips cross in front of / behind the character (depth), mixed anew every cut
+            torn_strip_deco(front, t, ci, back)
         elif k == "checker_strip":
-            checker_strip(front, td, y_frac=0.86 if fy < H / 2 else 0.18)
+            checker_strip(front if strip_sides(ci)[2] else back, td, y_frac=0.86 if fy < H / 2 else 0.18)
         elif k == "band":
             pass                    # the repeat band lives in the echo layer now
         elif k == "torn_edge":      # edge line of the tear that cuts the illustration
@@ -1813,8 +1813,24 @@ def micro_text(L, t, color):
     return True
 
 
-def torn_strip_deco(L, t, ci):
-    """Paper strips with torn edges crossing the frame edge to edge (attached to the frame, never floating)."""
+STRIP_PATTERNS = [(1, 0, 1), (0, 1, 0), (1, 1, 0), (0, 0, 1), (1, 0, 0), (0, 1, 1)]   # (torn 1, torn 2, checker): 1 = in front
+
+
+@lru_cache(None)
+def strip_sides(ci):
+    """Which strips pass in front of the character and which behind it, for cut ci: always a mix (depth), and never
+    the same mix as the cut before."""
+    prev = strip_sides(ci - 1) if ci else None
+    r = np.random.default_rng(ci * 29 + 5)
+    for k in r.permutation(len(STRIP_PATTERNS)):
+        if STRIP_PATTERNS[k] != prev:
+            return STRIP_PATTERNS[k]
+    return STRIP_PATTERNS[0]
+
+
+def torn_strip_deco(L, t, ci, L_back=None):
+    """Paper strips with torn edges crossing the frame edge to edge (attached to the frame, never floating).
+    With L_back, each strip goes in front of or behind the character as strip_sides(ci) says."""
     r = np.random.default_rng(ci * 61)
     W, H = Q.W, Q.H
     for k in range(2):
@@ -1826,7 +1842,8 @@ def torn_strip_deco(L, t, ci):
         ang = r.uniform(12, 24) * (1 if k else -1)
         strip = strip.rotate(ang, resample=Image.BICUBIC, expand=True)
         slide = ((math.floor(t * 12) / 12) * S(40) * (1 if k else -1)) % S(200)
-        paste(L, strip, W / 2 - strip.size[0] / 2 + slide - S(100), H * (0.30 + 0.38 * k) - strip.size[1] / 2)
+        dst = L if (L_back is None or strip_sides(ci)[k]) else L_back
+        paste(dst, strip, W / 2 - strip.size[0] / 2 + slide - S(100), H * (0.30 + 0.38 * k) - strip.size[1] / 2)
 
 
 def scene_layer(ci, t, excl):
