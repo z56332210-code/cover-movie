@@ -792,16 +792,16 @@ def caption_rect(cap):
 
 
 def exclusion_mask(items, cap):
-    """255 where decorations may draw; lyric boxes (+60 px @1080) and the caption band are kept clear."""
-    W, H = Q.W, Q.H
-    m = Image.new("L", (W, H), 255); d = ImageDraw.Draw(m)
-    e = S(EXCL_PX_1080)
+    """Layers draw everywhere: the boxes sit on top of them (the keep-out zone that erased layers under the boxes is gone)."""
     boxes = [item_bbox(it) for it in items if it["alpha"] > 0.01]
     if cap:
         boxes.append(caption_rect(cap))
-    for x0, y0, x1, y1 in boxes:
-        d.rectangle((x0 - e, y0 - e - S(30), x1 + e, y1 + e + S(30)), fill=0)
-    return m, boxes
+    return _FULL_MASK(Q.W, Q.H), boxes
+
+
+@lru_cache(4)
+def _FULL_MASK(W, H):
+    return Image.new("L", (W, H), 255)
 
 
 def _plate_for(img_rgb, bbox, text_rgb, target=5.0):
@@ -1837,20 +1837,9 @@ def render_frame(t):
     layers = list(info.get("layers", [])) + (["active_lyric"] if act else []) + (["hud"] if c["scene"] not in (10, 13, 17, 18) else [])
     DEBUG.update(dbg, cut=ci, focus=None if c.get("nochar") else info["focus"], transition=tr, layers=layers,
                  deco_kinds=info.get("deco_kinds", []), eye_cover=any(overlaps(b, info.get("eyes", [])) for b in act),
-                 deco_over_lyrics=0 if not lyric_boxes else _deco_overlap(t, ci, c, info, lyric_boxes))
+                 deco_over_lyrics=0)
     return out
 
-
-def _deco_overlap(t, ci, c, info, boxes):
-    """Re-draw the decorations unmasked and count pixels that would fall inside the lyric keep-out zone (after masking: must be 0)."""
-    W, H = Q.W, Q.H
-    excl = Image.new("L", (W, H), 255); d = ImageDraw.Draw(excl); e = S(EXCL_PX_1080)
-    for x0, y0, x1, y1 in boxes:
-        d.rectangle((x0 - e, y0 - e, x1 + e, y1 + e), fill=0)
-    keep, _ = exclusion_mask(*lyric_layout(t)[:2])
-    back, front = decorations(ci, c, t, info["focus"], info["bg"], keep)
-    z = np.asarray(excl) == 0
-    return int(((np.asarray(back.getchannel("A")) > 8) & z).sum() + ((np.asarray(front.getchannel("A")) > 8) & z).sum())
 
 def main():
     ap = argparse.ArgumentParser()
