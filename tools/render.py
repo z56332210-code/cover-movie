@@ -222,11 +222,16 @@ def focus_target_px(c):
     return ft[0] * Q.W, ft[1] * Q.H
 
 
+CROP_ZOOM_OUT = 1.3                                       # every crop shows 1.3x more of the drawing
+
+
 def cut_transform(ci, c, t):
     """Affine (output px -> source px). The crop's focus point (eye / mask / hand) is pinned to its rule-of-thirds target."""
     W, H = Q.W, Q.H
     src = CROPS[c["crop"]][0]
     w = (c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2]
+    if w is not None:
+        w *= CROP_ZOOM_OUT                                # framed a little wider than the plan's crop (user note)
     im = art(src)
     k = (im.size[1] / ART_UP / (H * 0.86)) if w is None else w / W
     k /= 1.04
@@ -343,7 +348,7 @@ def image_layer(ci, c, t):
     focus = fwd(*fsrc)
     eyes = []
     if src == "upper":
-        bw = (c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000
+        bw = ((c.get("crop_box") or {}).get("w") or CROPS[c["crop"]][2] or 2000 / CROP_ZOOM_OUT) * CROP_ZOOM_OUT
         for ex, ey in EYES_SRC:
             px, py = fwd(ex, ey); r_ = 48 / bw * W                # eye ~48 px radius in the source art
             eyes.append((px - r_, py - r_ * 0.7, px + r_, py + r_ * 0.7))
@@ -583,7 +588,9 @@ def rects_px(c):
     if not r:
         return []
     rs = r if isinstance(r[0], list) else [r]
-    return [(a * Q.W, b * Q.H, cc * Q.W, d * Q.H) for a, b, cc, d in rs]
+    lb = letterbox_px(c)
+    top, bot = (lb + S(28)) / Q.H, (Q.H - lb - S(28)) / Q.H        # lyrics stay inside the letterbox
+    return [(a * Q.W, max(b, top) * Q.H, cc * Q.W, min(d, bot) * Q.H) for a, b, cc, d in rs]
 
 
 @lru_cache(None)
@@ -931,10 +938,14 @@ def draw_lyrics(out, items, cap, dbg, hx, hy):
             cr = _plate_for(out, (bb[0] - S(14), bb[1] - S(10), bb[2] + S(14), bb[3] + S(10)), RED)[2]
             paste(L, it["img"], it["x"] + hx, it["y"] + hy + it["dy"], it["alpha"])
             crs.append(("red", cr))
+    lb = letterbox_px(cut_at(t_now[0])[1])
+    if lb:                                           # letterbox: over everything (lyrics, props, HUD) but the caption
+        d = ImageDraw.Draw(L)
+        d.rectangle((0, 0, Q.W, lb), fill=INK + (255,)); d.rectangle((0, Q.H - lb, Q.W, Q.H), fill=INK + (255,))
     if cap and cap["alpha"] > 0.01:
         x0, y0, x1, y1 = caption_rect(cap)
         reg = np.asarray(out.crop((int(x0), int(y0), int(x1), int(y1))).resize((40, 4))).reshape(-1, 3)
-        bgw = max(rel_lum(p) for p in reg)
+        bgw = rel_lum(INK) if lb and y0 >= Q.H - lb else max(rel_lum(p) for p in reg)
         ba = CAPTION_BAND_ALPHA                     # 60 %, darkened only as much as the picture behind needs
         while ba < 0.97 and contrast(rel_lum(PAPER_L), bgw * (1 - ba) + rel_lum(INK) * ba) < 4.8:
             ba += 0.03
@@ -1223,29 +1234,39 @@ def guide_pos(ci):
     return Q.W * 0.35, Q.H * 0.45
 
 
+def guide_first(ci):
+    return not (ci and "guides" in (CUTS[ci - 1].get("deco") or []))
+
+
 def guide_shake(ci, c, t):
-    """Big damped shake (about 0.6 s) on the cut where the reticle first appears; still afterwards."""
-    if ci and "guides" in (CUTS[ci - 1].get("deco") or []):
-        return 0.0, 0.0
-    u = t - c["start"]
-    if u < 0 or u > 0.7:
-        return 0.0, 0.0
-    env = math.exp(-u * 6.0)
-    return S(70) * env * math.sin(2 * math.pi * 7.5 * u), S(46) * env * math.sin(2 * math.pi * 6.0 * u + 1.3)
+    """One big shake (about 1 s) when the reticle first appears, starting once the cut's transition is over; the
+    reticle also pops 1.6x -> 1x. Returns (dx, dy, scale)."""
+    if not guide_first(ci):
+        return 0.0, 0.0, 1.0
+    u = t - c["start"] - 6 / FPS
+    if u < 0:
+        return 0.0, 0.0, 1.6
+    if u > 1.1:
+        return 0.0, 0.0, 1.0
+    env = math.exp(-u * 3.2)
+    return (S(150) * env * math.sin(2 * math.pi * 5.0 * u), S(95) * env * math.sin(2 * math.pi * 4.0 * u + 1.3),
+            1.0 + 0.6 * math.exp(-u * 6.0))
 
 
-def circle_guides(L, t, eyes, color):
+def circle_guides(L, t, eyes, color, scale=1.0, strong=False):
     d = ImageDraw.Draw(L)
-    col = color + (170,)
+    col = color + ((235,) if strong else (170,))
+    lw = max(1, S(2)) if strong else 1
     if eyes:
         x0, y0, x1, y1 = eyes[0]; cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     else:
         cx, cy = Q.W * 0.62, Q.H * 0.42
     for k, rr in enumerate((S(70), S(130), S(210))):
-        rr = rr * (1 + 0.04 * math.sin(t * 2 + k))
-        d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=col, width=1)
-    d.line((cx - S(260), cy, cx + S(260), cy), fill=col, width=1)
-    d.line((cx, cy - S(260), cx, cy + S(260)), fill=col, width=1)
+        rr = rr * (1 + 0.04 * math.sin(t * 2 + k)) * scale
+        d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=col, width=lw)
+    a = S(260) * scale
+    d.line((cx - a, cy, cx + a, cy), fill=col, width=lw)
+    d.line((cx, cy - a, cx, cy + a), fill=col, width=lw)
 
 
 def mini_icons(L, color):
@@ -1394,8 +1415,10 @@ def decorations(ci, c, t, focus, bg, excl):
             speed_lines(back, td, ci, GRAY_M, alpha=0.8, cx=fx, cy=fy)
         elif k == "guides":                 # reticle: a new spot every cut; one big shake when it first appears
             gx, gy = guide_pos(ci)
-            sx, sy = guide_shake(ci, c, t)
-            circle_guides(front, td, [(gx + sx - 1, gy + sy - 1, gx + sx + 1, gy + sy + 1)], GRAY_M)
+            sx, sy, gs = guide_shake(ci, c, t)
+            strong = guide_first(ci) and t - c["start"] < 1.3            # the entrance reads clearly: contrast tone, thicker
+            circle_guides(front, t if strong else td, [(gx + sx - 1, gy + sy - 1, gx + sx + 1, gy + sy + 1)], tc if strong else GRAY_M,
+                          gs, strong=strong)
         elif k == "code":
             cb = code_block(); off = int(td * S(30)) % max(1, cb.size[1] // 2)
             x = S(70) if fx > W / 2 else W - S(70) - cb.size[0]
@@ -1648,11 +1671,12 @@ def prop_place(n):
 PROP_CUT_EDGES = {"scissors": ("top", "bottom"), "signal": ("bottom",)}   # where the source drawing is cut by its canvas
 
 
-LETTERBOX_SCENES = (3, 8, 14)
+HIGHLIGHT_SECTIONS = ("chorus_a", "chorus_b", "last_chorus")
 
 
 def letterbox_px(c):
-    return int(Q.H * 0.115) if c["scene"] in LETTERBOX_SCENES else 0
+    """Cinema bars on everything but the highlights (choruses); drawn above every layer except the Korean caption."""
+    return 0 if c.get("section") in HIGHLIGHT_SECTIONS else int(Q.H * 0.115)
 
 
 def zero_g(t, th, n):
@@ -1913,9 +1937,6 @@ def scene_layer(ci, t, excl):
                                 fillcolor=bg + (255,))
     if img is not None and c["scene"] not in (10, 13, 17, 18):
         frame = shade(frame, ci, sum(bg) <= 380)
-    if c["scene"] in LETTERBOX_SCENES:  # cinema letterbox like ref B's band scenes (framing)
-        d = ImageDraw.Draw(frame); lb = int(H * 0.115)
-        d.rectangle((0, 0, W, lb), fill=INK + (255,)); d.rectangle((0, H - lb, W, H), fill=INK + (255,))
     if c["scene"] == 13:
         frame = Image.blend(frame, Image.new("RGBA", (W, H), (250, 250, 250, 255)), 0.82)
     deco_px = int((np.asarray(back.getchannel("A")) > 8).sum() + (np.asarray(front.getchannel("A")) > 8).sum()) if excl is not None else 0
@@ -2033,12 +2054,12 @@ def render_frame(t):
     hx = snoise(t, ci * 7919 + 14, (0.5, 0.75, 1.0)) * HANDHELD * W * 0.4   # boxes follow 40% of the handheld; giant type stays still
     hy = snoise(t, ci * 7919 + 15, (0.5, 0.75, 1.0)) * HANDHELD * W * 0.4
     t_now[0] = t
-    out = draw_lyrics(out, items, cap, dbg, int(round(hx)), int(round(hy)))
     if c["scene"] not in (10, 13, 17, 18):
         a = 0.35 if any(o.endswith(":dim") for o in c.get("overlays", [])) else 0.62
         hud = hud_layer().copy(); hud.putalpha(hud.getchannel("A").point(lambda v: int(v * a)))
         hud_dynamic(hud, t, 1.0)
         out = out.convert("RGBA"); out.alpha_composite(hud); out = out.convert("RGB")
+    out = draw_lyrics(out, items, cap, dbg, int(round(hx)), int(round(hy)))     # lyrics, letterbox, caption on top
     if c["scene"] == 18:
         u = (t - c["start"]) / max(c["dur"], 0.1)
         d = ImageDraw.Draw(out)
