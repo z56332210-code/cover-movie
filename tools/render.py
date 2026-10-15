@@ -1503,8 +1503,6 @@ def word_hit(t):
 # ------------------------------------------------------------------ props (makeup / scissors / ribbon / signal) on 「その…」
 PROP_LINES = (31, 32, 52, 53)                  # その名言 その意見 その批評 / そのカリスマ そのギャグ そのセンス (twice)
 PROP_ORDER = ["ribbon", "scissors", "compact", "lipstick", "brush2", "signal", "lipstick2", "brush"]
-PROP_H = {"signal": 0.62, "scissors": 0.50, "ribbon": 0.50, "compact": 0.36, "brush2": 0.44, "brush": 0.30,
-          "lipstick": 0.30, "lipstick2": 0.30}
 PROP_KEEP = 1                                  # one prop at a time: each 「その…」 beat swaps it for the next
 
 
@@ -1539,32 +1537,28 @@ def prop_img(name, h_px):
     return out
 
 
-PROP_SLOTS = [(0.22, 0.30), (0.20, 0.70), (0.46, 0.24), (0.42, 0.72), (0.12, 0.48), (0.62, 0.30), (0.60, 0.74)]
 
 
 @lru_cache(None)
 def prop_place(n):
-    """Slot, rotation of hit n: decided once from the cut / lyric boxes at its hit, then it stays put."""
+    """Centre, size and rotation of hit n: the prop fills the open side of the frame (everything left of the lyric
+    boxes), big, with a small offset per hit; decided once at its hit, then it stays put."""
     t, li, name = prop_hits()[n]
-    ci, c = cut_at(t + 0.05)
     items, _, _ = lyric_layout(line_window(li)[1] - 0.05)             # every box this line will show
     boxes = [item_bbox(it) for it in items if not it.get("dim")]
-    t1 = prop_group_end(li)
-    faces = [focus_target_px(cc) for cc in CUTS if cc["start"] < t1 and cc["start"] + cc["dur"] > t and not cc.get("nochar")]
-    used = [prop_place(m)[0] for m in range(max(0, n - PROP_KEEP + 1), n) if prop_group_end(prop_hits()[m][1]) == prop_group_end(li)]
+    x1 = min([b[0] for b in boxes] + [Q.W * 0.62]) - S(50)             # open area: left edge -> lyric column
+    x0 = Q.W * 0.04
+    y0, y1 = Q.H * 0.06, Q.H * 0.86                                    # above the caption band
     r = np.random.default_rng(n * 131 + 7)
-    best = None
-    for k in r.permutation(len(PROP_SLOTS)):
-        sx, sy = PROP_SLOTS[k]
-        x, y = sx * Q.W, sy * Q.H
-        sc = 0.0
-        sc += 3 if any(a[0] - S(140) < x < a[2] + S(140) and a[1] - S(120) < y < a[3] + S(120) for a in boxes) else 0
-        sc += 2 * sum(1 for fx, fy in faces if math.hypot(x - fx, y - fy) < 0.22 * Q.W)   # every face it will sit over
-        sc += 2 if k in used else 0
-        if best is None or sc < best[0]:
-            best = (sc, k)
-    rot = float(r.uniform(-24, 24))
-    return best[1], rot
+    rot = float(r.uniform(-16, 16))
+    src = Image.open(ROOT / f"art/props/{name}.png")
+    k = min((x1 - x0) * 0.92 / src.size[0], (y1 - y0) * 0.92 / src.size[1])   # as big as the open area allows
+    if name == "signal":                                               # pole runs off the bottom: may use the full height
+        k = min((x1 - x0) * 0.92 / src.size[0], Q.H * 0.95 / src.size[1])
+    h = src.size[1] * k
+    cx = (x0 + x1) / 2 + (x1 - x0) * 0.06 * r.uniform(-1, 1)
+    cy = (y0 + y1) / 2 + (y1 - y0) * 0.04 * r.uniform(-1, 1)
+    return cx, cy, int(h), rot
 
 
 def props_active(t):
@@ -1587,18 +1581,17 @@ def prop_layer(t):
         th, li, name = hits[n]
         if t >= prop_group_end(li) or prop_group_end(li) != prop_group_end(hits[k - 1][1]):   # only the current pair of lines
             continue
-        slot, rot = prop_place(n)
+        cx, cy, hpx, rot = prop_place(n)
         u = clamp((t - th) * FPS / 6)
         e = arrive(u, 0.08)
         sc = 1.35 - 0.35 * e
         rr = rot + 14 * (1 - e) * (1 if n % 2 else -1)
         bf = beat_flash(t, 3) if n != k - 1 else 0.0          # older props tick on every beat
         rr += 2.5 * bf * (1 if n % 2 else -1)
-        im = prop_img(name, int(PROP_H[name] * Q.H))
+        im = prop_img(name, hpx)
         im = im.resize((max(1, int(im.size[0] * sc)), max(1, int(im.size[1] * sc))), Image.BICUBIC)
         im = im.rotate(rr, resample=Image.BICUBIC, expand=True)
-        sx, sy = PROP_SLOTS[slot]
-        x, y = sx * Q.W - im.size[0] / 2, sy * Q.H - im.size[1] / 2
+        x, y = cx - im.size[0] / 2, cy - im.size[1] / 2
         if name == "signal":                                  # the pole runs off the bottom of the frame
             y = Q.H - im.size[1] * 0.92
         sh = Image.new("RGBA", im.size, INK + (0,)); sh.putalpha(im.getchannel("A").point(lambda v: int(v * 0.5)))
