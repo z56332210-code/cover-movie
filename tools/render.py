@@ -1164,7 +1164,6 @@ def starburst(L, cx, cy, R, t, seed, color=RED, alpha=1.0):
         pts.append((cx + rr * math.cos(a), cy + rr * math.sin(a)))
     d = ImageDraw.Draw(L)
     d.polygon(pts, fill=color + (int(255 * alpha),))
-    d.ellipse((cx - R * 0.38, cy - R * 0.38, cx + R * 0.38, cy + R * 0.38), outline=PAPER_L + (int(200 * alpha),), width=max(1, S(2)))
 
 
 def red_slash(L, t0, t, seed):
@@ -1862,7 +1861,9 @@ STRIP_PATTERNS = [(1, 0, 1), (0, 1, 0), (1, 1, 0), (0, 0, 1), (1, 0, 0), (0, 1, 
 @lru_cache(None)
 def strip_sides(ci):
     """Which strips pass in front of the character and which behind it, for cut ci: always a mix (depth), and never
-    the same mix as the cut before."""
+    the same mix as the cut before; on face close-ups all of them go behind."""
+    if CUTS[ci].get("crop") in _B.FACE_CROPS:           # face close-up: every strip passes behind the face
+        return (0, 0, 0)
     prev = strip_sides(ci - 1) if ci else None
     r = np.random.default_rng(ci * 29 + 5)
     for k in r.permutation(len(STRIP_PATTERNS)):
