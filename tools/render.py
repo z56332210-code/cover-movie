@@ -235,6 +235,11 @@ def cut_transform(ci, c, t):
     im = art(src)
     k = (im.size[1] / ART_UP / (H * 0.86)) if w is None else w / W
     k /= 1.04
+    if c["crop"] == "silhouette":                       # whole figure: head on its third, feet above the letterbox
+        fs_ = c.get("focus_src") or list(CROPS[c["crop"]][1])
+        ty_ = focus_target_px(c)[1]
+        room = Q.H - letterbox_px(c) - S(30) - ty_       # screen px below the head point
+        k = max(k, (im.size[1] / ART_UP - fs_[1]) / max(1.0, room))
     zm, px, py, rot = cam_motion(ci, c, t)
     k /= zm
     th = math.radians(c.get("rot", 0) + rot)
@@ -341,7 +346,7 @@ def image_layer(ci, c, t):
         hgt = H * r.uniform(0.36, 0.46); y0 = fy_ - hgt / 2; sl = H * r.uniform(-0.08, 0.08)
         ImageDraw.Draw(m).polygon([(0, y0), (W, y0 + sl), (W, y0 + sl + hgt), (0, y0 + hgt)], fill=255)
         acc.putalpha(ImageChops.multiply(acc.getchannel("A"), m))
-    if "torn_edge" in (c.get("deco") or []):
+    if "torn_edge" in (c.get("deco") or []) and c["crop"] != "silhouette":    # never tear the whole figure's legs off
         m, _ = torn_mask(ci, c)
         acc.putalpha(ImageChops.multiply(acc.getchannel("A"), m))
     fsrc = c.get("focus_src") or list(CROPS[c["crop"]][1])
@@ -472,15 +477,29 @@ def chunk_appear(i):
 
 
 # ------------------------------------------------------------------ text primitives
+RED_SPANS = ("「風」",)                                   # always red inside the Japanese lyric boxes (not the Korean caption)
+
+
 @lru_cache(4096)
 def vbox(text, size, fg=PAPER_L, bg=INK, pad=0.32, fontpath=F_L):
-    """Black box with white vertical (top-to-bottom) text."""
+    """Black box with white vertical (top-to-bottom) text; 「風」 (brackets included) in red."""
     f = font(fontpath, size)
     bb = f.getbbox(text, direction="ttb", features=["vert"])
     tw, th = bb[2] - bb[0], bb[3] - bb[1]
     p = int(size * pad)
     im = Image.new("RGBA", (tw + 2 * p, th + 2 * p), bg + (255,) if bg else (0, 0, 0, 0))
-    ImageDraw.Draw(im).text((p - bb[0], p - bb[1]), text, font=f, fill=fg + (255,), direction="ttb", features=["vert"])
+    d = ImageDraw.Draw(im)
+    d.text((p - bb[0], p - bb[1]), text, font=f, fill=fg + (255,), direction="ttb", features=["vert"])
+    for span in RED_SPANS:
+        j = text.find(span)
+        while j >= 0 and fg != RED:
+            # repaint the span: erase it with the box colour, then draw it red at the same advance
+            pre = f.getlength(text[:j], direction="ttb", features=["vert"]) if j else 0
+            sb = f.getbbox(span, direction="ttb", features=["vert"])
+            ox, oy = p - bb[0], p - bb[1] + pre
+            d.rectangle((ox + sb[0] - 1, oy + sb[1] - 1, ox + sb[2] + 1, oy + sb[3] + 1), fill=(bg + (255,)) if bg else (0, 0, 0, 0))
+            d.text((ox, oy), span, font=f, fill=RED + (255,), direction="ttb", features=["vert"])
+            j = text.find(span, j + len(span))
     return im
 
 
@@ -1436,7 +1455,7 @@ def decorations(ci, c, t, focus, bg, excl):
             checker_strip(front if strip_sides(ci)[2] else back, td, y_frac=0.86 if fy < H / 2 else 0.18)
         elif k == "band":
             pass                    # the repeat band lives in the echo layer now
-        elif k == "torn_edge":      # edge line of the tear that cuts the illustration
+        elif k == "torn_edge" and c.get("crop") != "silhouette":      # edge line of the tear that cuts the illustration
             _, edge = torn_mask(ci, c)
             ImageDraw.Draw(front).line(edge, fill=GRAY_M + (170,), width=max(1, S(2)))
     return _masked(back, excl), _masked(front, excl)
